@@ -1,0 +1,26 @@
+.header {
+    flex: 0 0 13%;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    background: linear-gradient(
+        to right,
+        #9daaa7 0%,
+        #516662 76%,
+        #728380 100%
+    );
+
+    .main-icon {
+        width: 3.3%;
+        height: auto;
+        margin-left: 4.5%;
+    }
+
+    a {
+        color: white;
+    }
+
+    a:hover {
+        color: gray;
+    }
+}

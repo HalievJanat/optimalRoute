@@ -1,0 +1,74 @@
+{
+    "root": true,
+    "ignorePatterns": ["projects/**/*", "src/assets/**/*"],
+    "overrides": [
+        {
+            "files": ["*.ts"],
+            "parserOptions": {
+                "project": ["tsconfig.json", "e2e/tsconfig.json"],
+                "createDefaultProgram": true
+            },
+            "extends": [
+                "plugin:@angular-eslint/recommended",
+                "plugin:@angular-eslint/template/process-inline-templates",
+                "eslint:recommended",
+                "plugin:@typescript-eslint/recommended",
+                "plugin:import/warnings"
+            ],
+            "plugins": ["import", "unused-imports"],
+            "rules": {
+                "@typescript-eslint/no-unused-vars": "error",
+                "@typescript-eslint/quotes": ["error", "single", { "avoidEscape": true, "allowTemplateLiterals": true }],
+                "@typescript-eslint/no-inferrable-types": "off",
+                "@typescript-eslint/no-shadow": "warn",
+                "import/order": "error",
+                "@typescript-eslint/member-ordering": [
+                    "warn",
+                    {
+                        "default": [
+                            "private-static-field",
+                            "public-static-field",
+                            "static-field",
+                            "instance-field",
+                            "constructor",
+                            "public-instance-method",
+                            "private-instance-method"
+                        ]
+                    }
+                ],
+                "@angular-eslint/component-selector": [
+                    "warn",
+                    {
+                        "prefix": "app"
+                    }
+                ],
+                "@angular-eslint/directive-selector": [
+                    "warn",
+                    {
+                        "prefix": "app"
+                    }
+                ],
+                "no-prototype-builtins": "warn",
+                "prefer-arrow/prefer-arrow-functions": ["off", { "allowStandaloneDeclarations": true }],
+                "@typescript-eslint/ban-ts-comment": ["off"],
+                "@typescript-eslint/dot-notation": "off",
+                "@typescript-eslint/explicit-module-boundary-types": "off",
+                "unused-imports/no-unused-imports": "error",
+                "no-nested-ternary": "error",
+                "prefer-object-spread": "error",
+                "no-lonely-if": "error",
+                "prefer-regex-literals": "error",
+                "@typescript-eslint/prefer-for-of": "error",
+                "@typescript-eslint/prefer-enum-initializers": "error",
+                "@typescript-eslint/prefer-string-starts-ends-with": "error",
+                "@typescript-eslint/no-redundant-type-constituents": "error",
+                "@typescript-eslint/prefer-regexp-exec": "error"
+            }
+        },
+        {
+            "files": ["*.html"],
+            "extends": ["plugin:@angular-eslint/template/recommended"],
+            "rules": {}
+        }
+    ]
+}
