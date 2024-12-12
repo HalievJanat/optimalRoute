@@ -18,7 +18,7 @@ export class AdminPageComponent {
     private layer: Konva.Layer = {} as any;
 
     //Метод для правой панели
-    methodRightPanelOpen() {
+    methodRightPanelOpen(): void {
         if (this.isRightPanelOpen == true)
             this.stage.width(window.innerWidth / 100 * 75);
         else this.stage.width(window.innerWidth / 100 * 56);
@@ -28,7 +28,7 @@ export class AdminPageComponent {
     }
 
     //Метод для левой панели
-    methodLeftPanelOpen() {
+    methodLeftPanelOpen(): void {
         if (this.isLeftPanelOpen == true)
             this.stage.width(window.innerWidth / 100 * 75);
         else this.stage.width(window.innerWidth / 100 * 56);
