@@ -17,6 +17,10 @@ export class AdminPageComponent {
 
     isCrossroadAdd = false;
 
+    isRoadAdd = false;
+    firstCoordinateX = -10;
+    firstCoordinateY = -10;
+
     private stage: Konva.Stage = {} as any;
     private layer: Konva.Layer = {} as any;
 
@@ -56,7 +60,7 @@ export class AdminPageComponent {
             x: 100,
             y: 100,
             radius: 20,
-            fill: 'blue',
+            stroke: '#000', 
             draggable: true, // Включаем перетаскивание
         });
         this.layer.add(circle);
@@ -92,6 +96,7 @@ export class AdminPageComponent {
 
     addCrossroad(): void {
         this.isCrossroadAdd = true;
+        this.isRoadAdd = false;
     }
 
     eventClickConvas(X: number, Y: number): void {
@@ -100,7 +105,7 @@ export class AdminPageComponent {
                 x: X,
                 y: Y,
                 radius: 20,
-                fill: 'blue',
+                stroke: '#000',
                 draggable: true, // Включаем перетаскивание
             });
     
@@ -111,5 +116,28 @@ export class AdminPageComponent {
 
             this.isCrossroadAdd = false;
         }
+        else if (this.isRoadAdd == true && this.firstCoordinateX >= 0) {
+            const line = new Konva.Line({
+                points: [this.firstCoordinateX, this.firstCoordinateY, X, Y],
+                stroke: '#000',
+                strokeWidth: 1,
+            })
+    
+            this.layer.add(line);
+    
+            // Обновляем слой
+            this.layer.draw();
+
+            this.isCrossroadAdd = false;
+        }
+        else if (this.isRoadAdd == true) {
+            this.firstCoordinateX = X;
+            this.firstCoordinateY = Y;
+        }
+    }
+
+    addRoad(): void {
+        this.isCrossroadAdd = false;
+        this.isRoadAdd = true;
     }
 }
