@@ -17,6 +17,26 @@ export class AdminPageComponent {
     private stage: Konva.Stage = {} as any;
     private layer: Konva.Layer = {} as any;
 
+    //Метод для правой панели
+    methodRightPanelOpen() {
+        if (this.isRightPanelOpen == true)
+            this.stage.width(window.innerWidth / 100 * 75);
+        else this.stage.width(window.innerWidth / 100 * 56);
+        this.isRightPanelOpen = !this.isRightPanelOpen;
+        this.drawGrid();
+        this.layer.draw();
+    }
+
+    //Метод для левой панели
+    methodLeftPanelOpen() {
+        if (this.isLeftPanelOpen == true)
+            this.stage.width(window.innerWidth / 100 * 75);
+        else this.stage.width(window.innerWidth / 100 * 56);
+        this.isLeftPanelOpen = !this.isLeftPanelOpen;
+        this.drawGrid();
+        this.layer.draw();
+    }
+
     ngOnInit(): void {
         // Инициализация сцены
         this.stage = new Konva.Stage({

@@ -14,7 +14,7 @@
             <button
                 type="button"
                 class="btn btn-outline-secondary"
-                (click)="isLeftPanelOpen = false"
+                (click)="methodLeftPanelOpen()"
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -47,7 +47,7 @@
         type="button"
         class="btn btn-outline-secondary open-left-panel-btn"
         [hidden]="isLeftPanelOpen"
-        (click)="isLeftPanelOpen = true"
+        (click)="methodLeftPanelOpen()"
     >
         <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -71,7 +71,7 @@
 
     <div class="right-panel" [hidden]="!isRightPanelOpen">
         <div class="right-panel-header">
-            <button type="button" class="btn btn-outline-secondary" (click)="isRightPanelOpen = false">
+            <button type="button" class="btn btn-outline-secondary" (click)="methodRightPanelOpen()">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="16"
@@ -104,7 +104,7 @@
         type="button"
         class="btn btn-outline-secondary open-right-panel-btn"
         [hidden]="isRightPanelOpen"
-        (click)="isRightPanelOpen = true"
+        (click)="methodRightPanelOpen()"
     >
         <svg
             xmlns="http://www.w3.org/2000/svg"
