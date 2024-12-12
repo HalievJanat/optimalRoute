@@ -41,6 +41,9 @@
                 <img class="roadrun" src="/assets/roadrun.png" alt="" />
                 <span>Прогон</span>
             </div>
+            <p>Масштаб:</p>              
+            <button (click)="replaceSizeGrid(false)">-</button>
+            <button (click)="replaceSizeGrid(true)">+</button>
         </div>
     </div>
     <button
@@ -66,7 +69,8 @@
     </button>
 
     <div class="graph-editor">
-        <div (click)="eventClickConvas($event.layerX, $event.layerY)" id="container" ></div>
+        <div (click)="eventClickConvas($event.layerX, $event.layerY)" id="container" >
+        </div>
     </div>
 
     <div class="right-panel" [hidden]="!isRightPanelOpen">

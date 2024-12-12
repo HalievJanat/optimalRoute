@@ -15,6 +15,8 @@ export class AdminPageComponent {
     isLeftPanelOpen = true;
     isRightPanelOpen = true;
 
+    gridSize = 50; // Масштаб
+
     isCrossroadAdd = false;
 
     isRoadAdd = false;
@@ -30,14 +32,22 @@ export class AdminPageComponent {
 
     //Метод для правой панели
     methodRightPanelOpen(): void {
-        this.createStage(this.isRightPanelOpen == true? window.innerWidth / 100 * 75 : window.innerWidth / 100 * 56);
         this.isRightPanelOpen = !this.isRightPanelOpen;
+        this.gridDrowSize();
     }
 
     //Метод для левой панели
     methodLeftPanelOpen(): void {
-        this.createStage(this.isLeftPanelOpen == true? window.innerWidth / 100 * 75 : window.innerWidth / 100 * 56);
         this.isLeftPanelOpen = !this.isLeftPanelOpen;
+        this.gridDrowSize();
+    }
+
+    private gridDrowSize(): void {
+        if (this.isRightPanelOpen == true && this.isLeftPanelOpen == true) {
+            this.createStage(window.innerWidth / 100 * 56);
+        } else if (this.isRightPanelOpen == true || this.isLeftPanelOpen == true) {
+            this.createStage(window.innerWidth / 100 * 75);
+        } else this.createStage(window.innerWidth / 100 * 94);
     }
 
     private createStage(wight: number): void {
@@ -54,27 +64,13 @@ export class AdminPageComponent {
 
         // Рисуем сетку
         this.drawGrid();
-
-        // Добавляем примерную вершину
-        const circle = new Konva.Circle({
-            x: 100,
-            y: 100,
-            radius: 20,
-            stroke: '#000', 
-            draggable: true, // Включаем перетаскивание
-        });
-        this.layer.add(circle);
-
-        // Обновляем слой
-        this.layer.draw();
     }
 
     private drawGrid(): void {
-        const gridSize = 50; 
         const width = this.stage.width();
         const height = this.stage.height();
 
-        for (let x = 0; x < width; x += gridSize) {
+        for (let x = 0; x < width; x += this.gridSize) {
             this.layer.add(
                 new Konva.Line({
                     points: [x, 0, x, height],
@@ -83,7 +79,7 @@ export class AdminPageComponent {
                 })
             );
         }
-        for (let y = 0; y < height; y += gridSize) {
+        for (let y = 0; y < height; y += this.gridSize) {
             this.layer.add(
                 new Konva.Line({
                     points: [0, y, width, y],
@@ -97,15 +93,20 @@ export class AdminPageComponent {
     addCrossroad(): void {
         this.isCrossroadAdd = true;
         this.isRoadAdd = false;
+        this.firstCoordinateX = -10;
+        this.firstCoordinateY = -10;
     }
 
     eventClickConvas(X: number, Y: number): void {
+        X = Math.round(X / this.gridSize) * this.gridSize;
+        Y = Math.round(Y / this.gridSize) * this.gridSize;
         if (this.isCrossroadAdd == true) {
             const circle = new Konva.Circle({
                 x: X,
                 y: Y,
-                radius: 20,
+                radius: this.gridSize * 2 / 5,
                 stroke: '#000',
+                full: '#fff',
                 draggable: true, // Включаем перетаскивание
             });
     
@@ -139,5 +140,13 @@ export class AdminPageComponent {
     addRoad(): void {
         this.isCrossroadAdd = false;
         this.isRoadAdd = true;
+        this.firstCoordinateX = -10;
+        this.firstCoordinateY = -10;
+    }
+
+    replaceSizeGrid(flag: boolean) {
+        if (!flag && this.gridSize > 30) this.gridSize -= 10;
+        else if (flag && this.gridSize < 100) this.gridSize += 10;
+        this.gridDrowSize();
     }
 }
