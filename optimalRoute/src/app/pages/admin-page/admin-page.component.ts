@@ -21,7 +21,7 @@ export class AdminPageComponent {
         // Инициализация сцены
         this.stage = new Konva.Stage({
             container: 'container', // ID контейнера
-            width: window.innerWidth,
+            width: window.innerWidth / 100 * 56,
             height: window.innerHeight,
         });
 
