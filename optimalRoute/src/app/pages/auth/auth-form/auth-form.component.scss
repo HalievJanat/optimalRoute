@@ -1,0 +1,28 @@
+button:hover {
+    color: gray;
+    border-color: gray;
+}
+
+input:focus {
+    border-color: white;
+    box-shadow: 2px 2px 2px 2px gray;
+}
+
+.submit-button {
+    background: linear-gradient(
+        to right,
+        #9daaa7 0%,
+        #516662 76%,
+        #728380 100%
+    );
+    border-radius: 10px;
+    border-color: white;
+}
+
+.form-inputs {
+    border-top: 0px;
+}
+
+input::placeholder {
+    font-weight: lighter;
+}

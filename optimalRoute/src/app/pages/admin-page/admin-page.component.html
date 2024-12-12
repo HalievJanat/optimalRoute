@@ -1,0 +1,122 @@
+<app-header>
+    <a href="/login" class="btn bg-transparent button">Cоздать новую карту</a>
+    <a href="/registration" class="btn bg-transparent button">Открыть карту</a>
+    <a href="/registration" class="btn bg-transparent button">Сохранить</a>
+    <a href="/registration" class="btn bg-transparent button">О системе</a>
+    <a href="/registration" class="btn bg-transparent button"
+        >О разработчиках</a
+    >
+</app-header>
+<div class="editor-container">
+    <div class="left-panel" [hidden]="!isLeftPanelOpen">
+        <div class="left-panel-header">
+            <h5 class="offcanvas-title">Добавление элементов УДС</h5>
+            <button
+                type="button"
+                class="btn btn-outline-secondary"
+                (click)="isLeftPanelOpen = false"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    class="bi bi-arrow-return-left"
+                    viewBox="0 0 16 16"
+                >
+                    <path
+                        fill-rule="evenodd"
+                        d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5"
+                    ></path>
+                </svg>
+                <span class="visually-hidden">Скрыть панель</span>
+            </button>
+        </div>
+        <div class="left-panel-body">
+            <div>
+                <img class="crossroad" src="/assets/crossroad.png" alt="" />
+                <span>Перекресток</span>
+            </div>
+            <div>
+                <img class="roadrun" src="/assets/roadrun.png" alt="" />
+                <span>Прогон</span>
+            </div>
+        </div>
+    </div>
+    <button
+        type="button"
+        class="btn btn-outline-secondary open-left-panel-btn"
+        [hidden]="isLeftPanelOpen"
+        (click)="isLeftPanelOpen = true"
+    >
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            class="bi bi-arrow-return-right"
+            viewBox="0 0 16 16"
+        >
+            <path
+                fill-rule="evenodd"
+                d="M1.5 1.5A.5.5 0 0 0 1 2v4.8a2.5 2.5 0 0 0 2.5 2.5h9.793l-3.347 3.346a.5.5 0 0 0 .708.708l4.2-4.2a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 8.3H3.5A1.5 1.5 0 0 1 2 6.8V2a.5.5 0 0 0-.5-.5"
+            ></path>
+        </svg>
+        <span class="visually-hidden">Открыть панель</span>
+    </button>
+
+    <div class="graph-editor"></div>
+
+    <div class="right-panel" [hidden]="!isRightPanelOpen">
+        <div class="right-panel-header">
+            <button type="button" class="btn btn-outline-secondary" (click)="isRightPanelOpen = false">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    class="bi bi-arrow-return-right"
+                    viewBox="0 0 16 16"
+                >
+                    <path
+                        fill-rule="evenodd"
+                        d="M1.5 1.5A.5.5 0 0 0 1 2v4.8a2.5 2.5 0 0 0 2.5 2.5h9.793l-3.347 3.346a.5.5 0 0 0 .708.708l4.2-4.2a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 8.3H3.5A1.5 1.5 0 0 1 2 6.8V2a.5.5 0 0 0-.5-.5"
+                    ></path>
+                </svg>
+                <span class="visually-hidden">Button</span>
+            </button>
+            <h5 class="offcanvas-title">Добавление элементов УДС</h5>
+        </div>
+        <div class="right-panel-body">
+            <div>
+                <img class="crossroad" src="/assets/crossroad.png" alt="" />
+                <span>Перекресток</span>
+            </div>
+            <div>
+                <img class="roadrun" src="/assets/roadrun.png" alt="" />
+                <span>Прогон</span>
+            </div>
+        </div>
+    </div>
+    <button
+        type="button"
+        class="btn btn-outline-secondary open-right-panel-btn"
+        [hidden]="isRightPanelOpen"
+        (click)="isRightPanelOpen = true"
+    >
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            class="bi bi-arrow-return-left"
+            viewBox="0 0 16 16"
+        >
+            <path
+                fill-rule="evenodd"
+                d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5"
+            ></path>
+        </svg>
+        <span class="visually-hidden">Открыть панель</span>
+    </button>
+</div>

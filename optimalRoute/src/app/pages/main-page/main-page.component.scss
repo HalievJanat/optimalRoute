@@ -1,4 +1,32 @@
-.main-img-container {
-    width: 100%;
-    height: 92.8%;
+:host {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-image {
+    flex: 1;
+    background-image: url("/assets/main-page.png");
+    background-size: 100% 100%;
+}
+
+.text-box {
+    position: absolute;
+    bottom: 6%; /* Регулируйте отступ сверху рамки */
+    left: 10%; /* Регулируйте отступ слева рамки */
+    width: 80%; /* Регулируйте ширину текста под рамку */
+    text-align: center; /* Текст выравнивается по центру */
+    font-size: 1rem; /* Размер текста */
+    line-height: 1.4; /* Межстрочный интервал */
+    color: black; /* Цвет текста */
+    white-space: normal; /* Перенос строк */
+    word-wrap: break-word; /* Перенос длинных слов */
+}
+
+a {
+    color: white;
+}
+
+a:hover {
+    color: gray;
 }
