@@ -22,7 +22,7 @@ export class AdminPageComponent {
         this.stage = new Konva.Stage({
             container: 'container', // ID контейнера
             width: window.innerWidth / 100 * 56,
-            height: window.innerHeight,
+            height: window.innerHeight / 100 * 91,
         });
 
         // Создаём слой
