@@ -11,8 +11,11 @@ import Konva from 'konva';
     styleUrl: './admin-page.component.scss',
 })
 export class AdminPageComponent {
+[x: string]: any;
     isLeftPanelOpen = true;
     isRightPanelOpen = true;
+
+    isCrossroadAdd = false;
 
     private stage: Konva.Stage = {} as any;
     private layer: Konva.Layer = {} as any;
@@ -30,7 +33,7 @@ export class AdminPageComponent {
     //Метод для левой панели
     methodLeftPanelOpen(): void {
         this.createStage(this.isLeftPanelOpen == true? window.innerWidth / 100 * 75 : window.innerWidth / 100 * 56);
-        this.isLeftPanelOpen = !this.isLeftPanelOpen;;
+        this.isLeftPanelOpen = !this.isLeftPanelOpen;
     }
 
     private createStage(wight: number): void {
@@ -87,5 +90,26 @@ export class AdminPageComponent {
         }
     }
 
+    addCrossroad(): void {
+        this.isCrossroadAdd = true;
+    }
+
+    eventClickConvas(X: number, Y: number): void {
+        if (this.isCrossroadAdd == true) {
+            const circle = new Konva.Circle({
+                x: X,
+                y: Y,
+                radius: 20,
+                fill: 'blue',
+                draggable: true, // Включаем перетаскивание
+            });
     
+            this.layer.add(circle);
+    
+            // Обновляем слой
+            this.layer.draw();
+
+            this.isCrossroadAdd = false;
+        }
+    }
 }
