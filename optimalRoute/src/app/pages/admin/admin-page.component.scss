@@ -162,6 +162,22 @@ a:hover {
     }
 }
 
-#container { width: 100%; height: 100%; }
+#container {
+    width: 100%;
+    height: 100%;
+}
 
+.content {
+    width: 100%;
+    height: 300px;
+    border: 1px solid #ccc;
+    position: relative;
+    user-select: none; /* Отключение выделения текста */
+}
 
+.dropdown-menu {
+    position: absolute;
+    z-index: 1050; /* Меню поверх других элементов */
+    display: block;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}

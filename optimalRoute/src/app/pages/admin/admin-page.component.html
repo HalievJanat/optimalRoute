@@ -34,14 +34,14 @@
         </div>
         <div class="left-panel-body">
             <div (click)="addCrossroad()">
-                <img class="crossroad" src="/assets/crossroad.png" alt=""/>
+                <img class="crossroad" src="/assets/crossroad.png" alt="" />
                 <span>Перекресток</span>
             </div>
             <div (click)="addRoad()">
                 <img class="roadrun" src="/assets/roadrun.png" alt="" />
                 <span>Прогон</span>
             </div>
-            <p>Масштаб:</p>              
+            <p>Масштаб:</p>
             <button (click)="replaceSizeGrid(false)">-</button>
             <button (click)="replaceSizeGrid(true)">+</button>
         </div>
@@ -69,16 +69,22 @@
     </button>
 
     <div class="graph-editor">
-        <div (click)="eventClickConvas($event.layerX, $event.layerY)" 
-        (contextmenu)="contextMenu($event.layerX, $event.layerY);false" 
-        data-toggle="context"
-        id="container" >
-        </div>
+        <div
+            (click)="eventClickConvas($event.layerX, $event.layerY)"
+            (contextmenu)="openContextMenu($event)"
+            data-toggle="context"
+            id="container"
+        ></div>
+        
     </div>
 
     <div class="right-panel" [hidden]="!isRightPanelOpen">
         <div class="right-panel-header">
-            <button type="button" class="btn btn-outline-secondary" (click)="methodRightPanelOpen()">
+            <button
+                type="button"
+                class="btn btn-outline-secondary"
+                (click)="methodRightPanelOpen()"
+            >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="16"
@@ -129,3 +135,17 @@
         <span class="visually-hidden">Открыть панель</span>
     </button>
 </div>
+
+@if (isContextMenuVisible) {
+    <div
+        [ngStyle]="{
+            top: contextMenuPosition.y + 'px',
+            left: contextMenuPosition.x + 'px'
+        }"
+        class="dropdown-menu show"
+        (click)="closeContextMenu()"
+    >
+        <button class="dropdown-item" (click)="action1()">Добавить светофор</button>
+        <button class="dropdown-item" (click)="action2()">Удалить</button>
+    </div>
+}
