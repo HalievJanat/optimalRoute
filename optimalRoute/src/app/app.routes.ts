@@ -2,7 +2,8 @@ import { Routes } from '@angular/router';
 import { MainPageComponent } from './pages/main-page/main-page.component';
 import { RegistrationComponent } from './pages/auth/registration/registration.component';
 import { LoginComponent } from './pages/auth/login/login.component';
-import { AdminPageComponent } from './pages/admin-page/admin-page.component';
+import { AdminPageComponent } from './pages/admin/admin-page.component';
+import { AdminDbComponent } from './pages/admin/admin-db/admin-db.component';
 
 export const routes: Routes = [
     {
@@ -21,4 +22,8 @@ export const routes: Routes = [
         path: 'admin-page',
         component: AdminPageComponent,
     },
+    {
+        path: 'admin-page/db',
+        component: AdminDbComponent,
+    }
 ];
