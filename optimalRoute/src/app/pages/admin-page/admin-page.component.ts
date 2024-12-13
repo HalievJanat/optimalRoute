@@ -24,8 +24,7 @@ export class AdminPageComponent {
     isCrossroadAdd = false;
 
     isRoadAdd = false;
-    firstCoordinateX = -10;
-    firstCoordinateY = -10;
+    indexCrossroad1 = -1;
 
     private stage: Konva.Stage = {} as any;
     private layer: Konva.Layer = {} as any;
@@ -98,14 +97,24 @@ export class AdminPageComponent {
     addCrossroad(): void {
         this.isCrossroadAdd = true;
         this.isRoadAdd = false;
-        this.firstCoordinateX = -10;
-        this.firstCoordinateY = -10;
+        this.indexCrossroad1 = -1;
     }
 
     eventClickConvas(X: number, Y: number): void {
         X = Math.round(X / this.gridSize) * this.gridSize;
         Y = Math.round(Y / this.gridSize) * this.gridSize;
+        if (X==0) X += this.gridSize;
+        else if (X==this.stage.width()) X-=this.gridSize;
+
+        if (Y==0) Y += this.gridSize;
+        else if (Y ==this.stage.height()) Y-=this.gridSize;
+        
         if (this.isCrossroadAdd == true) {
+            for (let i = 0; i < this.crossroadList.length; i++) {
+                if (this.crossroadList[i].X == X && this.crossroadList[i].Y == Y) {
+                    return;
+                } 
+            }
             const circle = new Konva.Circle({
                 x: X,
                 y: Y,
@@ -129,9 +138,9 @@ export class AdminPageComponent {
             const jsonCrossroad: string = JSON.stringify(this.crossroadList);
             console.log(jsonCrossroad);
         }
-        else if (this.isRoadAdd == true && this.firstCoordinateX >= 0) {
+        else if (this.isRoadAdd == true && this.indexCrossroad1 >= 0) {
             const line = new Konva.Line({
-                points: [this.firstCoordinateX, this.firstCoordinateY, X, Y],
+                points: [this.crossroadList[this.indexCrossroad1].X, this.crossroadList[this.indexCrossroad1].X, X, Y],
                 stroke: '#000',
                 strokeWidth: 1,
             })
@@ -151,16 +160,19 @@ export class AdminPageComponent {
             console.log(jsonRoad);
         }
         else if (this.isRoadAdd == true) {
-            this.firstCoordinateX = X;
-            this.firstCoordinateY = Y;
+            for (let i = 0; i < this.crossroadList.length; i++) {
+                if (this.crossroadList[i].X == X && this.crossroadList[i].Y == Y) {
+                    this.indexCrossroad1 = i;
+                    return;
+                } 
+            }
         }
     }
 
     addRoad(): void {
         this.isCrossroadAdd = false;
         this.isRoadAdd = true;
-        this.firstCoordinateX = -10;
-        this.firstCoordinateY = -10;
+        this.indexCrossroad1 = -1;
     }
 
     replaceSizeGrid(flag: boolean) {
