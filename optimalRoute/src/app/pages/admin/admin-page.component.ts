@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { HeaderComponent } from '../../header/header.component';
-import { NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
 import Konva from 'konva';
 import {ClassOptimalRoute} from "../../classJSON/ClassOptimalRoure"
 
@@ -8,7 +7,7 @@ import {ClassOptimalRoute} from "../../classJSON/ClassOptimalRoure"
 @Component({
     selector: 'app-admin-page',
     standalone: true,
-    imports: [HeaderComponent, NgbDatepickerModule],
+    imports: [HeaderComponent],
     templateUrl: './admin-page.component.html',
     styleUrl: './admin-page.component.scss',
 })
@@ -296,8 +295,8 @@ export class AdminPageComponent {
         }
     }
 
-    contextMenu() {
-        alert("Тут должно быть контекстное меню!!!");
+    contextMenu(X: number, Y: number) {
+        alert("Тут должно быть контекстное меню!!!" + X + " ," + Y);
     }
 
     checkLimitRoadForCrossroad() {

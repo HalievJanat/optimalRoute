@@ -69,7 +69,10 @@
     </button>
 
     <div class="graph-editor">
-        <div (click)="eventClickConvas($event.layerX, $event.layerY)" (contextmenu)="contextMenu();false" id="container" >
+        <div (click)="eventClickConvas($event.layerX, $event.layerY)" 
+        (contextmenu)="contextMenu($event.layerX, $event.layerY);false" 
+        data-toggle="context"
+        id="container" >
         </div>
     </div>
 
