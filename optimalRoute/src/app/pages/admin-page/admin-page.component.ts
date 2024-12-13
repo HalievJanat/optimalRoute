@@ -139,8 +139,14 @@ export class AdminPageComponent {
             console.log(jsonCrossroad);
         }
         else if (this.isRoadAdd == true && this.indexCrossroad1 >= 0) {
+            for (let i = 0; i < this.crossroadList.length; i++) {
+                if (this.crossroadList[i].X == X && this.crossroadList[i].Y == Y) {
+                    this.indexCrossroad1 = i;
+                    return;
+                } 
+            }
             const line = new Konva.Line({
-                points: [this.crossroadList[this.indexCrossroad1].X, this.crossroadList[this.indexCrossroad1].X, X, Y],
+                points: [this.crossroadList[this.indexCrossroad1].X, this.crossroadList[this.indexCrossroad1].Y, X, Y],
                 stroke: '#000',
                 strokeWidth: 1,
             })
@@ -150,7 +156,7 @@ export class AdminPageComponent {
             // Обновляем слой
             this.layer.draw();
 
-            this.isCrossroadAdd = false;
+            this.isRoadAdd = false;
 
             let road  = new ClassOptimalRoute.Road();
             road.Crossroad1 = X;
@@ -166,6 +172,7 @@ export class AdminPageComponent {
                     return;
                 } 
             }
+            alert("Лох, тут не перекрестка");
         }
     }
 
