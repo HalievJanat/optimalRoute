@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { HeaderComponent } from '../../header/header.component';
 import { NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
 import Konva from 'konva';
+import {ClassOptimalRoute} from "../../classJSON/ClassOptimalRoure"
+
 
 @Component({
     selector: 'app-admin-page',
@@ -11,9 +13,11 @@ import Konva from 'konva';
     styleUrl: './admin-page.component.scss',
 })
 export class AdminPageComponent {
-[x: string]: any;
+    [x: string]: any;
     isLeftPanelOpen = true;
     isRightPanelOpen = true;
+    crossroadList: ClassOptimalRoute.Crossroad[] = [];
+    roadList: ClassOptimalRoute.Road[] = [];
 
     gridSize = 50; // Масштаб
 
@@ -25,7 +29,7 @@ export class AdminPageComponent {
 
     private stage: Konva.Stage = {} as any;
     private layer: Konva.Layer = {} as any;
-
+    
     ngOnInit(): void {
         this.createStage(window.innerWidth / 100 * 56);
     }
@@ -34,6 +38,7 @@ export class AdminPageComponent {
     methodRightPanelOpen(): void {
         this.isRightPanelOpen = !this.isRightPanelOpen;
         this.gridDrowSize();
+        
     }
 
     //Метод для левой панели
@@ -116,6 +121,13 @@ export class AdminPageComponent {
             this.layer.draw();
 
             this.isCrossroadAdd = false;
+
+            let crossroad  = new ClassOptimalRoute.Crossroad();
+            crossroad.X = X;
+            crossroad.Y = Y;
+            this.crossroadList.push(crossroad);
+            const jsonCrossroad: string = JSON.stringify(this.crossroadList);
+            console.log(jsonCrossroad);
         }
         else if (this.isRoadAdd == true && this.firstCoordinateX >= 0) {
             const line = new Konva.Line({
@@ -130,6 +142,13 @@ export class AdminPageComponent {
             this.layer.draw();
 
             this.isCrossroadAdd = false;
+
+            let road  = new ClassOptimalRoute.Road();
+            road.Crossroad1 = X;
+            road.Crossroad2 = Y;
+            this.roadList.push(road);
+            const jsonRoad: string = JSON.stringify(this.roadList);
+            console.log(jsonRoad);
         }
         else if (this.isRoadAdd == true) {
             this.firstCoordinateX = X;
