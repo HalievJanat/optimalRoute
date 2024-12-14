@@ -12,6 +12,15 @@ a:hover {
     color: gray;
 }
 
+input:focus {
+    border-color: white;
+    box-shadow: 2px 2px 2px 2px gray;
+}
+
+input::placeholder {
+    font-weight: lighter;
+}
+
 .editor-container {
     flex: 1;
     height: 100%;
@@ -32,50 +41,155 @@ a:hover {
     background-color: #efefef;
     flex-grow: 0;
     width: 22%;
-}
 
-.left-panel-header {
-    display: flex;
-    border-bottom: solid black;
-    border-block-width: 2px;
-    * {
-        font-size: 1em;
-        margin-left: 10px;
-        margin-top: 4%;
-        margin-bottom: 4%;
+    li {
+        width: 100%;
+
+        button:hover {
+            background-color: rgb(233, 226, 226);
+        }
+
+        button:focus {
+            background-color: rgb(186, 186, 186);
+        }
+
+        button.active {
+            background-color: rgb(186, 186, 186);
+        }
+
+        button {
+            border-top-left-radius: 0%;
+            border-top-right-radius: 0%;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            border-bottom: solid gray;
+            border-block-width: 1px;
+            padding-top: 4%;
+            padding-bottom: 4%;
+            box-shadow: -1px 1px 2px 0 rgba($color: #908d8d, $alpha: 1);
+            border-right: none;
+            color: black;
+
+            img {
+                user-select: none;
+                flex: 0;
+                justify-content: center;
+                align-items: center;
+                width: 25px;
+                height: 25px;
+                margin-right: 10px;
+            }
+
+            span {
+                user-select: none;
+                text-align: left;
+                flex: 2;
+                font-size: 0.85em;
+            }
+        }
     }
 }
 
-.left-panel-body {
+.form-container {
+    width: 100%;
+    height: 100%;
+    flex-grow: 2;
     display: flex;
-    flex-direction: column;
-    div {
-        display: flex;
-        align-items: center;
-        width: 100%;
-        border-bottom: solid gray;
-        border-block-width: 1px;
-        padding-top: 4%;
-        padding-bottom: 4%;
-        box-shadow: -1px 1px 2px 0 rgba($color: #908d8d, $alpha: 1);
-        border-right: none;
-        cursor: pointer;
+    justify-content: center; /* Горизонтальное центрирование */
+    align-items: center;
 
-        img {
-            user-select: none;
-            flex: 0;
-            justify-content: center;
-            align-items: center;
-            width: 25px;
-            height: 25px;
-            margin-left: 10px;
-            margin-right: 10px;
+    form {
+        button:hover {
+            color: gray;
+            border-color: gray;
+        }
+
+        .submit-button {
+            width: 100%;
+            background: linear-gradient(
+                to right,
+                #9daaa7 0%,
+                #516662 76%,
+                #728380 100%
+            );
+            border-radius: 10px;
+            border-color: white;
+        }
+
+        .dropdown-button {
+            &:focus {
+                border-color: white;
+                box-shadow: 2px 2px 2px 2px gray;
+            }
+            width: 100%;
+            background: white;
+            border-color: #dee2e6;
+            border-radius: 0.375rem;
+            color: gray;
+        }
+
+        .invalid-dropdown-button {
+            border-color: #ff0000; /* red */
+            color: red;
+        }
+
+        .valid-dropdown-button {
+            color: black;
+        }
+
+        .ng-dirty.ng-invalid:not(form) {
+            border-color: #ff0000; /* red */
+            &::placeholder {
+                color: #ff0000;
+            }
         }
 
         span {
-            user-select: none;
-            flex: 2;
-            font-size: 0.85em;
+            color: #ff0000;
+        }
+    }
+}
+
+.right-panel {
+    background-color: #efefef;
+    flex-grow: 0;
+    width: 22%;
+    li {
+        width: 100%;
+
+        button:hover {
+            background-color: rgb(233, 226, 226);
+        }
+
+        button:focus {
+            background-color: rgb(186, 186, 186);
+        }
+
+        button.active {
+            background-color: rgb(186, 186, 186);
+        }
+
+        button {
+            border-top-left-radius: 0%;
+            border-top-right-radius: 0%;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            border-bottom: solid gray;
+            border-block-width: 1px;
+            padding-top: 4%;
+            padding-bottom: 4%;
+            box-shadow: 1px 1px 2px 0 rgba($color: #908d8d, $alpha: 1);
+            border-left: none;
+            color: black;
+
+            span {
+                user-select: none;
+                text-align: left;
+                flex: 2;
+                font-size: 0.85em;
+            }
         }
     }
 }

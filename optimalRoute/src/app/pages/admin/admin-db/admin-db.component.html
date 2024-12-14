@@ -8,43 +8,249 @@
     >
 </app-header>
 <div class="editor-container">
-    <div class="left-panel">
-        <div class="left-panel-header">
-            <h5 class="offcanvas-title">Добавление в базу данных</h5>
-        </div>
-        <div class="left-panel-body">
-            <div>
-                <img src="/assets/driver.png" alt=""/>
+    <ul
+        ngbNav
+        #leftnav="ngbNav"
+        class="nav-tabs left-panel"
+        orientation="vertical"
+    >
+        <li ngbNavItem>
+            <button ngbNavLink autofocus>
+                <img src="/assets/driver.png" alt="" />
                 <span>Водитель</span>
-            </div>
-            <div>
+            </button>
+            <ng-template ngbNavContent>
+                @if (activeRightElement===1) {
+                <form [formGroup]="driverAddForm">
+                    <div class="col">
+                        <div class="col mb-4">
+                            <input
+                                type="text"
+                                class="form-control"
+                                formControlName="family"
+                                placeholder="Фамилия*"
+                            />
+                        </div>
+                        <div class="col mb-4">
+                            <input
+                                type="text"
+                                class="form-control"
+                                formControlName="name"
+                                placeholder="Имя*"
+                            />
+                        </div>
+                        <div class="col mb-4">
+                            <input
+                                type="text"
+                                class="form-control"
+                                formControlName="surname"
+                                placeholder="Отчество*"
+                            />
+                        </div>
+                        <div class="form-check col mb-4">
+                            <label
+                                class="form-check-label"
+                                for="flexCheckDefault"
+                            >
+                                Признак нарушителя
+                            </label>
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                formControlName="infringer"
+                                id="flexCheckDefault"
+                            />
+                        </div>
+                        <div class="col mb-4">
+                            <div ngbDropdown class="d-inline-block">
+                                <button
+                                    type="button"
+                                    [class.invalid-dropdown-button]="
+                                        driverAddForm.controls.vehicle.dirty &&
+                                        driverAddForm.controls.vehicle.invalid
+                                    "
+                                    [class.valid-dropdown-button]="
+                                        driverAddForm.controls.vehicle.valid
+                                    "
+                                    class="btn btn-outline-primary dropdown-button"
+                                    id="dropdownBasic"
+                                    (click)="
+                                        driverAddForm.controls.vehicle.markAsDirty()
+                                    "
+                                    ngbDropdownToggle
+                                >
+                                    {{
+                                        driverAddForm.controls.vehicle.value ||
+                                            "Автомобиль*"
+                                    }}
+                                </button>
+                                <div
+                                    ngbDropdownMenu
+                                    aria-labelledby="dropdownBasic"
+                                >
+                                    @for (vehicle of vehicles; track
+                                    vehicle.brand) {
+                                    <button
+                                        ngbDropdownItem
+                                        (click)="
+                                            driverAddForm.controls.vehicle.setValue(
+                                                vehicle.brand
+                                            )
+                                        "
+                                    >
+                                        {{ vehicle.brand }}
+                                    </button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        @if (isFormInvalid(driverAddForm)) {
+                        <div class="col mb-4">
+                            <span>* - поля являются обязательными</span>
+                        </div>
+                        }
+                    </div>
+                    <button
+                        router
+                        class="btn btn-primary submit-button"
+                        type="button"
+                        (click)="addDriver()"
+                    >
+                        Добавить
+                    </button>
+                </form>
+                } @else if (activeRightElement===2) {
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Фамилия водителя</th>
+                            <th scope="col">Имя водителя</th>
+                            <th scope="col">Отчество</th>
+                            <th scope="col">Признак нарушителя</th>
+                            <th scope="col">Автомобиль</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (driver of pageDriversShowing; track $index) {
+                        <tr>
+                            <th scope="row">{{ $index + 1 }}</th>
+                            <td>
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    placeholder="Фамилия*"
+                                    disabled="true"
+                                />
+                                {{ driver.family }}
+                            </td>
+                            <td>
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    placeholder="Имя*"
+                                    [disabled]="true"
+                                />
+                            </td>
+                            <td>
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    placeholder="Отчество*"
+                                    [disabled]="true"
+                                />
+                            </td>
+                            <td>{{ driver.family }}</td>
+                            <td>{{ driver.vehicle.brand }}</td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+
+                <div class="d-flex justify-content-between p-2">
+                    <ngb-pagination
+                        [collectionSize]="driversArrSize"
+                        [(page)]="driverTabPage"
+                        [pageSize]="4"
+                        (pageChange)="refreshDrivers()"
+                    >
+                    </ngb-pagination>
+                </div>
+                } @else { Удалить водителя }
+            </ng-template>
+        </li>
+        <li ngbNavItem>
+            <button ngbNavLink>
                 <img src="/assets/auto.png" alt="" />
                 <span>Автомобиль</span>
-            </div>
-            <div>
+            </button>
+            <ng-template ngbNavContent>Автомобиль</ng-template>
+        </li>
+        <li ngbNavItem>
+            <button ngbNavLink>
                 <img src="/assets/police.png" alt="" />
                 <span>Степень коррумпированности</span>
-            </div>
-            <div>
+            </button>
+            <ng-template ngbNavContent>Степень коррумпированности</ng-template>
+        </li>
+        <li ngbNavItem>
+            <button ngbNavLink>
                 <img src="/assets/benzine.png" alt="" />
                 <span>Топливо</span>
-            </div>
-            <div>
+            </button>
+            <ng-template ngbNavContent>Топливо</ng-template>
+        </li>
+        <li ngbNavItem>
+            <button ngbNavLink>
                 <img src="/assets/street.png" alt="" />
                 <span>Улица</span>
-            </div>
-            <div>
+            </button>
+            <ng-template ngbNavContent>Улица</ng-template>
+        </li>
+        <li ngbNavItem>
+            <button ngbNavLink>
                 <img src="/assets/road-surface.png" alt="" />
                 <span>Дорожное покрытие</span>
-            </div>
-            <div>
+            </button>
+            <ng-template ngbNavContent>Дорожное покрытие</ng-template>
+        </li>
+        <li ngbNavItem>
+            <button ngbNavLink>
                 <img src="/assets/traffic-light.png" alt="" />
                 <span>Светофор</span>
-            </div>
-            <div>
+            </button>
+            <ng-template ngbNavContent>Светофор</ng-template>
+        </li>
+        <li ngbNavItem>
+            <button ngbNavLink>
                 <img src="/assets/fine.png" alt="" />
                 <span>Штраф</span>
-            </div>
-        </div>
-    </div>
+            </button>
+            <ng-template ngbNavContent>Штраф</ng-template>
+        </li>
+    </ul>
+    <div class="form-container" [ngbNavOutlet]="leftnav"></div>
+    <ul
+        ngbNav
+        #rightnav="ngbNav"
+        [(activeId)]="activeRightElement"
+        class="nav-tabs right-panel"
+        orientation="vertical"
+    >
+        <li [ngbNavItem]="1" [class.active]="activeRightElement === 1">
+            <button ngbNavLink autofocus>
+                <span>Добавить</span>
+            </button>
+        </li>
+        <li [ngbNavItem]="2" [class.active]="activeRightElement === 2">
+            <button ngbNavLink>
+                <span>Изменить</span>
+            </button>
+        </li>
+        <li [ngbNavItem]="3" [class.active]="activeRightElement === 3">
+            <button ngbNavLink>
+                <span>Удалить</span>
+            </button>
+        </li>
+    </ul>
 </div>
