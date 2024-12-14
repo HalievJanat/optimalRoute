@@ -21,7 +21,7 @@ export namespace ClassOptimalRoute {
             return this.y;
         }
 
-        public set TrafficLights(trafficLights: TrafficLights) {
+        public set TrafficLights(trafficLights: TrafficLights | null) {
             this.trafficLights = trafficLights;
         }
 

@@ -17,6 +17,9 @@ export class AdminPageComponent {
     contextMenuPosition = { x: 0, y: 0 }; // Координаты меню
     indexSelectedElement = -1;
 
+    isLeftClickCrossroad = false;
+    isLeftClickRoad = false;
+
     [x: string]: any;
     isLeftPanelOpen = true;
     isRightPanelOpen = true;
@@ -40,6 +43,8 @@ export class AdminPageComponent {
 
     //Метод для правой панели
     methodRightPanelOpen(): void {
+        this.isLeftClickCrossroad = false;
+        this.isLeftClickRoad = false;
         this.isRightPanelOpen = !this.isRightPanelOpen;
         this.gridDrowSize();
 
@@ -49,6 +54,8 @@ export class AdminPageComponent {
 
     //Метод для левой панели
     methodLeftPanelOpen(): void {
+        this.isLeftClickCrossroad = false;
+        this.isLeftClickRoad = false;
         this.isLeftPanelOpen = !this.isLeftPanelOpen;
         this.gridDrowSize();
 
@@ -96,6 +103,8 @@ export class AdminPageComponent {
     }
 
     addCrossroad(): void {
+        this.isLeftClickCrossroad = false;
+        this.isLeftClickRoad = false;
         if (this.crossroadList.length == 30) {
             alert('Больше 30 нельзя');
             return;
@@ -105,11 +114,13 @@ export class AdminPageComponent {
         this.indexCrossroad1 = -1;
     }
 
-    eventClickConvas(X: number, Y: number): void {
+    eventClickConvas(coordX: number, coordY: number): void {
         this.isContextMenuVisibleCrossroad = false; // Показывать ли меню
-        this.isContextMenuVisibleRoad = false;      // Показывать ли меню
-        X = Math.round(X / this.gridSize) * this.gridSize;
-        Y = Math.round(Y / this.gridSize) * this.gridSize;
+        this.isContextMenuVisibleRoad = false;      // Показывать ли 
+        this.isLeftClickCrossroad = false;
+        this.isLeftClickRoad = false;
+        let X = Math.round(coordX / this.gridSize) * this.gridSize;
+        let Y = Math.round(coordY / this.gridSize) * this.gridSize;
         if (X == 0) X += this.gridSize;
         else if (X == this.stage.width()) X -= this.gridSize;
 
@@ -282,7 +293,18 @@ export class AdminPageComponent {
         }
     }
 
+    evenDoubleClickConvas(X: number, Y: number): void {
+        this.isCrossroadAdd = false;
+        if (this.defineClickCrossroad(X, Y)) {
+            this.isLeftClickCrossroad = true;
+        } else if (this.defineClickRoad(X, Y)) {
+            this.isLeftClickRoad = true;
+        }
+    }
+
     addRoad(): void {
+        this.isLeftClickCrossroad = false;
+        this.isLeftClickRoad = false;
         if (this.crossroadList.length == 60) {
             alert('Больше 60 нельзя');
             return;
@@ -293,6 +315,8 @@ export class AdminPageComponent {
     }
 
     replaceSizeGrid(flag: boolean): void {
+        this.isLeftClickCrossroad = false;
+        this.isLeftClickRoad = false;
         let tempGridSize = this.gridSize;
         if (!flag && this.gridSize > 30) this.gridSize -= 10;
         else if (flag && this.gridSize < 100) this.gridSize += 10;
@@ -375,18 +399,6 @@ export class AdminPageComponent {
         }
     }
 
-    contextMenu(X: number, Y: number) {
-        alert('Тут должно быть контекстное меню!!!' + X + ' ,' + Y);
-    }
-
-    checkLimitRoadForCrossroad() {}
-
-    private calculateCoordinateX1():number {
-
-
-        return 0;
-    }
-
     private drawLine(x1: number, y1: number, x2: number, y2: number, stroke: string): void {
         this.layer.add(
             new Konva.Line({
@@ -424,6 +436,8 @@ export class AdminPageComponent {
     }
 
     openContextMenu(event: MouseEvent): void {
+        this.isLeftClickCrossroad = false;
+        this.isLeftClickRoad = false;
         event.preventDefault(); // Отключаем стандартное меню браузера
         if (this.defineClickCrossroad(event.layerX, event.layerY)) {    
             this.isContextMenuVisibleCrossroad = true;
@@ -443,17 +457,54 @@ export class AdminPageComponent {
     }
 
     closeContextMenu(): void {
+        this.isLeftClickCrossroad = false;
+        this.isLeftClickRoad = false;
         this.isContextMenuVisibleCrossroad = false;
         this.isContextMenuVisibleRoad = false;
     }
 
-    action1(): void {
-        console.log('Действие 1 выполнено');
+    actionDeleteCrossroad(): void {
+        
+
+        console.log('Удаление выполнено');
         this.closeContextMenu();
     }
 
-    action2(): void {
-        console.log('Действие 2 выполнено');
+    actionDeleteRoad(): void {
+        this.roadList.splice(this.indexSelectedElement, 1);
+
+        this.gridDrowSize();
+        this.drawScaleCanvas(this.gridSize);
+        this.closeContextMenu();
+    }
+
+    actionAddTrafficLights(): void {
+        this.crossroadList[this.indexSelectedElement].TrafficLights = new ClassOptimalRoute.TrafficLights();
+        this.closeContextMenu();
+    }
+
+    actionDeleteTrafficLights(): void {
+        this.crossroadList[this.indexSelectedElement].TrafficLights = null;
+        this.closeContextMenu();
+    }
+
+    actionAddTrafficSigns(): void {
+        this.roadList[this.indexSelectedElement].TrafficSigns = new ClassOptimalRoute.TrafficSigns();
+        this.closeContextMenu();
+    }
+
+    actionDeleteTrafficSigns(): void {
+        this.roadList[this.indexSelectedElement].TrafficSigns = null;
+        this.closeContextMenu();
+    }
+
+    actionAddPolicePost(): void {
+        this.roadList[this.indexSelectedElement].PolicePost = new ClassOptimalRoute.PolicePost();
+        this.closeContextMenu();
+    }
+
+    actionDeletePolicePost(): void {
+        this.roadList[this.indexSelectedElement].PolicePost = null;
         this.closeContextMenu();
     }
 
@@ -484,17 +535,58 @@ export class AdminPageComponent {
                 this.crossroadList[this.roadList[i].Crossroad1].X
             );
 
-            let y1 = (k*x + b);
-            let y2 = (k*x + b + 1);
-            let y3 = (k*x + b - 1);
-            let y4 = (k*x + b + 2);
-            let y5 = (k*x + b - 2);
+            let y1;
+            let y2;
+            let y3;
+            let y4;
+            let y5;
+            let y6;
+            let y7;
+            
+            if (k == Infinity || k == -Infinity) {
+                let x1 = this.crossroadList[this.roadList[i].Crossroad1].X;
+                let yMax = this.crossroadList[this.roadList[i].Crossroad1].Y;
+                let yMin = this.crossroadList[this.roadList[i].Crossroad2].Y;
+                if (yMax < yMin) {
+                    yMax = this.crossroadList[this.roadList[i].Crossroad2].Y;
+                    yMin = this.crossroadList[this.roadList[i].Crossroad1].Y;
+                }
 
-            if (y == y1 || y == y2 || y == y3 || y == y4 || y == y5) {
-                this.indexSelectedElement = i;
-                return true;
+                if (x > x1 - 3 && x < x1 + 3 && y > yMin && y < yMax) {
+                    this.indexSelectedElement = i;
+                    return true;
+                }
+            } else {
+                y1 = (k*x + b);
+                y2 = (k*x + b + 1);
+                y3 = (k*x + b - 1);
+                y4 = (k*x + b + 2);
+                y5 = (k*x + b - 2);
+                y6 = (k*x + b + 3);
+                y7 = (k*x + b - 3);
+                if (y == y1 || y == y2 || y == y3 || y == y4 || y == y5 || y == y6 || y == y7 ) {
+                    this.indexSelectedElement = i;
+                    return true;
+                }
             }
         }
         return false;
+    }
+
+    modifyCrossroadParamener():void {
+        this.crossroadList[this.indexSelectedElement].TrafficLights!.TimeRedSignal = 
+            (<HTMLInputElement> document.querySelector(".timeRedSignal")).valueAsNumber;
+            
+        this.crossroadList[this.indexSelectedElement].TrafficLights!.TimeGreenSignal = 
+            (<HTMLInputElement> document.querySelector(".timeGreenSignal")).valueAsNumber;    
+        
+        this.isLeftClickCrossroad = false;
+        this.isLeftClickRoad = false;
+    }
+
+    modifyRoadParamener():void {
+
+        this.isLeftClickCrossroad = false;
+        this.isLeftClickRoad = false;
     }
 }

@@ -72,6 +72,7 @@
         <div
             (click)="eventClickConvas($event.layerX, $event.layerY)"
             (contextmenu)="openContextMenu($event)"
+            (dblclick)="evenDoubleClickConvas($event.layerX, $event.layerY)"
             data-toggle="context"
             id="container"
         ></div>
@@ -100,8 +101,84 @@
                 </svg>
                 <span class="visually-hidden">Button</span>
             </button>
-            <h5 class="offcanvas-title">Добавление элементов УДС</h5>
+            <h5 class="offcanvas-title">Параметры элементов УДС</h5>
         </div>
+        
+
+        <!--Перекресток-->
+        @if (isLeftClickCrossroad) {
+            <div class="right-panel-body">
+                <div>
+                    <p class="name-element-uds">Перекресток</p>
+                </div>
+                @if (crossroadList[indexSelectedElement].TrafficLights != null) {
+                    <div>
+                        <div>
+                            <p>Светофор</p>
+                        </div>
+                        <p>Длительность красной фазы</p>
+                        <input type="number" class="timeRedSignal" [value]="crossroadList[indexSelectedElement].TrafficLights?.TimeRedSignal">
+                        <p>Длительность зеленой фазы</p>
+                        <input type="number" class="timeGreenSignal" [value]="crossroadList[indexSelectedElement].TrafficLights?.TimeGreenSignal">
+                        <button (click)="modifyCrossroadParamener()">Сохранить</button>
+                    </div>
+                }
+            </div>
+        }
+
+        <!--Прогон-->
+        @if (isLeftClickRoad) {
+            <div class="right-panel-body">
+                <div>
+                    <p class="name-element-uds">Дорога</p>
+                </div>
+                <div>
+                    <p>Направления движения</p>
+                    <select>
+                        <option>0</option>
+                        <option>1</option>
+                        <option>2</option>
+                    </select>
+                </div>
+                <div>
+                    <p>Улица</p>
+                    <input type="text">
+                </div>
+                <div>
+                    <p>Длина</p>
+                    <input type="number">
+                </div>
+                <div>
+                    <p>Тип покрытия</p>
+                    <input type="string">
+                </div>
+                @if (roadList[indexSelectedElement].TrafficSigns != null) {
+                    <div>
+                        <div>
+                            <p>Знак дорожного движения</p>
+                        </div>
+                        <p>Скорость</p>
+                        <input type="number" class="speedInput" [value]="roadList[indexSelectedElement].TrafficSigns?.Speed">
+                    </div>
+                }
+                @if (roadList[indexSelectedElement].PolicePost != null) {
+                    <div>
+                        <div>
+                            <p>Полицеский пост</p>
+                        </div>
+                        <p>Название</p>
+                        <input type="text" class="nameCoeffCorumpInput" [value]="roadList[indexSelectedElement].PolicePost?.Corruption?.Name">
+                        <p>Коэффициент коррумпированности</p>
+                        <input type="number" class="coeffCorumpInput" [value]="roadList[indexSelectedElement].PolicePost?.Corruption?.CoefficientCorruption">
+                        
+                    </div>
+                }
+                <button (click)="modifyRoadParamener()">Сохранить</button>
+            </div>
+        }
+        
+        
+        <!--
         <div class="right-panel-body">
             <div>
                 <img class="crossroad" src="/assets/crossroad.png" alt="" />
@@ -112,6 +189,7 @@
                 <span>Прогон</span>
             </div>
         </div>
+    -->
     </div>
     <button
         type="button"
@@ -145,8 +223,13 @@
         class="dropdown-menu show"
         (click)="closeContextMenu()"
     >
-        <button class="dropdown-item" (click)="action1()">Добавить светофор</button>
-        <button class="dropdown-item" (click)="action2()">Удалить</button>
+        @if (crossroadList[indexSelectedElement].TrafficLights == null) {
+            <button class="dropdown-item" (click)="actionAddTrafficLights()">Добавить светофор</button>
+        }
+        @if (crossroadList[indexSelectedElement].TrafficLights != null) {
+            <button class="dropdown-item" (click)="actionDeleteTrafficLights()">Удалить светофор</button>
+        }
+        <button class="dropdown-item" (click)="actionDeleteCrossroad()">Удалить перекресток</button>
     </div>
 }
 
@@ -159,12 +242,18 @@
         class="dropdown-menu show"
         (click)="closeContextMenu()"
     >
+        @if (roadList[indexSelectedElement].TrafficSigns == null) {
+            <button class="dropdown-item" (click)="actionAddTrafficSigns()">Добавить знак дорожного движения</button>
+        }
         @if (roadList[indexSelectedElement].TrafficSigns != null) {
-            <button class="dropdown-item" (click)="action1()">Добавить знак дорожного движения</button>
+            <button class="dropdown-item" (click)="actionDeleteTrafficSigns()">Удалить знак дорожного движения</button>
+        }
+        @if (roadList[indexSelectedElement].PolicePost == null) {
+            <button class="dropdown-item" (click)="actionAddPolicePost()">Добавить полицейский пост</button>
         }
         @if (roadList[indexSelectedElement].PolicePost != null) {
-            <button class="dropdown-item" (click)="action1()">Добавить полицейский пост</button>
+            <button class="dropdown-item" (click)="actionDeletePolicePost()">Удалить полицейский пост</button>
         }
-        <button class="dropdown-item" (click)="action2()">Удалить</button>
+        <button class="dropdown-item" (click)="actionDeleteRoad()">Удалить прогон</button>
     </div>
 }
