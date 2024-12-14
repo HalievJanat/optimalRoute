@@ -464,9 +464,27 @@ export class AdminPageComponent {
     }
 
     actionDeleteCrossroad(): void {
-        
+        this.crossroadList.splice(this.indexSelectedElement, 1);
 
-        console.log('Удаление выполнено');
+        let i = 0;
+        while (i <this.roadList.length) {
+            if (this.roadList[i].Crossroad1 > this.indexSelectedElement) {
+                this.roadList[i].Crossroad1 -= 1;
+            } else if (this.roadList[i].Crossroad1 == this.indexSelectedElement) {
+                this.roadList.splice(i, 1);
+                continue;
+            }
+            if (this.roadList[i].Crossroad2 > this.indexSelectedElement) {
+                this.roadList[i].Crossroad2 -= 1;
+            } else if (this.roadList[i].Crossroad2 == this.indexSelectedElement) {
+                this.roadList.splice(i, 1);
+                continue;
+            }
+            i++;
+        }
+
+        this.gridDrowSize();
+        this.drawScaleCanvas(this.gridSize);
         this.closeContextMenu();
     }
 
