@@ -12,9 +12,9 @@ import { CommonModule } from '@angular/common';
     styleUrl: './admin-page.component.scss',
 })
 export class AdminPageComponent {
-    isContextMenuVisible = false; // Показывать ли меню
+    isContextMenuVisibleCrossroad = false; // Показывать ли меню
+    isContextMenuVisibleRoad = false; // Показывать ли меню
     contextMenuPosition = { x: 0, y: 0 }; // Координаты меню
-
     indexSelectedElement = -1;
 
     [x: string]: any;
@@ -106,7 +106,8 @@ export class AdminPageComponent {
     }
 
     eventClickConvas(X: number, Y: number): void {
-        this.isContextMenuVisible = false; // Показывать ли меню
+        this.isContextMenuVisibleCrossroad = false; // Показывать ли меню
+        this.isContextMenuVisibleRoad = false;      // Показывать ли меню
         X = Math.round(X / this.gridSize) * this.gridSize;
         Y = Math.round(Y / this.gridSize) * this.gridSize;
         if (X == 0) X += this.gridSize;
@@ -425,13 +426,15 @@ export class AdminPageComponent {
     openContextMenu(event: MouseEvent): void {
         event.preventDefault(); // Отключаем стандартное меню браузера
         if (this.defineClickCrossroad(event.layerX, event.layerY)) {    
-            this.isContextMenuVisible = true;
+            this.isContextMenuVisibleCrossroad = true;
+            this.isContextMenuVisibleRoad = false;
             this.contextMenuPosition = {
                 x: event.clientX, // Горизонтальная позиция мыши
                 y: event.clientY, // Вертикальная позиция мыши
             };
         } else if (this.defineClickRoad(event.layerX, event.layerY)) {    
-            this.isContextMenuVisible = true;
+            this.isContextMenuVisibleRoad = true;
+            this.isContextMenuVisibleCrossroad = false;
             this.contextMenuPosition = {
                 x: event.clientX, // Горизонтальная позиция мыши
                 y: event.clientY, // Вертикальная позиция мыши
@@ -440,7 +443,8 @@ export class AdminPageComponent {
     }
 
     closeContextMenu(): void {
-        this.isContextMenuVisible = false;
+        this.isContextMenuVisibleCrossroad = false;
+        this.isContextMenuVisibleRoad = false;
     }
 
     action1(): void {
