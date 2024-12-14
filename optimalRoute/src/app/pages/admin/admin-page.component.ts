@@ -45,6 +45,7 @@ export class AdminPageComponent {
     roadList: ClassOptimalRoute.Road[] = [];
 
     gridSize = 50; // Масштаб
+    radius = (this.gridSize * 2) / 5;
 
     isCrossroadAdd = false;
 
@@ -108,22 +109,10 @@ export class AdminPageComponent {
         const height = this.stage.height();
 
         for (let x = 0; x < width; x += this.gridSize) {
-            this.layer.add(
-                new Konva.Line({
-                    points: [x, 0, x, height],
-                    stroke: '#ddd',
-                    strokeWidth: 1,
-                })
-            );
+            this.drawLine(x, 0, x, height, '#ddd');
         }
         for (let y = 0; y < height; y += this.gridSize) {
-            this.layer.add(
-                new Konva.Line({
-                    points: [0, y, width, y],
-                    stroke: '#ddd',
-                    strokeWidth: 1,
-                })
-            );
+            this.drawLine(0, y, width, y, '#ddd');
         }
     }
 
@@ -225,21 +214,47 @@ export class AdminPageComponent {
                 }
             }
 
-            const line = new Konva.Line({
-                points: [
-                    this.crossroadList[this.indexCrossroad1].X,
-                    this.crossroadList[this.indexCrossroad1].Y,
-                    X,
-                    Y,
-                ],
-                stroke: '#000',
-                strokeWidth: 1,
-            });
+            let ky = this.calculateKLine(
+                this.crossroadList[this.indexCrossroad1].X,
+                this.crossroadList[this.indexCrossroad1].Y,
+                X,
+                Y
+            );
+            let by = this.calculateBLine(
+                this.crossroadList[this.indexCrossroad1].Y,
+                ky,
+                this.crossroadList[this.indexCrossroad1].X
+            );
+            let x1;
+            let x2;
+            let y1;
+            let y2;
+            
+            if (ky != Infinity && ky != -Infinity) {
+                x1 = this.calculateXCoordinate(ky, by, this.crossroadList[this.indexCrossroad1].X,
+                    this.crossroadList[this.indexCrossroad1].Y, this.radius, this.crossroadList[this.indexCrossroad1].X > X);
+                x2 = this.calculateXCoordinate(ky, by, X, Y, this.radius, this.crossroadList[this.indexCrossroad1].X < X);
+                y1 = this.calculateYCoordinate(ky, by, x1);
+                y2 = this.calculateYCoordinate(ky, by, x2);
+            } else if (this.crossroadList[this.indexCrossroad1].Y > Y){
+                x1 = this.crossroadList[this.indexCrossroad1].X; 
+                x2 = X;
+                y1 = this.crossroadList[this.indexCrossroad1].Y - this.radius;
+                y2 = Y + this.radius;
+            } else {
+                x1 = this.crossroadList[this.indexCrossroad1].X; 
+                x2 = X;
+                y1 = this.crossroadList[this.indexCrossroad1].Y + this.radius;
+                y2 = Y - this.radius;
+            }
 
-            this.layer.add(line);
-
-            // Обновляем слой
-            this.layer.draw();
+            this.drawLine(
+                x1,
+                y1,
+                x2,
+                y2,
+                '#000'
+            );
 
             this.isRoadAdd = false;
 
@@ -249,6 +264,7 @@ export class AdminPageComponent {
             this.roadList.push(road);
             const jsonRoad: string = JSON.stringify(this.roadList);
             console.log(jsonRoad);
+            this.indexCrossroad1 = -1;
         } else if (this.isRoadAdd == true) {
             let i = 0;
             while (i < this.crossroadList.length) {
@@ -316,7 +332,7 @@ export class AdminPageComponent {
             const circle = new Konva.Circle({
                 x: this.crossroadList[i].X,
                 y: this.crossroadList[i].Y,
-                radius: (this.gridSize * 2) / 5,
+                radius: this.radius,
                 stroke: '#000',
                 full: '#fff',
                 //draggable: true, // Включаем перетаскивание
@@ -329,21 +345,13 @@ export class AdminPageComponent {
         }
 
         for (let i = 0; i < this.roadList.length; i++) {
-            const line = new Konva.Line({
-                points: [
-                    this.crossroadList[this.roadList[i].Crossroad1].X,
-                    this.crossroadList[this.roadList[i].Crossroad1].Y,
-                    this.crossroadList[this.roadList[i].Crossroad2].X,
-                    this.crossroadList[this.roadList[i].Crossroad2].Y,
-                ],
-                stroke: '#000',
-                strokeWidth: 1,
-            });
-
-            this.layer.add(line);
-
-            // Обновляем слой
-            this.layer.draw();
+            this.drawLine(
+                this.crossroadList[this.roadList[i].Crossroad1].X,
+                this.crossroadList[this.roadList[i].Crossroad1].Y,
+                this.crossroadList[this.roadList[i].Crossroad2].X,
+                this.crossroadList[this.roadList[i].Crossroad2].Y,
+                '#000'
+            );
         }
     }
 
@@ -352,4 +360,55 @@ export class AdminPageComponent {
     }
 
     checkLimitRoadForCrossroad() {}
+
+    private calculateCoordinateX1():number {
+
+
+        return 0;
+    }
+
+    private drawLine(x1: number, y1: number, x2: number, y2: number, stroke: string): void {
+        this.layer.add(
+            new Konva.Line({
+                points: [x1, y1, x2, y2],
+                stroke: stroke,
+                strokeWidth: 1,
+            })
+        );
+    }
+
+    calculateKLine(x1: number, y1: number, x2: number, y2: number): number {
+        return (y1 - y2)/  (x1 -  x2);
+    }
+
+    calculateBLine(y: number, k: number, x: number): number {
+        return y - k * x;
+    }
+
+    calculateXCoordinate(ky:number, by:number, xc:number, yc:number, r:number, flag:boolean): number {
+        let a = 1 + Math.pow(ky,2);
+        let b = 2*ky*by - 2*ky*yc - 2*xc;
+        let c = Math.pow(xc,2) +  Math.pow(yc,2) - Math.pow(r,2) + Math.pow(by,2) - 2*by*yc;
+
+        let d = Math.pow(b,2) - 4*a*c;
+        let x;
+
+        if (flag) x = (-b - Math.sqrt(d))/(2*a);
+        else x = (-b + Math.sqrt(d))/(2*a);
+
+        console.log("k: "+ky);
+        console.log("by: "+by);
+        console.log("a: "+a);
+        console.log("b: "+b);
+        console.log("c: "+c);
+        console.log("d: "+d);
+        console.log("x: "+x);
+
+
+        return x;
+    }
+
+    calculateYCoordinate(k:number, b:number, x:number): number {
+        return k*x + b;
+    }
 }
