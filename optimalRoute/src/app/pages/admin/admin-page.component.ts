@@ -15,28 +15,7 @@ export class AdminPageComponent {
     isContextMenuVisible = false; // Показывать ли меню
     contextMenuPosition = { x: 0, y: 0 }; // Координаты меню
 
-    openContextMenu(event: MouseEvent): void {
-        event.preventDefault(); // Отключаем стандартное меню браузера
-        this.isContextMenuVisible = true;
-        this.contextMenuPosition = {
-            x: event.clientX, // Горизонтальная позиция мыши
-            y: event.clientY, // Вертикальная позиция мыши
-        };
-    }
-
-    closeContextMenu(): void {
-        this.isContextMenuVisible = false;
-    }
-
-    action1(): void {
-        console.log('Действие 1 выполнено');
-        this.closeContextMenu();
-    }
-
-    action2(): void {
-        console.log('Действие 2 выполнено');
-        this.closeContextMenu();
-    }
+    indexSelectedElement = -1;
 
     [x: string]: any;
     isLeftPanelOpen = true;
@@ -127,6 +106,7 @@ export class AdminPageComponent {
     }
 
     eventClickConvas(X: number, Y: number): void {
+        this.isContextMenuVisible = false; // Показывать ли меню
         X = Math.round(X / this.gridSize) * this.gridSize;
         Y = Math.round(Y / this.gridSize) * this.gridSize;
         if (X == 0) X += this.gridSize;
@@ -416,15 +396,15 @@ export class AdminPageComponent {
         );
     }
 
-    calculateKLine(x1: number, y1: number, x2: number, y2: number): number {
+    private calculateKLine(x1: number, y1: number, x2: number, y2: number): number {
         return (y1 - y2)/  (x1 -  x2);
     }
 
-    calculateBLine(y: number, k: number, x: number): number {
+    private calculateBLine(y: number, k: number, x: number): number {
         return y - k * x;
     }
 
-    calculateXCoordinate(ky:number, by:number, xc:number, yc:number, r:number, flag:boolean): number {
+    private calculateXCoordinate(ky:number, by:number, xc:number, yc:number, r:number, flag:boolean): number {
         let a = 1 + Math.pow(ky,2);
         let b = 2*ky*by - 2*ky*yc - 2*xc;
         let c = Math.pow(xc,2) +  Math.pow(yc,2) - Math.pow(r,2) + Math.pow(by,2) - 2*by*yc;
@@ -435,19 +415,82 @@ export class AdminPageComponent {
         if (flag) x = (-b - Math.sqrt(d))/(2*a);
         else x = (-b + Math.sqrt(d))/(2*a);
 
-        console.log("k: "+ky);
-        console.log("by: "+by);
-        console.log("a: "+a);
-        console.log("b: "+b);
-        console.log("c: "+c);
-        console.log("d: "+d);
-        console.log("x: "+x);
-
-
         return x;
     }
 
-    calculateYCoordinate(k:number, b:number, x:number): number {
+    private calculateYCoordinate(k:number, b:number, x:number): number {
         return k*x + b;
+    }
+
+    openContextMenu(event: MouseEvent): void {
+        event.preventDefault(); // Отключаем стандартное меню браузера
+        if (this.defineClickCrossroad(event.layerX, event.layerY)) {    
+            this.isContextMenuVisible = true;
+            this.contextMenuPosition = {
+                x: event.clientX, // Горизонтальная позиция мыши
+                y: event.clientY, // Вертикальная позиция мыши
+            };
+        } else if (this.defineClickRoad(event.layerX, event.layerY)) {    
+            this.isContextMenuVisible = true;
+            this.contextMenuPosition = {
+                x: event.clientX, // Горизонтальная позиция мыши
+                y: event.clientY, // Вертикальная позиция мыши
+            };
+        }
+    }
+
+    closeContextMenu(): void {
+        this.isContextMenuVisible = false;
+    }
+
+    action1(): void {
+        console.log('Действие 1 выполнено');
+        this.closeContextMenu();
+    }
+
+    action2(): void {
+        console.log('Действие 2 выполнено');
+        this.closeContextMenu();
+    }
+
+    private defineClickCrossroad(x: number, y: number): boolean {    
+        for (let i = 0; i < this.crossroadList.length; i++) {
+            let x0 = this.crossroadList[i].X;
+            let y0 = this.crossroadList[i].Y;
+            let r = Math.pow((x - x0), 2) + Math.pow((y - y0), 2); 
+            if (r <= Math.pow(this.radius,2)) {
+                this.indexSelectedElement = i;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private defineClickRoad(x: number, y: number): boolean {    
+        for (let i = 0; i < this.roadList.length; i++) {
+            let k = this.calculateKLine(
+                this.crossroadList[this.roadList[i].Crossroad1].X,
+                this.crossroadList[this.roadList[i].Crossroad1].Y,
+                this.crossroadList[this.roadList[i].Crossroad2].X,
+                this.crossroadList[this.roadList[i].Crossroad2].Y
+            );
+            let b = this.calculateBLine(
+                this.crossroadList[this.roadList[i].Crossroad1].Y,
+                k,
+                this.crossroadList[this.roadList[i].Crossroad1].X
+            );
+
+            let y1 = (k*x + b);
+            let y2 = (k*x + b + 1);
+            let y3 = (k*x + b - 1);
+            let y4 = (k*x + b + 2);
+            let y5 = (k*x + b - 2);
+
+            if (y == y1 || y == y2 || y == y3 || y == y4 || y == y5) {
+                this.indexSelectedElement = i;
+                return true;
+            }
+        }
+        return false;
     }
 }
