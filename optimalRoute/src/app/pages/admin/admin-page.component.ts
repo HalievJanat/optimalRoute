@@ -311,10 +311,11 @@ export class AdminPageComponent {
         this.indexCrossroad1 = -1;
     }
 
-    replaceSizeGrid(flag: boolean) {
+    replaceSizeGrid(flag: boolean): void {
         let tempGridSize = this.gridSize;
         if (!flag && this.gridSize > 30) this.gridSize -= 10;
         else if (flag && this.gridSize < 100) this.gridSize += 10;
+        else return;
         this.gridDrowSize();
 
         this.drawScaleCanvas(tempGridSize);
@@ -322,6 +323,7 @@ export class AdminPageComponent {
 
     private drawScaleCanvas(tempGridSize: number): void {
         for (let i = 0; i < this.crossroadList.length; i++) {
+            this. radius = (this.gridSize * 2) / 5;
             this.crossroadList[i].X =
                 Math.round(this.crossroadList[i].X / tempGridSize) *
                 this.gridSize;
@@ -345,11 +347,48 @@ export class AdminPageComponent {
         }
 
         for (let i = 0; i < this.roadList.length; i++) {
-            this.drawLine(
+            let ky = this.calculateKLine(
                 this.crossroadList[this.roadList[i].Crossroad1].X,
                 this.crossroadList[this.roadList[i].Crossroad1].Y,
                 this.crossroadList[this.roadList[i].Crossroad2].X,
-                this.crossroadList[this.roadList[i].Crossroad2].Y,
+                this.crossroadList[this.roadList[i].Crossroad2].Y
+            );
+            let by = this.calculateBLine(
+                this.crossroadList[this.roadList[i].Crossroad1].Y,
+                ky,
+                this.crossroadList[this.roadList[i].Crossroad1].X
+            );
+            let x1;
+            let x2;
+            let y1;
+            let y2;
+            
+            if (ky != Infinity && ky != -Infinity) {
+                x1 = this.calculateXCoordinate(ky, by, this.crossroadList[this.roadList[i].Crossroad1].X,
+                    this.crossroadList[this.roadList[i].Crossroad1].Y, this.radius, 
+                    this.crossroadList[this.roadList[i].Crossroad1].X > this.crossroadList[this.roadList[i].Crossroad2].X);
+                x2 = this.calculateXCoordinate(ky, by,this.crossroadList[this.roadList[i].Crossroad2].X,
+                    this.crossroadList[this.roadList[i].Crossroad2].Y, this.radius,
+                    this.crossroadList[this.roadList[i].Crossroad1].X < this.crossroadList[this.roadList[i].Crossroad2].X);
+                y1 = this.calculateYCoordinate(ky, by, x1);
+                y2 = this.calculateYCoordinate(ky, by, x2);
+            } else if (this.crossroadList[this.roadList[i].Crossroad1].Y > this.crossroadList[this.roadList[i].Crossroad2].Y){
+                x1 = this.crossroadList[this.roadList[i].Crossroad1].X; 
+                x2 = this.crossroadList[this.roadList[i].Crossroad2].X;
+                y1 = this.crossroadList[this.roadList[i].Crossroad1].Y - this.radius;
+                y2 = this.crossroadList[this.roadList[i].Crossroad2].Y + this.radius;
+            } else {
+                x1 = this.crossroadList[this.roadList[i].Crossroad1].X; 
+                x2 = this.crossroadList[this.roadList[i].Crossroad2].X;
+                y1 = this.crossroadList[this.roadList[i].Crossroad1].Y + this.radius;
+                y2 = this.crossroadList[this.roadList[i].Crossroad2].Y - this.radius
+            }
+
+            this.drawLine(
+                x1,
+                y1,
+                x2,
+                y2,
                 '#000'
             );
         }
