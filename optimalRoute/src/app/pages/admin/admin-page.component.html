@@ -159,8 +159,12 @@
         class="dropdown-menu show"
         (click)="closeContextMenu()"
     >
-        <button class="dropdown-item" (click)="action1()">Добавить полицейский пост</button>
-        <button class="dropdown-item" (click)="action1()">Добавить знак дорожного движения</button>
+        @if (roadList[indexSelectedElement].TrafficSigns != null) {
+            <button class="dropdown-item" (click)="action1()">Добавить знак дорожного движения</button>
+        }
+        @if (roadList[indexSelectedElement].PolicePost != null) {
+            <button class="dropdown-item" (click)="action1()">Добавить полицейский пост</button>
+        }
         <button class="dropdown-item" (click)="action2()">Удалить</button>
     </div>
 }
