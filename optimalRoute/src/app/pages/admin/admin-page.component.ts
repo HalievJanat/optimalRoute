@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { HeaderComponent } from '../../header/header.component';
 import Konva from 'konva';
-import { ClassOptimalRoute } from '../../classJSON/ClassOptimalRoure';
+import { ClassOptimalRoute } from '../../classJSON/ClassOptimalRoute';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
     templateUrl: './admin-page.component.html',
     styleUrl: './admin-page.component.scss',
 })
+
 export class AdminPageComponent {
     isContextMenuVisibleCrossroad = false; // Показывать ли меню
     isContextMenuVisibleRoad = false; // Показывать ли меню
@@ -170,10 +171,10 @@ export class AdminPageComponent {
                 i++;
             }
             if (i == this.crossroadList.length) {
-                alert('Лох, тут не перекрестка');
+                alert('Перекресток не найден!');
                 return;
             } else if (i == this.indexCrossroad1) {
-                alert('Лох, ты куда прогон добавляешь');
+                alert('Прогон нельзя добавить к данным объектам!');
                 return;
             }
 
@@ -187,7 +188,7 @@ export class AdminPageComponent {
                     countIndex++;
                 }
                 if (countIndex > 4) {
-                    alert('Лох, больше 4 нельзя');
+                    alert('Больше 4 прогонов добавить нельзя');
                     return;
                 }
                 j++;
@@ -270,7 +271,7 @@ export class AdminPageComponent {
             }
 
             if (this.crossroadList.length == i) {
-                alert('Лох, тут не перекрестка');
+                alert('Перекресток не найден');
                 return;
             }
 
@@ -284,7 +285,7 @@ export class AdminPageComponent {
                     countIndex++;
                 }
                 if (countIndex > 4) {
-                    alert('Лох, больше 4 нельзя');
+                    alert('Больше 4 прогонов добавить нельзя');
                     return;
                 }
                 j++;
@@ -552,14 +553,6 @@ export class AdminPageComponent {
                 k,
                 this.crossroadList[this.roadList[i].Crossroad1].X
             );
-
-            let y1;
-            let y2;
-            let y3;
-            let y4;
-            let y5;
-            let y6;
-            let y7;
             
             if (k == Infinity || k == -Infinity) {
                 let x1 = this.crossroadList[this.roadList[i].Crossroad1].X;
@@ -575,16 +568,13 @@ export class AdminPageComponent {
                     return true;
                 }
             } else {
-                y1 = (k*x + b);
-                y2 = (k*x + b + 1);
-                y3 = (k*x + b - 1);
-                y4 = (k*x + b + 2);
-                y5 = (k*x + b - 2);
-                y6 = (k*x + b + 3);
-                y7 = (k*x + b - 3);
-                if (y == y1 || y == y2 || y == y3 || y == y4 || y == y5 || y == y6 || y == y7 ) {
-                    this.indexSelectedElement = i;
-                    return true;
+                for (let j = 0; j < 6; j++) {
+                    let y1 = (k*x + b + j);
+                    let y2 = (k*x + b - j);
+                    if (y == y1 || y == y2) {
+                        this.indexSelectedElement = i;
+                        return true;
+                    }
                 }
             }
         }
@@ -596,13 +586,55 @@ export class AdminPageComponent {
             (<HTMLInputElement> document.querySelector(".timeRedSignal")).valueAsNumber;
             
         this.crossroadList[this.indexSelectedElement].TrafficLights!.TimeGreenSignal = 
-            (<HTMLInputElement> document.querySelector(".timeGreenSignal")).valueAsNumber;    
+            (<HTMLInputElement> document.querySelector(".timeGreenSignal")).valueAsNumber;
+            
+        const jsonCrossroad: string = JSON.stringify(this.crossroadList);
+        console.log(jsonCrossroad);
         
         this.isLeftClickCrossroad = false;
         this.isLeftClickRoad = false;
     }
 
     modifyRoadParamener():void {
+        this.roadList[this.indexSelectedElement].Street.Name = 
+            (<HTMLInputElement> document.querySelector(".streetName")).value;
+
+        if ((<HTMLInputElement> document.querySelector(".lengthRoad")).value != '') {
+            this.roadList[this.indexSelectedElement].Length = 
+                (<HTMLInputElement> document.querySelector(".lengthRoad")).valueAsNumber;
+        } else {
+            alert('Введите значение длины');
+        }
+
+        this.roadList[this.indexSelectedElement].TypeCover.Name= 
+            (<HTMLInputElement> document.querySelector(".typeCoverName")).value;
+
+        if ((<HTMLInputElement> document.querySelector(".coeffCover")).valueAsNumber <= 2 && (<HTMLInputElement> document.querySelector(".coeffCover")).valueAsNumber >= 1) {
+            this.roadList[this.indexSelectedElement].TypeCover.CoefficientBraking = 
+                (<HTMLInputElement> document.querySelector(".coeffCover")).valueAsNumber;
+        } else {
+            alert ('Коэффициент торможения должен быть в диапазоне от 1 до 2')
+        }
+
+        if (this.roadList[this.indexSelectedElement].TrafficSigns != null) {
+            this.roadList[this.indexSelectedElement].TrafficSigns!.Speed = 
+                (<HTMLInputElement> document.querySelector(".speedInput")).valueAsNumber;
+        }
+
+        if (this.roadList[this.indexSelectedElement].PolicePost != null) {
+            this.roadList[this.indexSelectedElement].PolicePost!.Corruption.Name= 
+                (<HTMLInputElement> document.querySelector(".nameCoeffCorumpInput")).value;
+
+            if ((<HTMLInputElement> document.querySelector(".coeffCorumpInput")).valueAsNumber <= 2 && (<HTMLInputElement> document.querySelector(".coeffCorumpInput")).valueAsNumber >= 1) {
+                this.roadList[this.indexSelectedElement].PolicePost!.Corruption.CoefficientCorruption = 
+                    (<HTMLInputElement> document.querySelector(".coeffCorumpInput")).valueAsNumber;
+            } else {
+                alert ('Коэффициент коррумпированности должен быть в диапазоне от 1 до 2')
+            }
+        }
+
+        const jsonRoad: string = JSON.stringify(this.roadList);
+        console.log(jsonRoad);
 
         this.isLeftClickCrossroad = false;
         this.isLeftClickRoad = false;

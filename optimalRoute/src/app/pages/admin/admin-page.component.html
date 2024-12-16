@@ -1,9 +1,10 @@
 <app-header>
-    <a href="/login" class="btn bg-transparent button">Cоздать новую карту</a>
-    <a href="/registration" class="btn bg-transparent button">Открыть карту</a>
-    <a href="/registration" class="btn bg-transparent button">Сохранить</a>
-    <a href="/registration" class="btn bg-transparent button">О системе</a>
-    <a href="/registration" class="btn bg-transparent button"
+    <a href="admin-page" class="btn bg-transparent button">Cоздать новую карту</a>
+    <a href="./" class="btn bg-transparent button">Открыть карту</a>
+    
+    <a href="./" class="btn bg-transparent button">Сохранить</a>
+    <a href="./" class="btn bg-transparent button">О системе</a>
+    <a href="./" class="btn bg-transparent button"
         >О разработчиках</a
     >
 </app-header>
@@ -107,7 +108,7 @@
 
         <!--Перекресток-->
         @if (isLeftClickCrossroad) {
-            <div class="right-panel-body">
+            <div class=".right-panel-body-2">
                 <div>
                     <p class="name-element-uds">Перекресток</p>
                 </div>
@@ -120,6 +121,7 @@
                         <input type="number" class="timeRedSignal" [value]="crossroadList[indexSelectedElement].TrafficLights?.TimeRedSignal">
                         <p>Длительность зеленой фазы</p>
                         <input type="number" class="timeGreenSignal" [value]="crossroadList[indexSelectedElement].TrafficLights?.TimeGreenSignal">
+                        <br>
                         <button (click)="modifyCrossroadParamener()">Сохранить</button>
                     </div>
                 }
@@ -128,7 +130,7 @@
 
         <!--Прогон-->
         @if (isLeftClickRoad) {
-            <div class="right-panel-body">
+            <div class=".right-panel-body-2">
                 <div>
                     <p class="name-element-uds">Дорога</p>
                 </div>
@@ -142,15 +144,18 @@
                 </div>
                 <div>
                     <p>Улица</p>
-                    <input type="text">
+                    <input type="text" class="streetName">
                 </div>
                 <div>
                     <p>Длина</p>
-                    <input type="number">
+                    <input type="number" class="lengthRoad">
                 </div>
                 <div>
                     <p>Тип покрытия</p>
-                    <input type="string">
+                    <input type="string" class="typeCoverName">
+                    <p>Коэффициент тормажения</p>
+                        <input type="number" class="coeffCover">
+                        
                 </div>
                 @if (roadList[indexSelectedElement].TrafficSigns != null) {
                     <div>
@@ -173,6 +178,7 @@
                         
                     </div>
                 }
+                <br>
                 <button (click)="modifyRoadParamener()">Сохранить</button>
             </div>
         }
