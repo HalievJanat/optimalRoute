@@ -1,4 +1,4 @@
 export interface CorruptionDegree {
     name: string;
-    corruptionCoeff: number;
+    coefficient_corruption: number;
 }

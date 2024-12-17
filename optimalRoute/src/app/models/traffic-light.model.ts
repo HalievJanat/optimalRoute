@@ -1,4 +1,4 @@
 export interface TrafficLight {
-    greenSignalTime: number;
-    redSignalTime: number;
+    time_green_signal: number;
+    time_red_signal: number;
 }

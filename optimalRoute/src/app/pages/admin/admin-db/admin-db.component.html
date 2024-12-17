@@ -1,21 +1,12 @@
 <app-header>
-    <a href="/login" class="btn bg-transparent button">Cоздать новую карту</a>
-    <a href="/registration" class="btn bg-transparent button">Открыть карту</a>
-    <a href="/registration" class="btn bg-transparent button">Сохранить</a>
+    <a href="/admin-page" class="btn bg-transparent button">Вернуть к построению карты</a>
     <a href="/registration" class="btn bg-transparent button">О системе</a>
-    <a href="/admin-page/db" class="btn bg-transparent button"
-        >О разработчиках</a
-    >
+    <a href="/admin-page/db" class="btn bg-transparent button">О разработчиках</a>
 </app-header>
 <div class="editor-container">
-    <ul
-        ngbNav
-        #leftnav="ngbNav"
-        class="nav-tabs left-panel"
-        orientation="vertical"
-    >
+    <ul ngbNav #leftnav="ngbNav" class="nav-tabs left-panel" orientation="vertical">
         <li ngbNavItem>
-            <button ngbNavLink autofocus>
+            <button ngbNavLink autofocus (click)="activeRightElement=1">
                 <img src="/assets/driver.png" alt="" />
                 <span>Водитель</span>
             </button>
@@ -24,98 +15,72 @@
                 <form [formGroup]="driverAddForm">
                     <div class="col">
                         <div class="col mb-4">
-                            <input
-                                type="text"
-                                class="form-control"
-                                formControlName="family"
-                                placeholder="Фамилия*"
-                            />
+                            <h4>Водитель</h4>
                         </div>
                         <div class="col mb-4">
-                            <input
-                                type="text"
-                                class="form-control"
-                                formControlName="name"
-                                placeholder="Имя*"
-                            />
+                            <input type="text" class="form-control" formControlName="family" placeholder="Фамилия*" />
                         </div>
                         <div class="col mb-4">
-                            <input
-                                type="text"
-                                class="form-control"
-                                formControlName="surname"
-                                placeholder="Отчество*"
-                            />
+                            <input type="text" class="form-control" formControlName="name" placeholder="Имя*" />
+                        </div>
+                        <div class="col mb-4">
+                            <input type="text" class="form-control" formControlName="surname" placeholder="Отчество*" />
                         </div>
                         <div class="form-check col mb-4">
-                            <label
-                                class="form-check-label"
-                                for="flexCheckDefault"
-                            >
+                            <label class="form-check-label" for="flexCheckDefault">
                                 Признак нарушителя
                             </label>
-                            <input
-                                class="form-check-input"
-                                type="checkbox"
-                                formControlName="infringer"
-                                id="flexCheckDefault"
-                            />
+                            <input class="form-check-input" type="checkbox" formControlName="infringer"
+                                id="flexCheckDefault" />
                         </div>
                         <div class="col mb-4">
                             <div ngbDropdown class="d-inline-block">
-                                <button
-                                    type="button"
-                                    [class.invalid-dropdown-button]="
+                                <button type="button" [class.invalid-dropdown-button]="
                                         driverAddForm.controls.vehicle.dirty &&
                                         driverAddForm.controls.vehicle.invalid
-                                    "
-                                    [class.valid-dropdown-button]="
+                                    " [class.valid-dropdown-button]="
                                         driverAddForm.controls.vehicle.valid
-                                    "
-                                    class="btn btn-outline-primary dropdown-button"
-                                    id="dropdownBasic"
-                                    (click)="
+                                    " class="btn btn-outline-primary dropdown-button" id="dropdownBasic" (click)="
                                         driverAddForm.controls.vehicle.markAsDirty()
-                                    "
-                                    ngbDropdownToggle
-                                >
+                                    " ngbDropdownToggle>
                                     {{
-                                        driverAddForm.controls.vehicle.value ||
-                                            "Автомобиль*"
+                                    driverAddForm.controls.vehicle.value ||
+                                    "Автомобиль*"
                                     }}
                                 </button>
-                                <div
-                                    ngbDropdownMenu
-                                    aria-labelledby="dropdownBasic"
-                                >
+                                <div ngbDropdownMenu aria-labelledby="dropdownBasic">
                                     @for (vehicle of vehicles; track
                                     vehicle.brand) {
-                                    <button
-                                        ngbDropdownItem
-                                        (click)="
+                                    <button ngbDropdownItem (click)="
                                             driverAddForm.controls.vehicle.setValue(
                                                 vehicle.brand
                                             )
-                                        "
-                                    >
+                                        ">
                                         {{ vehicle.brand }}
                                     </button>
                                     }
                                 </div>
                             </div>
                         </div>
-                        @if (isFormInvalid(driverAddForm)) {
-                        <div class="col mb-4">
-                            <span>* - поля являются обязательными</span>
-                        </div>
+                        @if (isRequiredError(driverAddForm)) {
+                            <div class="col mb-4">
+                                <span>* - поля являются обязательными</span>
+                            </div>
+                        } @if (driverDuplicateValidation()) {
+                            <div class="col mb-4">
+                                <span>Водитель с таким ФИО уже добавлен</span>
+                            </div>
+                        } @if (driverAddForm.controls.name.hasError('stringRange') || 
+                               driverAddForm.controls.surname.hasError('stringRange') ||
+                               driverAddForm.controls.family.hasError('stringRange')) {
+                            <div class="col mb-4">
+                                <span>ФИО не должны привышать 50 символов</span>
+                            </div>
                         }
                     </div>
-                    <button
-                        router
-                        class="btn btn-primary submit-button"
-                        type="button"
-                        (click)="addDriver()"
-                    >
+                    <button router class="btn btn-primary submit-button" type="button" (click)="addDriver()" [disabled]="
+                            !driverAddForm.valid || driverDuplicateValidation()
+                        ">
                         Добавить
                     </button>
                 </form>
@@ -129,114 +94,930 @@
                             <th scope="col">Отчество</th>
                             <th scope="col">Признак нарушителя</th>
                             <th scope="col">Автомобиль</th>
+                            <th scope="col">Действия</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @for (driver of pageDriversShowing; track $index) {
-                        <tr>
+                        @for (driver of driverEditForm.controls.slice((driverTabPage - 1) * 4, (driverTabPage - 1) * 4 + 4); track $index) {
+                        <tr [formGroup]="driver">
                             <th scope="row">{{ $index + 1 }}</th>
                             <td>
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    placeholder="Фамилия*"
-                                    disabled="true"
-                                />
-                                {{ driver.family }}
+                                <input type="text" class="form-control" placeholder="Фамилия*" formControlName="family"/>
                             </td>
                             <td>
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    placeholder="Имя*"
-                                    [disabled]="true"
-                                />
+                                <input type="text" class="form-control" placeholder="Имя*" formControlName="name"/>
                             </td>
                             <td>
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    placeholder="Отчество*"
-                                    [disabled]="true"
-                                />
+                                <input type="text" class="form-control" placeholder="Отчество*" formControlName="surname"/>
                             </td>
-                            <td>{{ driver.family }}</td>
-                            <td>{{ driver.vehicle.brand }}</td>
+                            <td>
+                                <label class="form-check-label" for="flexCheckDefault">
+                                    Признак нарушителя
+                                </label>
+                                <input class="form-check-input" type="checkbox" formControlName="infringer"
+                                    id="flexCheckDefault"/>
+                            </td>
+                            <td>
+                                <div ngbDropdown class="d-inline-block">
+                                    <button type="button" class="btn btn-outline-primary dropdown-button" id="dropdownBasic" 
+                                     ngbDropdownToggle [disabled]="driver.disabled">
+                                        {{
+                                        driver.controls.vehicle.value
+                                        }}
+                                    </button>
+                                    <div ngbDropdownMenu aria-labelledby="dropdownBasic">
+                                        @for (vehicle of vehicles; track
+                                        vehicle.brand) {
+                                        <button ngbDropdownItem (click)="
+                                            driver.controls.vehicle.setValue(
+                                                vehicle.brand
+                                            )
+                                        ">
+                                            {{ vehicle.brand }}
+                                        </button>
+                                        }
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div ngbDropdown class="d-inline-block">
+                                    <button type="button" class="btn btn-outline-primary dropdown-button valid-dropdown-button" [disabled]="isDriverEdit" ngbDropdownToggle>
+                                    </button>
+                                    <div ngbDropdownMenu aria-labelledby="dropdownBasic">
+                                        <button ngbDropdownItem (click)="driver.enable(); editDriverNumber=$index; isDriverEdit=true">
+                                          Редактировать 
+                                        </button>
+                                        <button ngbDropdownItem (click)="driverDelete($index)">
+                                            Удалить 
+                                        </button>
+                                    </div>
+                                </div>
+                            </td>
                         </tr>
                         }
                     </tbody>
                 </table>
 
                 <div class="d-flex justify-content-between p-2">
-                    <ngb-pagination
-                        [collectionSize]="driversArrSize"
-                        [(page)]="driverTabPage"
-                        [pageSize]="4"
-                        (pageChange)="refreshDrivers()"
-                    >
+                    <ngb-pagination [collectionSize]="driversArrSize" [(page)]="driverTabPage" [pageSize]="4">
                     </ngb-pagination>
                 </div>
-                } @else { Удалить водителя }
+                @if (driverDuplicateValidation()) {
+                    <div class="col mb-4">
+                        <span class="error-span">Водитель с таким ФИО уже добавлен</span>
+                    </div>
+                }
+                @if (isRequiredError(driverEditForm.controls[editDriverNumber])) {
+                    <div class="col mb-4">
+                        <span class="error-span">* - поля являются обязательными</span>
+                    </div>
+                }
+                @if (driverEditForm.controls[editDriverNumber].controls.name.hasError('stringRange') || 
+                    driverEditForm.controls[editDriverNumber].controls.surname.hasError('stringRange') ||
+                    driverEditForm.controls[editDriverNumber].controls.family.hasError('stringRange')) {
+                    <div class="col mb-4">
+                        <span class="error-span">ФИО не должны привышать 50 символов</span>
+                    </div>
+                }
+                @if (isDriverEdit) {
+                    <button router class="btn btn-primary submit-button" type="button" (click)="editDriver()" [disabled]="
+                            !driverEditForm.controls[editDriverNumber].valid
+                        ">
+                        Сохранить
+                    </button>
+                    <button router class="btn btn-primary submit-button" type="button" (click)="cancelEditDriver()">
+                        Отмена
+                    </button>
+                }
+            } 
             </ng-template>
         </li>
         <li ngbNavItem>
-            <button ngbNavLink>
+            <button ngbNavLink (click)="activeRightElement=1">
                 <img src="/assets/auto.png" alt="" />
                 <span>Автомобиль</span>
             </button>
-            <ng-template ngbNavContent>Автомобиль</ng-template>
+            <ng-template ngbNavContent>
+                @if (activeRightElement===1) {
+                <form [formGroup]="vehicleAddForm">
+                    <div class="col">
+                        <div class="col mb-4">
+                            <h4>Автомобиль</h4>
+                        </div>
+                        <div class="col mb-4">
+                            <input type="text" class="form-control" formControlName="brand" placeholder="Марка*" />
+                            @if (vehicleAddForm.controls.brand.hasError('stringRange')) {
+                                <span>Марка автомобиля должна быть не больше 15 символов</span>
+                            }
+                        </div>
+                        <div class="col mb-4">
+                            <div ngbDropdown class="d-inline-block">
+                                <button type="button" [class.invalid-dropdown-button]="
+                                        vehicleAddForm.controls.typeFuel.dirty &&
+                                        vehicleAddForm.controls.typeFuel.invalid
+                                    " [class.valid-dropdown-button]="
+                                        vehicleAddForm.controls.typeFuel.valid
+                                    " class="btn btn-outline-primary dropdown-button" id="dropdownBasic" (click)="
+                                        vehicleAddForm.controls.typeFuel.markAsDirty()
+                                    " ngbDropdownToggle>
+                                    {{
+                                    vehicleAddForm.controls.typeFuel.value ||
+                                    "Вид топлива*"
+                                    }}
+                                </button>
+                                <div ngbDropdownMenu aria-labelledby="dropdownBasic">
+                                    @for (typeFuel of typeFuels; track
+                                    typeFuel.name) {
+                                    <button ngbDropdownItem (click)="
+                                            vehicleAddForm.controls.typeFuel.setValue(
+                                                typeFuel.name
+                                            )
+                                        ">
+                                        {{ typeFuel.name }}
+                                    </button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col mb-4">
+                            <input type="text" class="form-control" formControlName="consumption_fuel" (keypress)="allowOnlyDigits($event)" placeholder="Расход топлива(л/100 км)*"/>
+                            @if (vehicleAddForm.controls.consumption_fuel.hasError('range')) {
+                                <span>Расход топлива должен быть больше 0 и меньше 20 л/100км</span>
+                            }
+                        </div>
+                        <div class="col mb-4">
+                            <input type="text" class="form-control" formControlName="max_speed" (keypress)="allowOnlyDigits($event)" placeholder="Максимальная скорость*"/>
+                            @if (vehicleAddForm.controls.max_speed.hasError('range')) {
+                                <span>Скорость должна быть больше 0 и меньше 300 км/ч</span>
+                            }
+                        </div>
+                        @if (isRequiredError(vehicleAddForm)) {
+                        <div class="col mb-4">
+                            <span>* - поля являются обязательными</span>
+                        </div>
+                        } @if (vehicleDuplicateValidation()) {
+                        <div class="col mb-4">
+                            <span>Данный автомобиль уже добавлен</span>
+                        </div>
+                        }
+                    </div>
+                    <button router class="btn btn-primary submit-button" type="button" (click)="addVehicle()" [disabled]="
+                            !vehicleAddForm.valid || vehicleDuplicateValidation()
+                        ">
+                        Добавить
+                    </button>
+                </form>
+                } @else if (activeRightElement===2) {
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Марка автомобиля</th>
+                            <th scope="col">Вид топлива</th>
+                            <th scope="col">Расход топлива (л/100км)</th>
+                            <th scope="col">Максимальная скорость</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (vehicle of vehicleEditForm.controls.slice((vehiclesTabPage - 1) * 4, (vehiclesTabPage - 1) * 4 + 4); track $index) {
+                        <tr [formGroup]="vehicle">
+                            <th scope="row">{{ $index + 1 }}</th>
+                            <td>
+                                <input type="text" class="form-control" formControlName="brand" placeholder="Марка*" />
+                            </td>
+                            <td>
+                                <div ngbDropdown class="d-inline-block">
+                                    <button type="button" class="btn btn-outline-primary dropdown-button" ngbDropdownToggle [disabled]="vehicle.disabled">
+                                        {{
+                                        vehicle.controls.typeFuel.value
+                                        }}
+                                    </button>
+                                    <div ngbDropdownMenu aria-labelledby="dropdownBasic">
+                                        @for (typeFuel of typeFuels; track
+                                        typeFuel.name) {
+                                        <button ngbDropdownItem (click)="
+                                                vehicle.controls.typeFuel.setValue(
+                                                    typeFuel.name
+                                                )
+                                            ">
+                                            {{ typeFuel.name }}
+                                        </button>
+                                        }
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" formControlName="consumption_fuel" (keypress)="allowOnlyDigits($event)" placeholder="Расход топлива(л/100 км)*"/>
+                            </td>
+                            <td>    
+                                <input type="text" class="form-control" formControlName="max_speed" (keypress)="allowOnlyDigits($event)" placeholder="Максимальная скорость*"/>
+                            </td>
+                            <td>
+                                <div ngbDropdown class="d-inline-block">
+                                    <button type="button" class="btn btn-outline-primary dropdown-button valid-dropdown-button" [disabled]="isVehicleEdit" ngbDropdownToggle>
+                                    </button>
+                                    <div ngbDropdownMenu aria-labelledby="dropdownBasic">
+                                        <button ngbDropdownItem (click)="vehicle.enable(); editVehicleNumber=$index; isVehicleEdit=true">
+                                          Редактировать 
+                                        </button>
+                                        <button ngbDropdownItem (click)="vehicleDelete($index)">
+                                            Удалить 
+                                        </button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+
+                <div class="d-flex justify-content-between p-2">
+                    <ngb-pagination [collectionSize]="vehiclesArrSize" [(page)]="vehiclesTabPage" [pageSize]="4">
+                    </ngb-pagination>
+                </div>
+                @if (vehicleEditForm.controls[editVehicleNumber].controls.brand.hasError('stringRange')) {
+                    <div class="col mb-4">
+                        <span class="error-span">Марка автомобиля должна быть не больше 15 символов</span>
+                    </div>
+                }
+                @if (vehicleEditForm.controls[editVehicleNumber].controls.consumption_fuel.hasError('range')) {
+                    <div class="col mb-4">
+                        <span class="error-span">Расход топлива должен быть больше 0 и меньше 20 л/100км</span>
+                    </div>
+                }
+                @if (vehicleEditForm.controls[editVehicleNumber].controls.max_speed.hasError('range')) {
+                    <div class="col mb-4">
+                        <span class="error-span">Скорость должна быть больше 0 и меньше 300 км/ч</span>
+                    </div>
+                }
+                @if (isRequiredError(vehicleEditForm.controls[editVehicleNumber])) {
+                    <div class="col mb-4">
+                        <span class="error-span">* - поля являются обязательными</span>
+                    </div>
+                }
+                @if (isVehicleEdit) {
+                    <button router class="btn btn-primary submit-button" type="button" (click)="editVehicle()" [disabled]="
+                            !vehicleEditForm.controls[editVehicleNumber].valid
+                        ">
+                        Сохранить
+                    </button>
+                    <button router class="btn btn-primary submit-button" type="button" (click)="cancelEditVehicle()">
+                        Отмена
+                    </button>
+                }
+            } 
+            </ng-template>
         </li>
         <li ngbNavItem>
-            <button ngbNavLink>
+            <button ngbNavLink (click)="activeRightElement=1">
                 <img src="/assets/police.png" alt="" />
                 <span>Степень коррумпированности</span>
             </button>
-            <ng-template ngbNavContent>Степень коррумпированности</ng-template>
+            <ng-template ngbNavContent>
+                @if (activeRightElement===1) {
+                    <form [formGroup]="corruptionDegreeAddForm">
+                        <div class="col">
+                            <div class="col mb-4">
+                                <h4>Степень коррумпированности</h4>
+                            </div>
+                            <div class="col mb-4">
+                                <input type="text" class="form-control" formControlName="name" placeholder="Название степени коррумпированности*"/>
+                                @if (corruptionDegreeAddForm.controls.name.hasError('stringRange')) {
+                                    <span>Название степени коррумпированности не должно превышать 30 символов</span>
+                                }
+                            </div>
+                            <div class="col mb-4">
+                                <input type="text" class="form-control" formControlName="coefficient_corruption" placeholder="Коэффициент*"/>
+                                @if (corruptionDegreeAddForm.controls.coefficient_corruption.hasError('range') ||
+                                     corruptionDegreeAddForm.controls.coefficient_corruption.hasError('floatOnly')) {
+                                    <span>Коэффициент должен быть положительным числом в диапозоне от 1 до 2</span>
+                                }
+                            </div>
+                            @if (isRequiredError(corruptionDegreeAddForm)) {
+                            <div class="col mb-4">
+                                <span>* - поля являются обязательными</span>
+                            </div>
+                            } @if (corruptionDegreeDuplicateValidation()) {
+                            <div class="col mb-4">
+                                <span>Степень коррумпированности с таким названием уже добавлена</span>
+                            </div>
+                            }
+                        </div>
+                        <button router class="btn btn-primary submit-button" type="button" (click)="addCorruptionDegree()" [disabled]="
+                                !corruptionDegreeAddForm.valid || corruptionDegreeDuplicateValidation()
+                            ">
+                            Добавить
+                        </button>
+                    </form>
+                    } @else if (activeRightElement===2) {
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Название степени коррумпированности</th>
+                                <th scope="col">Коэффициент</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (corruptionDegree of corruptionDegreeEditForm.controls.slice((corruptionDegreesTabPage - 1) * 4, (corruptionDegreesTabPage - 1) * 4 + 4); track $index) {
+                            <tr [formGroup]="corruptionDegree">
+                                <th scope="row">{{ $index + 1 }}</th>
+                                <td>
+                                    <input type="text" class="form-control" formControlName="name" placeholder="Название степени коррумпированности*" />
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" formControlName="coefficient_corruption" placeholder="Коэффициент*"/>
+                                </td>
+                                <td>
+                                    <div ngbDropdown class="d-inline-block">
+                                        <button type="button" class="btn btn-outline-primary dropdown-button valid-dropdown-button" [disabled]="isCorruptionDegreeEdit" ngbDropdownToggle>
+                                        </button>
+                                        <div ngbDropdownMenu aria-labelledby="dropdownBasic">
+                                            <button ngbDropdownItem (click)="corruptionDegree.enable(); editCorruptionDegreeNumber=$index; isCorruptionDegreeEdit=true">
+                                              Редактировать 
+                                            </button>
+                                            <button ngbDropdownItem (click)="corruptionDegreeDelete($index)">
+                                                Удалить 
+                                            </button>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+    
+                    <div class="d-flex justify-content-between p-2">
+                        <ngb-pagination [collectionSize]="corruptionDegreeArrSize" [(page)]="corruptionDegreesTabPage" [pageSize]="4">
+                        </ngb-pagination>
+                    </div>
+                    @if (corruptionDegreeEditForm.controls[editCorruptionDegreeNumber].controls.name.hasError('stringRange')) {
+                        <div class="col mb-4">
+                            <span class="error-span">Название степени коррумпированности не должно превышать 30 символов</span>
+                        </div>
+                    }
+                    @if (corruptionDegreeEditForm.controls[editCorruptionDegreeNumber].controls.coefficient_corruption.hasError('range') ||
+                         corruptionDegreeEditForm.controls[editCorruptionDegreeNumber].controls.coefficient_corruption.hasError('floatOnly')) {
+                        <span class="error-span">Коэффициент должен быть положительным числом в диапозоне от 1 до 2</span>
+                    }
+                    @if (isRequiredError(corruptionDegreeEditForm.controls[editCorruptionDegreeNumber])) {
+                        <div class="col mb-4">
+                            <span class="error-span">* - поля являются обязательными</span>
+                        </div>
+                    }
+                    @if (isCorruptionDegreeEdit) {
+                        <button router class="btn btn-primary submit-button" type="button" (click)="editCorruptionDegree()" [disabled]="
+                                !corruptionDegreeEditForm.controls[editCorruptionDegreeNumber].valid
+                            ">
+                            Сохранить
+                        </button>
+                        <button router class="btn btn-primary submit-button" type="button" (click)="cancelEditCorruptionDegree()">
+                            Отмена
+                        </button>
+                    }
+                }
+            </ng-template>
         </li>
         <li ngbNavItem>
-            <button ngbNavLink>
+            <button ngbNavLink (click)="activeRightElement=1">
                 <img src="/assets/benzine.png" alt="" />
                 <span>Топливо</span>
             </button>
-            <ng-template ngbNavContent>Топливо</ng-template>
+            <ng-template ngbNavContent>
+                @if (activeRightElement===1) {
+                    <form [formGroup]="typeFuelAddForm">
+                        <div class="col">
+                            <div class="col mb-4">
+                                <h4>Топливо</h4>
+                            </div>
+                            <div class="col mb-4">
+                                <input type="text" class="form-control" formControlName="name" placeholder="Название топлива*"/>
+                                @if (typeFuelAddForm.controls.name.hasError('stringRange')) {
+                                    <span>Название топлива должно быть не больше 15 символов</span>
+                                }
+                            </div>
+                            <div class="col mb-4">
+                                <input type="text" class="form-control" formControlName="price" (keypress)="allowOnlyDigits($event)" placeholder="Цена топлива (руб/л)*"/>
+                                @if (typeFuelAddForm.controls.price.hasError('range')) {
+                                    <span>Цена топлива должна быть в диапозоне от 50 до 150 руб/л</span>
+                                }
+                            </div>
+                            @if (isRequiredError(typeFuelAddForm)) {
+                            <div class="col mb-4">
+                                <span>* - поля являются обязательными</span>
+                            </div>
+                            } @if (typeFuelDuplicateValidation()) {
+                            <div class="col mb-4">
+                                <span>Топливо с таким названием уже добавлено</span>
+                            </div>
+                            }
+                        </div>
+                        <button router class="btn btn-primary submit-button" type="button" (click)="addTypeFuel()" [disabled]="
+                                !typeFuelAddForm.valid || typeFuelDuplicateValidation()
+                            ">
+                            Добавить
+                        </button>
+                    </form>
+                    } @else if (activeRightElement===2) {
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Название топлива</th>
+                                <th scope="col">Цена топлива</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (typeFuel of typeFuelEditForm.controls.slice((typeFuelsTabPage - 1) * 4, (typeFuelsTabPage - 1) * 4 + 4); track $index) {
+                            <tr [formGroup]="typeFuel">
+                                <th scope="row">{{ $index + 1 }}</th>
+                                <td>
+                                    <input type="text" class="form-control" formControlName="name" placeholder="Название топлива*" />
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" formControlName="price" (keypress)="allowOnlyDigits($event)" placeholder="Цена топлива (руб/л)*"/>
+                                </td>
+                                <td>
+                                    <div ngbDropdown class="d-inline-block">
+                                        <button type="button" class="btn btn-outline-primary dropdown-button valid-dropdown-button" [disabled]="isTypeFuelEdit" ngbDropdownToggle>
+                                        </button>
+                                        <div ngbDropdownMenu aria-labelledby="dropdownBasic">
+                                            <button ngbDropdownItem (click)="typeFuel.enable(); editTypeFuelNumber=$index; isTypeFuelEdit=true">
+                                              Редактировать 
+                                            </button>
+                                            <button ngbDropdownItem (click)="typeFuelDelete($index)">
+                                                Удалить 
+                                            </button>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+    
+                    <div class="d-flex justify-content-between p-2">
+                        <ngb-pagination [collectionSize]="typeFuelsArrSize" [(page)]="typeFuelsTabPage" [pageSize]="4">
+                        </ngb-pagination>
+                    </div>
+                    @if (typeFuelEditForm.controls[editTypeFuelNumber].controls.name.hasError('stringRange')) {
+                        <div class="col mb-4">
+                            <span class="error-span">Название топлива должно быть не больше 15 символов</span>
+                        </div>
+                    }
+                    @if (typeFuelEditForm.controls[editTypeFuelNumber].controls.price.hasError('range')) {
+                        <div class="col mb-4">
+                            <span class="error-span">Цена топлива должна быть в диапозоне от 50 до 150 руб/л</span>
+                        </div>
+                    }
+                    @if (isRequiredError(typeFuelEditForm.controls[editTypeFuelNumber])) {
+                        <div class="col mb-4">
+                            <span class="error-span">* - поля являются обязательными</span>
+                        </div>
+                    }
+                    @if (isTypeFuelEdit) {
+                        <button router class="btn btn-primary submit-button" type="button" (click)="editTypeFuel()" [disabled]="
+                                !typeFuelEditForm.controls[editTypeFuelNumber].valid
+                            ">
+                            Сохранить
+                        </button>
+                        <button router class="btn btn-primary submit-button" type="button" (click)="cancelEditTypeFuel()">
+                            Отмена
+                        </button>
+                    }
+                }
+            </ng-template>
         </li>
         <li ngbNavItem>
-            <button ngbNavLink>
+            <button ngbNavLink (click)="activeRightElement=1">
                 <img src="/assets/street.png" alt="" />
                 <span>Улица</span>
             </button>
-            <ng-template ngbNavContent>Улица</ng-template>
+            <ng-template ngbNavContent>
+                @if (activeRightElement===1) {
+                    <form [formGroup]="streetAddForm">
+                        <div class="col">
+                            <div class="col mb-4">
+                                <h4>Улица</h4>
+                            </div>
+                            <div class="col mb-4">
+                                <input type="text" class="form-control" formControlName="name" placeholder="Название улицы*"/>
+                                @if (streetAddForm.controls.name.hasError('stringRange')) {
+                                    <span>Название улицы должно быть не больше 30 символов</span>
+                                }
+                            </div>
+                            @if (isRequiredError(streetAddForm)) {
+                            <div class="col mb-4">
+                                <span>* - поля являются обязательными</span>
+                            </div>
+                            } @if (streetDuplicateValidation()) {
+                            <div class="col mb-4">
+                                <span>Улица с таким названием уже добавлена</span>
+                            </div>
+                            }
+                        </div>
+                        <button router class="btn btn-primary submit-button" type="button" (click)="addStreet()" [disabled]="
+                                !streetAddForm.valid || streetDuplicateValidation()
+                            ">
+                            Добавить
+                        </button>
+                    </form>
+                    } @else if (activeRightElement===2) {
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Название улицы</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (street of streetEditForm.controls.slice((streetsTabPage - 1) * 4, (streetsTabPage - 1) * 4 + 4); track $index) {
+                            <tr [formGroup]="street">
+                                <th scope="row">{{ $index + 1 }}</th>
+                                <td>
+                                    <input type="text" class="form-control" formControlName="name" placeholder="Название улицы*" />
+                                </td>
+                                <td>
+                                    <div ngbDropdown class="d-inline-block">
+                                        <button type="button" class="btn btn-outline-primary dropdown-button valid-dropdown-button" [disabled]="isStreetEdit" ngbDropdownToggle>
+                                        </button>
+                                        <div ngbDropdownMenu aria-labelledby="dropdownBasic">
+                                            <button ngbDropdownItem (click)="street.enable(); editStreetNumber=$index; isStreetEdit=true">
+                                              Редактировать 
+                                            </button>
+                                            <button ngbDropdownItem (click)="streetDelete($index)">
+                                                Удалить 
+                                            </button>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+    
+                    <div class="d-flex justify-content-between p-2">
+                        <ngb-pagination [collectionSize]="streetsArrSize" [(page)]="streetsTabPage" [pageSize]="4">
+                        </ngb-pagination>
+                    </div>
+                    @if (streetEditForm.controls[editStreetNumber].controls.name.hasError('stringRange')) {
+                        <div class="col mb-4">
+                            <span class="error-span">Название топлива должно быть не больше 30 символов</span>
+                        </div>
+                    }
+                    @if (isRequiredError(streetEditForm.controls[editStreetNumber])) {
+                        <div class="col mb-4">
+                            <span class="error-span">* - поля являются обязательными</span>
+                        </div>
+                    }
+                    @if (isStreetEdit) {
+                        <button router class="btn btn-primary submit-button" type="button" (click)="editStreet()" [disabled]="
+                                !streetEditForm.controls[editStreetNumber].valid
+                            ">
+                            Сохранить
+                        </button>
+                        <button router class="btn btn-primary submit-button" type="button" (click)="cancelEditStreet()">
+                            Отмена
+                        </button>
+                    }
+                }
+            </ng-template>
         </li>
         <li ngbNavItem>
-            <button ngbNavLink>
+            <button ngbNavLink (click)="activeRightElement=1">
                 <img src="/assets/road-surface.png" alt="" />
                 <span>Дорожное покрытие</span>
             </button>
-            <ng-template ngbNavContent>Дорожное покрытие</ng-template>
+            <ng-template ngbNavContent>
+                @if (activeRightElement===1) {
+                    <form [formGroup]="coverTypeAddForm">
+                        <div class="col">
+                            <div class="col mb-4">
+                                <h4>Дорожное покрытие</h4>
+                            </div>
+                            <div class="col mb-4">
+                                <input type="text" class="form-control" formControlName="name" placeholder="Название дорожного покрытия*"/>
+                                @if (coverTypeAddForm.controls.name.hasError('stringRange')) {
+                                    <div class="col mb-4">
+                                        <span class="error-span">Название покрытия должно быть не больше 30 символов</span>
+                                    </div>
+                                }
+                            </div>
+                            <div class="col mb-4">
+                                <input type="text" class="form-control" formControlName="coefficient_braking" placeholder="Коэффициент*"/>
+                                @if (coverTypeAddForm.controls.coefficient_braking.hasError('range') ||
+                                     coverTypeAddForm.controls.coefficient_braking.hasError('floatOnly')) {
+                                    <span>Коэффициент должен быть положительным числом в диапозоне от 1 до 2</span>
+                                }
+                            </div>
+                            @if (isRequiredError(coverTypeAddForm)) {
+                            <div class="col mb-4">
+                                <span>* - поля являются обязательными</span>
+                            </div>
+                            } @if (coverTypeDuplicateValidation()) {
+                            <div class="col mb-4">
+                                <span>Покрытие с таким названием уже добавлено</span>
+                            </div>
+                            }
+                        </div>
+                        <button router class="btn btn-primary submit-button" type="button" (click)="addCoverType()" [disabled]="
+                                !coverTypeAddForm.valid || coverTypeDuplicateValidation()
+                            ">
+                            Добавить
+                        </button>
+                    </form>
+                    } @else if (activeRightElement===2) {
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Название дорожного покрытия</th>
+                                <th scope="col">Коэффициент</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (coverType of coverTypeEditForm.controls.slice((coverTypesTabPage - 1) * 4, (coverTypesTabPage - 1) * 4 + 4); track $index) {
+                            <tr [formGroup]="coverType">
+                                <th scope="row">{{ $index + 1 }}</th>
+                                <td>
+                                    <input type="text" class="form-control" formControlName="name" placeholder="Название дорожного покрытия*" />
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" formControlName="coefficient_braking" placeholder="Коэффициент*"/>
+                                </td>
+                                <td>
+                                    <div ngbDropdown class="d-inline-block">
+                                        <button type="button" class="btn btn-outline-primary dropdown-button valid-dropdown-button" [disabled]="isCoverTypeEdit" ngbDropdownToggle>
+                                        </button>
+                                        <div ngbDropdownMenu aria-labelledby="dropdownBasic">
+                                            <button ngbDropdownItem (click)="coverType.enable(); editCoverTypeNumber=$index; isCoverTypeEdit=true">
+                                              Редактировать 
+                                            </button>
+                                            <button ngbDropdownItem (click)="coverTypeDelete($index)">
+                                                Удалить 
+                                            </button>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+    
+                    <div class="d-flex justify-content-between p-2">
+                        <ngb-pagination [collectionSize]="coverTypesArrSize" [(page)]="coverTypesTabPage" [pageSize]="4">
+                        </ngb-pagination>
+                    </div>
+                    @if (coverTypeEditForm.controls[editCoverTypeNumber].controls.name.hasError('stringRange')) {
+                        <div class="col mb-4">
+                            <span class="error-span">Название покрытия должно быть не больше 30 символов</span>
+                        </div>
+                    }
+                    @if (coverTypeEditForm.controls[editCoverTypeNumber].controls.coefficient_braking.hasError('range') ||
+                         coverTypeEditForm.controls[editCoverTypeNumber].controls.coefficient_braking.hasError('floatOnly')) {
+                        <span class="error-span">Коэффициент должен быть положительным числом в диапозоне от 1 до 2</span>
+                    }
+                    @if (isRequiredError(coverTypeEditForm.controls[editCoverTypeNumber])) {
+                        <div class="col mb-4">
+                            <span class="error-span">* - поля являются обязательными</span>
+                        </div>
+                    }
+                    @if (isCoverTypeEdit) {
+                        <button router class="btn btn-primary submit-button" type="button" (click)="editCoverType()" [disabled]="
+                                !coverTypeEditForm.controls[editCoverTypeNumber].valid
+                            ">
+                            Сохранить
+                        </button>
+                        <button router class="btn btn-primary submit-button" type="button" (click)="cancelEditCoverType()">
+                            Отмена
+                        </button>
+                    }
+                }
+            </ng-template>
         </li>
         <li ngbNavItem>
-            <button ngbNavLink>
+            <button ngbNavLink (click)="activeRightElement=1">
                 <img src="/assets/traffic-light.png" alt="" />
                 <span>Светофор</span>
             </button>
-            <ng-template ngbNavContent>Светофор</ng-template>
+            <ng-template ngbNavContent>
+                @if (activeRightElement===1) {
+                    <form [formGroup]="trafficLightAddForm">
+                        <div class="col">
+                            <div class="col mb-4">
+                                <h4>Светофор</h4>
+                            </div>
+                            <div class="col mb-4">
+                                <input type="text" class="form-control" formControlName="time_green_signal" (keypress)="allowOnlyDigits($event)" placeholder="Длительность зелёной фазы*"/>
+                                @if (trafficLightAddForm.controls.time_green_signal.hasError('range')) {
+                                    <div class="col mb-4">
+                                        <span class="error-span">Длительность должна быть в диапозоне от 20 до 120</span>
+                                    </div>
+                                }
+                            </div>
+                            <div class="col mb-4">
+                                <input type="text" class="form-control" formControlName="time_red_signal" (keypress)="allowOnlyDigits($event)" placeholder="Длительность красной фазы*"/>
+                                @if (trafficLightAddForm.controls.time_red_signal.hasError('range')) {
+                                    <div class="col mb-4">
+                                        <span class="error-span">Длительность должна быть в диапозоне от 20 до 120</span>
+                                    </div>
+                                }
+                            </div>
+                            @if (isRequiredError(trafficLightAddForm)) {
+                            <div class="col mb-4">
+                                <span>* - поля являются обязательными</span>
+                            </div>
+                            } @if (trafficLightDuplicateValidation()) {
+                            <div class="col mb-4">
+                                <span>Светофор с такими значениями уже добавлен</span>
+                            </div>
+                            }
+                        </div>
+                        <button router class="btn btn-primary submit-button" type="button" (click)="addTrafficLight()" [disabled]="
+                                !trafficLightAddForm.valid || trafficLightDuplicateValidation()
+                            ">
+                            Добавить
+                        </button>
+                    </form>
+                    } @else if (activeRightElement===2) {
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Длительность зелёной фазы</th>
+                                <th scope="col">Длительность красной фазы</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (trafficLight of trafficLightEditForm.controls.slice((trafficLightsTabPage - 1) * 4, (trafficLightsTabPage - 1) * 4 + 4); track $index) {
+                            <tr [formGroup]="trafficLight">
+                                <th scope="row">{{ $index + 1 }}</th>
+                                <td>
+                                    <input type="text" class="form-control" formControlName="time_green_signal" (keypress)="allowOnlyDigits($event)" placeholder="Длительность зелёной фазы*"/>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" formControlName="time_red_signal" (keypress)="allowOnlyDigits($event)" placeholder="Длительность красной фазы*"/>
+                                </td>
+                                <td>
+                                    <div ngbDropdown class="d-inline-block">
+                                        <button type="button" class="btn btn-outline-primary dropdown-button valid-dropdown-button" [disabled]="isTrafficLightEdit" ngbDropdownToggle>
+                                        </button>
+                                        <div ngbDropdownMenu aria-labelledby="dropdownBasic">
+                                            <button ngbDropdownItem (click)="trafficLight.enable(); editTrafficLightNumber=$index; isTrafficLightEdit=true">
+                                              Редактировать 
+                                            </button>
+                                            <button ngbDropdownItem (click)="trafficLightDelete($index)">
+                                                Удалить 
+                                            </button>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+    
+                    <div class="d-flex justify-content-between p-2">
+                        <ngb-pagination [collectionSize]="trafficLightsTabPage" [(page)]="trafficLightsTabPage" [pageSize]="4">
+                        </ngb-pagination>
+                    </div>
+                    @if (trafficLightEditForm.controls[editTrafficLightNumber].controls.time_red_signal.hasError('range') ||
+                         trafficLightEditForm.controls[editTrafficLightNumber].controls.time_green_signal.hasError('range')) {
+                        <div class="col mb-4">
+                            <span class="error-span">Длительность должна быть в диапозоне от 20 до 120</span>
+                        </div>
+                    }
+                    @if (isRequiredError(trafficLightEditForm.controls[editTrafficLightNumber])) {
+                        <div class="col mb-4">
+                            <span class="error-span">* - поля являются обязательными</span>
+                        </div>
+                    }
+                    @if (isTrafficLightEdit) {
+                        <button router class="btn btn-primary submit-button" type="button" (click)="editTrafficLights()" [disabled]="
+                                !trafficLightEditForm.controls[editTrafficLightNumber].valid
+                            ">
+                            Сохранить
+                        </button>
+                        <button router class="btn btn-primary submit-button" type="button" (click)="cancelEditTrafficLights()">
+                            Отмена
+                        </button>
+                    }
+                }
+            </ng-template>
         </li>
         <li ngbNavItem>
-            <button ngbNavLink>
+            <button ngbNavLink (click)="activeRightElement=1">
                 <img src="/assets/fine.png" alt="" />
                 <span>Штраф</span>
             </button>
-            <ng-template ngbNavContent>Штраф</ng-template>
+            <ng-template ngbNavContent>
+                @if (activeRightElement===1) {
+                    <form [formGroup]="fineTypeAddForm">
+                        <div class="col">
+                            <div class="col mb-4">
+                                <h4>Штраф</h4>
+                            </div>
+                            <div class="col mb-4">
+                                <input type="text" class="form-control" formControlName="name" placeholder="Название штрафа*"/>
+                                @if (fineTypeAddForm.controls.name.hasError('stringRange')) {
+                                    <span>Название штрафа должно быть не больше 40 символов</span>
+                                }
+                            </div>
+                            <div class="col mb-4">
+                                <input type="text" class="form-control" formControlName="price" (keypress)="allowOnlyDigits($event)" placeholder="Стоимость штрафа*"/>
+                                @if (fineTypeAddForm.controls.price.hasError('range')) {
+                                    <span>Стоимость штрафа должна быть в диапозоне от 300 до 20000 руб/л</span>
+                                }
+                            </div>
+                            @if (isRequiredError(fineTypeAddForm)) {
+                            <div class="col mb-4">
+                                <span>* - поля являются обязательными</span>
+                            </div>
+                            } @if (fineTypeDuplicateValidation()) {
+                            <div class="col mb-4">
+                                <span>Топливо с таким названием уже добавлено</span>
+                            </div>
+                            }
+                        </div>
+                        <button router class="btn btn-primary submit-button" type="button" (click)="addTypeFuel()" [disabled]="
+                                !fineTypeAddForm.valid || fineTypeDuplicateValidation()
+                            ">
+                            Добавить
+                        </button>
+                    </form>
+                    } @else if (activeRightElement===2) {
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Название штрафа</th>
+                                <th scope="col">Стоимость штрафа</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (fineType of fineTypeEditForm.controls.slice((fineTypeTabPage - 1) * 4, (fineTypeTabPage - 1) * 4 + 4); track $index) {
+                            <tr [formGroup]="fineType">
+                                <th scope="row">{{ $index + 1 }}</th>
+                                <td>
+                                    <input type="text" class="form-control" formControlName="name" placeholder="Название штрафа*"/>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" formControlName="price" (keypress)="allowOnlyDigits($event)" placeholder="Стоимость штрафа*"/>
+                                </td>
+                                <td>
+                                    <div ngbDropdown class="d-inline-block">
+                                        <button type="button" class="btn btn-outline-primary dropdown-button valid-dropdown-button" [disabled]="isFineTypeEdit" ngbDropdownToggle>
+                                        </button>
+                                        <div ngbDropdownMenu aria-labelledby="dropdownBasic">
+                                            <button ngbDropdownItem (click)="fineType.enable(); editFineTypeNumber=$index; isFineTypeEdit=true">
+                                              Редактировать 
+                                            </button>
+                                            <button ngbDropdownItem (click)="fineTypeDelete($index)">
+                                                Удалить 
+                                            </button>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+    
+                    <div class="d-flex justify-content-between p-2">
+                        <ngb-pagination [collectionSize]="fineTypesArrSize" [(page)]="fineTypeTabPage" [pageSize]="4">
+                        </ngb-pagination>
+                    </div>
+                    @if (fineTypeEditForm.controls[editFineTypeNumber].controls.name.hasError('stringRange')) {
+                        <div class="col mb-4">
+                            <span>Название штрафа должно быть не больше 40 символов</span>
+                        </div>
+                    }
+                    @if (fineTypeEditForm.controls[editFineTypeNumber].controls.price.hasError('range')) {
+                        <div class="col mb-4">
+                            <span>Стоимость штрафа должна быть в диапозоне от 300 до 20000 руб/л</span>
+                        </div>
+                    }
+                    @if (isRequiredError(fineTypeEditForm.controls[editFineTypeNumber])) {
+                        <div class="col mb-4">
+                            <span class="error-span">* - поля являются обязательными</span>
+                        </div>
+                    }
+                    @if (isFineTypeEdit) {
+                        <button router class="btn btn-primary submit-button" type="button" (click)="editFineTypes()" [disabled]="
+                                !fineTypeEditForm.controls[editFineTypeNumber].valid
+                            ">
+                            Сохранить
+                        </button>
+                        <button router class="btn btn-primary submit-button" type="button" (click)="cancelEditFineTypes()">
+                            Отмена
+                        </button>
+                    }
+                }
+            </ng-template>
         </li>
     </ul>
     <div class="form-container" [ngbNavOutlet]="leftnav"></div>
-    <ul
-        ngbNav
-        #rightnav="ngbNav"
-        [(activeId)]="activeRightElement"
-        class="nav-tabs right-panel"
-        orientation="vertical"
-    >
+    <ul ngbNav #rightnav="ngbNav" [(activeId)]="activeRightElement" class="nav-tabs right-panel" orientation="vertical">
         <li [ngbNavItem]="1" [class.active]="activeRightElement === 1">
             <button ngbNavLink autofocus>
                 <span>Добавить</span>
@@ -245,11 +1026,6 @@
         <li [ngbNavItem]="2" [class.active]="activeRightElement === 2">
             <button ngbNavLink>
                 <span>Изменить</span>
-            </button>
-        </li>
-        <li [ngbNavItem]="3" [class.active]="activeRightElement === 3">
-            <button ngbNavLink>
-                <span>Удалить</span>
             </button>
         </li>
     </ul>
