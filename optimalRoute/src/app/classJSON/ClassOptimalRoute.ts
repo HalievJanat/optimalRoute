@@ -58,8 +58,8 @@ export namespace ClassOptimalRoute {
         }
 
         constructor() {
-            this.time_green_signal = 0;
-            this.time_red_signal = 0;
+            this.time_green_signal = 20;
+            this.time_red_signal = 20;
         }
     }
 
@@ -144,7 +144,7 @@ export namespace ClassOptimalRoute {
             this.traffic_signs = null;
             this.typeCover = new TypeCover();
             this.police_post = null;
-            this.length = 0;
+            this.length = 1;
             this.direction = 0;
         }
     }
@@ -169,7 +169,7 @@ export namespace ClassOptimalRoute {
         
         constructor() {
             this.name = "";
-            this.coefficient_corruption = 0;
+            this.coefficient_corruption = 1;
         }
     }
 
@@ -199,11 +199,11 @@ export namespace ClassOptimalRoute {
         }
 
         constructor() {
-            this.name = "Неопределена";
+            this.name = "";
         }
     }
 
-    export class TrafficSigns {
+    export class TrafficSigns { //30,40,50
         private speed: number;
 
         public get Speed(): number {
@@ -214,7 +214,7 @@ export namespace ClassOptimalRoute {
         }
 
         constructor() {
-            this.speed = 0;
+            this.speed = 30;
         }
     }
 
@@ -238,7 +238,7 @@ export namespace ClassOptimalRoute {
         
         constructor() {
             this.name = "";
-            this.coefficient_braking = 0;
+            this.coefficient_braking = 1;
         }
     }
 
@@ -262,7 +262,7 @@ export namespace ClassOptimalRoute {
         
         constructor() {
             this.name = "";
-            this.price = 0;
+            this.price = 300;
         }
     }
 
@@ -322,7 +322,7 @@ export namespace ClassOptimalRoute {
         
         constructor() {
             this.name = "";
-            this.price = 0;
+            this.price = 50;
         }
     }
 
@@ -429,8 +429,8 @@ export namespace ClassOptimalRoute {
         }
 
         constructor() {
-            this.start_crossroad = -1;
-            this.end_crossroad = -1;
+            this.start_crossroad = 0;
+            this.end_crossroad = 0;
             this.driver = new Driver;
             this.criteria_searche = "";
             this.crossroads = [];

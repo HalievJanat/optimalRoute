@@ -1,11 +1,35 @@
+<ng-template #content let-c="close" let-d="dismiss">
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Разработчики</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="d('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+        <div class="modal-header">
+            <p>Группа: 6401-090301D, Петренко Мария Вадимовна</p>
+        </div>
+        <div class="modal-header">
+            <p>Группа: 6401-090301D, Уваров Глеб Алексеевич</p>
+        </div>
+        <div class="modal-header">
+            <p>Группа: 6401-090301D, Халиев Жанат Тлекешевич</p>
+        </div>
+        <div class="modal-header">
+            <p>Группа: 6401-090301D, Шатилов Никита Юрьевич</p>
+        </div> 
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="c('Save click')">Закрыть</button>
+    </div>
+</ng-template>
 <app-header>
-    <a href="/login" class="btn bg-transparent button">Cоздать новую карту</a>
-    <a href="/registration" class="btn bg-transparent button">Открыть карту</a>
-    <a href="/registration" class="btn bg-transparent button">Сохранить</a>
-    <a href="/registration" class="btn bg-transparent button">О системе</a>
-    <a href="/registration" class="btn bg-transparent button"
-        >О разработчиках</a
-    >
+    <a href="admin-page" class="btn bg-transparent button">Cоздать новую карту</a>
+    <a href="./" class="btn bg-transparent button">Открыть карту</a>
+    
+    <a href="./" class="btn bg-transparent button">Сохранить</a>
+    <a href="./" class="btn bg-transparent button">О системе</a>
+    <div class="btn btn-lg btn-outline-primary" (click)="open(content)"><a class="btn bg-transparent button"
+        >О разработчиках</a></div>
+    
 </app-header>
 <div class="editor-container">
     <div class="left-panel" [hidden]="!isLeftPanelOpen">
@@ -107,7 +131,7 @@
 
         <!--Перекресток-->
         @if (isLeftClickCrossroad) {
-            <div class="right-panel-body">
+            <div class=".right-panel-body-2">
                 <div>
                     <p class="name-element-uds">Перекресток</p>
                 </div>
@@ -120,6 +144,7 @@
                         <input type="number" class="timeRedSignal" [value]="crossroadList[indexSelectedElement].TrafficLights?.TimeRedSignal">
                         <p>Длительность зеленой фазы</p>
                         <input type="number" class="timeGreenSignal" [value]="crossroadList[indexSelectedElement].TrafficLights?.TimeGreenSignal">
+                        <br>
                         <button (click)="modifyCrossroadParamener()">Сохранить</button>
                     </div>
                 }
@@ -128,29 +153,44 @@
 
         <!--Прогон-->
         @if (isLeftClickRoad) {
-            <div class="right-panel-body">
+            <div class=".right-panel-body-2">
                 <div>
                     <p class="name-element-uds">Дорога</p>
                 </div>
                 <div>
                     <p>Направления движения</p>
                     <select>
-                        <option>0</option>
-                        <option>1</option>
-                        <option>2</option>
+                        @if (roadList[indexSelectedElement].Direction == 0) {
+                            <option selected>0</option>
+                        } @else {
+                            <option>0</option>
+                        }
+                        @if (roadList[indexSelectedElement].Direction == 1) {
+                            <option selected>1</option>
+                        } @else {
+                            <option>1</option>
+                        }
+                        @if (roadList[indexSelectedElement].Direction == 2) {
+                            <option selected>2</option>
+                        } @else {
+                            <option>2</option>
+                        }
                     </select>
                 </div>
                 <div>
                     <p>Улица</p>
-                    <input type="text">
+                    <input type="text" class="streetName" [value]="roadList[indexSelectedElement].Street.Name">
                 </div>
                 <div>
                     <p>Длина</p>
-                    <input type="number">
+                    <input type="number" class="lengthRoad" [value]="roadList[indexSelectedElement].Length">
                 </div>
                 <div>
                     <p>Тип покрытия</p>
-                    <input type="string">
+                    <input type="string" class="typeCoverName" [value]="roadList[indexSelectedElement].TypeCover.Name">
+                    <p>Коэффициент тормажения</p>
+                    <input type="number" class="coeffCover" [value]="roadList[indexSelectedElement].TypeCover.CoefficientBraking">
+                        
                 </div>
                 @if (roadList[indexSelectedElement].TrafficSigns != null) {
                     <div>
@@ -158,7 +198,23 @@
                             <p>Знак дорожного движения</p>
                         </div>
                         <p>Скорость</p>
-                        <input type="number" class="speedInput" [value]="roadList[indexSelectedElement].TrafficSigns?.Speed">
+                        <select>
+                            @if (roadList[indexSelectedElement].TrafficSigns?.Speed == 30) {
+                                <option selected>30</option>
+                            } @else {
+                                <option>30</option>
+                            }
+                            @if (roadList[indexSelectedElement].TrafficSigns?.Speed == 40) {
+                                <option selected>40</option>
+                            } @else {
+                                <option>40</option>
+                            }
+                            @if (roadList[indexSelectedElement].TrafficSigns?.Speed == 50) {
+                                <option selected>50</option>
+                            } @else {
+                                <option>50</option>
+                            }
+                        </select>
                     </div>
                 }
                 @if (roadList[indexSelectedElement].PolicePost != null) {
@@ -170,26 +226,12 @@
                         <input type="text" class="nameCoeffCorumpInput" [value]="roadList[indexSelectedElement].PolicePost?.Corruption?.Name">
                         <p>Коэффициент коррумпированности</p>
                         <input type="number" class="coeffCorumpInput" [value]="roadList[indexSelectedElement].PolicePost?.Corruption?.CoefficientCorruption">
-                        
                     </div>
                 }
+                <br>
                 <button (click)="modifyRoadParamener()">Сохранить</button>
             </div>
         }
-        
-        
-        <!--
-        <div class="right-panel-body">
-            <div>
-                <img class="crossroad" src="/assets/crossroad.png" alt="" />
-                <span>Перекресток</span>
-            </div>
-            <div>
-                <img class="roadrun" src="/assets/roadrun.png" alt="" />
-                <span>Прогон</span>
-            </div>
-        </div>
-    -->
     </div>
     <button
         type="button"

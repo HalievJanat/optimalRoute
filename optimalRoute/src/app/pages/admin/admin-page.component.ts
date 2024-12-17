@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { HeaderComponent } from '../../header/header.component';
 import Konva from 'konva';
-import { ClassOptimalRoute } from '../../classJSON/ClassOptimalRoure';
+import { ClassOptimalRoute } from '../../classJSON/ClassOptimalRoute';
 import { CommonModule } from '@angular/common';
+import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
     selector: 'app-admin-page',
@@ -11,7 +12,21 @@ import { CommonModule } from '@angular/common';
     templateUrl: './admin-page.component.html',
     styleUrl: './admin-page.component.scss',
 })
+
 export class AdminPageComponent {
+    constructor(
+		config: NgbModalConfig,
+		private modalService: NgbModal,
+	) {
+		// customize default values of modals used by this component tree
+		config.backdrop = 'static';
+		config.keyboard = false;
+	}
+
+    open(content: any) {
+		this.modalService.open(content);
+	}
+
     isContextMenuVisibleCrossroad = false; // Показывать ли меню
     isContextMenuVisibleRoad = false; // Показывать ли меню
     contextMenuPosition = { x: 0, y: 0 }; // Координаты меню
@@ -170,10 +185,10 @@ export class AdminPageComponent {
                 i++;
             }
             if (i == this.crossroadList.length) {
-                alert('Лох, тут не перекрестка');
+                alert('Перекресток не найден!');
                 return;
             } else if (i == this.indexCrossroad1) {
-                alert('Лох, ты куда прогон добавляешь');
+                alert('Прогон нельзя добавить к данным объектам!');
                 return;
             }
 
@@ -187,7 +202,7 @@ export class AdminPageComponent {
                     countIndex++;
                 }
                 if (countIndex > 4) {
-                    alert('Лох, больше 4 нельзя');
+                    alert('Больше 4 прогонов добавить нельзя');
                     return;
                 }
                 j++;
@@ -270,7 +285,7 @@ export class AdminPageComponent {
             }
 
             if (this.crossroadList.length == i) {
-                alert('Лох, тут не перекрестка');
+                alert('Перекресток не найден');
                 return;
             }
 
@@ -284,7 +299,7 @@ export class AdminPageComponent {
                     countIndex++;
                 }
                 if (countIndex > 4) {
-                    alert('Лох, больше 4 нельзя');
+                    alert('Больше 4 прогонов добавить нельзя');
                     return;
                 }
                 j++;
@@ -552,14 +567,6 @@ export class AdminPageComponent {
                 k,
                 this.crossroadList[this.roadList[i].Crossroad1].X
             );
-
-            let y1;
-            let y2;
-            let y3;
-            let y4;
-            let y5;
-            let y6;
-            let y7;
             
             if (k == Infinity || k == -Infinity) {
                 let x1 = this.crossroadList[this.roadList[i].Crossroad1].X;
@@ -575,16 +582,13 @@ export class AdminPageComponent {
                     return true;
                 }
             } else {
-                y1 = (k*x + b);
-                y2 = (k*x + b + 1);
-                y3 = (k*x + b - 1);
-                y4 = (k*x + b + 2);
-                y5 = (k*x + b - 2);
-                y6 = (k*x + b + 3);
-                y7 = (k*x + b - 3);
-                if (y == y1 || y == y2 || y == y3 || y == y4 || y == y5 || y == y6 || y == y7 ) {
-                    this.indexSelectedElement = i;
-                    return true;
+                for (let j = 0; j < 6; j++) {
+                    let y1 = (k*x + b + j);
+                    let y2 = (k*x + b - j);
+                    if (y == y1 || y == y2) {
+                        this.indexSelectedElement = i;
+                        return true;
+                    }
                 }
             }
         }
@@ -592,17 +596,117 @@ export class AdminPageComponent {
     }
 
     modifyCrossroadParamener():void {
-        this.crossroadList[this.indexSelectedElement].TrafficLights!.TimeRedSignal = 
-            (<HTMLInputElement> document.querySelector(".timeRedSignal")).valueAsNumber;
-            
-        this.crossroadList[this.indexSelectedElement].TrafficLights!.TimeGreenSignal = 
-            (<HTMLInputElement> document.querySelector(".timeGreenSignal")).valueAsNumber;    
+        let timeRedSignal = (<HTMLInputElement> document.querySelector(".timeRedSignal")).valueAsNumber;
+        let timeGreenSignal = (<HTMLInputElement> document.querySelector(".timeGreenSignal")).valueAsNumber;
+        if (timeRedSignal >= 20 && timeRedSignal <= 120) {
+            this.crossroadList[this.indexSelectedElement].TrafficLights!.TimeRedSignal = timeRedSignal;
+        } else {
+            alert('Значение красного сигнала должно быть от 20 до 120');
+            return;
+        }
+
+        if (timeGreenSignal >= 20 && timeGreenSignal <= 120) {
+            this.crossroadList[this.indexSelectedElement].TrafficLights!.TimeGreenSignal =  timeGreenSignal;
+        } else {
+            alert('Значение зеленого сигнала должно быть от 20 до 120');
+            return;
+        }
+  
+        const jsonCrossroad: string = JSON.stringify(this.crossroadList);
+        console.log(jsonCrossroad);
         
         this.isLeftClickCrossroad = false;
         this.isLeftClickRoad = false;
     }
 
     modifyRoadParamener():void {
+        // this.roadList[this.indexSelectedElement].Direction = 2;
+
+        let nameStreet = (<HTMLInputElement> document.querySelector(".streetName")).value;
+
+        if (nameStreet.length >= 1 && nameStreet.length <=30) {
+            this.roadList[this.indexSelectedElement].Street.Name = nameStreet;
+        } else {
+            alert('Длина название улица должны быть от 1 до 30');
+            return;
+        }
+
+        let lengthRoad = (<HTMLInputElement> document.querySelector(".lengthRoad")).value;
+        let numberLengthRoad;
+
+        if (lengthRoad != '') {
+            numberLengthRoad = Number(lengthRoad);
+        } else {
+            alert('Введите значение длины');
+            return;
+        }
+
+        if (numberLengthRoad >= 1 && numberLengthRoad <= 10) {
+            this.roadList[this.indexSelectedElement].Length = numberLengthRoad;
+        } else {
+            alert('Длина дороги должна быть от 1 до 10');
+            return;
+        }
+
+        let nameTypeCover = (<HTMLInputElement> document.querySelector(".typeCoverName")).value;
+        if (nameTypeCover.length <= 15) {
+            this.roadList[this.indexSelectedElement].TypeCover.Name = nameTypeCover;
+        } else {
+            alert('Длина названия покрытия должна быть до 15 символов');
+            return;
+        }
+
+        let coefficientBrakingRoad = (<HTMLInputElement> document.querySelector(".coeffCover")).value;
+        let numberCoefficientBrakingRoad;
+
+        if (coefficientBrakingRoad != '') {
+            numberCoefficientBrakingRoad = Number(coefficientBrakingRoad);
+        } else {
+            alert('Введите коэффициент тормажения');
+            return;
+        }
+        
+        if (numberCoefficientBrakingRoad >= 1 && numberCoefficientBrakingRoad <= 2) {
+            this.roadList[this.indexSelectedElement].TypeCover.CoefficientBraking = numberCoefficientBrakingRoad;
+        } else {
+            alert ('Коэффициент торможения должен быть в диапазоне от 1 до 2');
+            return;
+        }
+
+        if (this.roadList[this.indexSelectedElement].TrafficSigns != null) {
+            this.roadList[this.indexSelectedElement].TrafficSigns!.Speed = 
+                (<HTMLInputElement> document.querySelector(".speedInput")).valueAsNumber;
+        }
+
+        if (this.roadList[this.indexSelectedElement].PolicePost != null) {
+            let nameCorruption =  (<HTMLInputElement> document.querySelector(".nameCoeffCorumpInput")).value;
+            if (nameCorruption.length <= 15) {
+                this.roadList[this.indexSelectedElement].PolicePost!.Corruption.Name = nameCorruption;
+            } else {
+                alert('Длина названия коэффициента коррумпированности должна быть до 20 символов');
+                return;
+            }
+
+            let coeffCorumpInput = (<HTMLInputElement> document.querySelector(".coeffCorumpInput")).value;
+            let numberСoeffCorumpInput;
+
+            if (coeffCorumpInput != '') {
+                numberСoeffCorumpInput = Number(coeffCorumpInput);
+            } else {
+                alert('Введите коэффициент коррумпированности');
+                return;
+            }
+            
+            if (numberСoeffCorumpInput >= 1 && numberСoeffCorumpInput <= 2) {
+                this.roadList[this.indexSelectedElement].PolicePost!.Corruption.CoefficientCorruption = numberСoeffCorumpInput;
+            } else {
+                alert ('Коэффициент коррумпированности должен быть в диапазоне от 1 до 2')
+                return;
+            }
+        }
+
+        const jsonRoad: string = JSON.stringify(this.roadList);
+        console.log(jsonRoad);
 
         this.isLeftClickCrossroad = false;
         this.isLeftClickRoad = false;
