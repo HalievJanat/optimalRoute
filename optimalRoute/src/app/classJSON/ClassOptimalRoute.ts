@@ -169,7 +169,7 @@ export namespace ClassOptimalRoute {
         
         constructor() {
             this.name = "";
-            this.coefficient_corruption = 0;
+            this.coefficient_corruption = 1;
         }
     }
 

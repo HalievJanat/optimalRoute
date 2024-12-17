@@ -1,12 +1,35 @@
+<ng-template #content let-c="close" let-d="dismiss">
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Разработчики</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="d('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+        <div class="modal-header">
+            <p>Группа: 6401-090301D, Петренко Мария Вадимовна</p>
+        </div>
+        <div class="modal-header">
+            <p>Группа: 6401-090301D, Уваров Глеб Алексеевич</p>
+        </div>
+        <div class="modal-header">
+            <p>Группа: 6401-090301D, Халиев Жанат Тлекешевич</p>
+        </div>
+        <div class="modal-header">
+            <p>Группа: 6401-090301D, Шатилов Никита Юрьевич</p>
+        </div> 
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="c('Save click')">Закрыть</button>
+    </div>
+</ng-template>
 <app-header>
     <a href="admin-page" class="btn bg-transparent button">Cоздать новую карту</a>
     <a href="./" class="btn bg-transparent button">Открыть карту</a>
     
     <a href="./" class="btn bg-transparent button">Сохранить</a>
     <a href="./" class="btn bg-transparent button">О системе</a>
-    <a href="./" class="btn bg-transparent button"
-        >О разработчиках</a
-    >
+    <div class="btn btn-lg btn-outline-primary" (click)="open(content)"><a class="btn bg-transparent button"
+        >О разработчиках</a></div>
+    
 </app-header>
 <div class="editor-container">
     <div class="left-panel" [hidden]="!isLeftPanelOpen">
@@ -136,7 +159,7 @@
                 </div>
                 <div>
                     <p>Направления движения</p>
-                    <select>
+                    <select [value]="roadList[indexSelectedElement].Direction">
                         <option>0</option>
                         <option>1</option>
                         <option>2</option>
@@ -144,17 +167,17 @@
                 </div>
                 <div>
                     <p>Улица</p>
-                    <input type="text" class="streetName">
+                    <input type="text" class="streetName" [value]="roadList[indexSelectedElement].Street.Name">
                 </div>
                 <div>
                     <p>Длина</p>
-                    <input type="number" class="lengthRoad">
+                    <input type="number" class="lengthRoad" [value]="roadList[indexSelectedElement].Length">
                 </div>
                 <div>
                     <p>Тип покрытия</p>
-                    <input type="string" class="typeCoverName">
+                    <input type="string" class="typeCoverName" [value]="roadList[indexSelectedElement].TypeCover.Name">
                     <p>Коэффициент тормажения</p>
-                        <input type="number" class="coeffCover">
+                    <input type="number" class="coeffCover" [value]="roadList[indexSelectedElement].TypeCover.CoefficientBraking">
                         
                 </div>
                 @if (roadList[indexSelectedElement].TrafficSigns != null) {
@@ -163,7 +186,11 @@
                             <p>Знак дорожного движения</p>
                         </div>
                         <p>Скорость</p>
-                        <input type="number" class="speedInput" [value]="roadList[indexSelectedElement].TrafficSigns?.Speed">
+                        <select>
+                            <option>30</option>
+                            <option>40</option>
+                            <option>50</option>
+                        </select>
                     </div>
                 }
                 @if (roadList[indexSelectedElement].PolicePost != null) {
@@ -175,27 +202,12 @@
                         <input type="text" class="nameCoeffCorumpInput" [value]="roadList[indexSelectedElement].PolicePost?.Corruption?.Name">
                         <p>Коэффициент коррумпированности</p>
                         <input type="number" class="coeffCorumpInput" [value]="roadList[indexSelectedElement].PolicePost?.Corruption?.CoefficientCorruption">
-                        
                     </div>
                 }
                 <br>
                 <button (click)="modifyRoadParamener()">Сохранить</button>
             </div>
         }
-        
-        
-        <!--
-        <div class="right-panel-body">
-            <div>
-                <img class="crossroad" src="/assets/crossroad.png" alt="" />
-                <span>Перекресток</span>
-            </div>
-            <div>
-                <img class="roadrun" src="/assets/roadrun.png" alt="" />
-                <span>Прогон</span>
-            </div>
-        </div>
-    -->
     </div>
     <button
         type="button"

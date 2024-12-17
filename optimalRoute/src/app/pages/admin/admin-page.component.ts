@@ -3,6 +3,7 @@ import { HeaderComponent } from '../../header/header.component';
 import Konva from 'konva';
 import { ClassOptimalRoute } from '../../classJSON/ClassOptimalRoute';
 import { CommonModule } from '@angular/common';
+import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
     selector: 'app-admin-page',
@@ -13,6 +14,19 @@ import { CommonModule } from '@angular/common';
 })
 
 export class AdminPageComponent {
+    constructor(
+		config: NgbModalConfig,
+		private modalService: NgbModal,
+	) {
+		// customize default values of modals used by this component tree
+		config.backdrop = 'static';
+		config.keyboard = false;
+	}
+
+    open(content: any) {
+		this.modalService.open(content);
+	}
+
     isContextMenuVisibleCrossroad = false; // Показывать ли меню
     isContextMenuVisibleRoad = false; // Показывать ли меню
     contextMenuPosition = { x: 0, y: 0 }; // Координаты меню
@@ -582,12 +596,22 @@ export class AdminPageComponent {
     }
 
     modifyCrossroadParamener():void {
-        this.crossroadList[this.indexSelectedElement].TrafficLights!.TimeRedSignal = 
-            (<HTMLInputElement> document.querySelector(".timeRedSignal")).valueAsNumber;
-            
-        this.crossroadList[this.indexSelectedElement].TrafficLights!.TimeGreenSignal = 
-            (<HTMLInputElement> document.querySelector(".timeGreenSignal")).valueAsNumber;
-            
+        let timeRedSignal = (<HTMLInputElement> document.querySelector(".timeRedSignal")).valueAsNumber;
+        let timeGreenSignal = (<HTMLInputElement> document.querySelector(".timeGreenSignal")).valueAsNumber;
+        if (timeRedSignal >= 20 && timeRedSignal <= 120) {
+            this.crossroadList[this.indexSelectedElement].TrafficLights!.TimeRedSignal = timeRedSignal;
+        } else {
+            alert('Значение красного сигнала должно быть от 20 до 120');
+            return;
+        }
+
+        if (timeGreenSignal >= 20 && timeGreenSignal <= 120) {
+            this.crossroadList[this.indexSelectedElement].TrafficLights!.TimeGreenSignal =  timeGreenSignal;
+        } else {
+            alert('Значение зеленого сигнала должно быть от 20 до 120');
+            return;
+        }
+  
         const jsonCrossroad: string = JSON.stringify(this.crossroadList);
         console.log(jsonCrossroad);
         
@@ -596,24 +620,55 @@ export class AdminPageComponent {
     }
 
     modifyRoadParamener():void {
-        this.roadList[this.indexSelectedElement].Street.Name = 
-            (<HTMLInputElement> document.querySelector(".streetName")).value;
+        let nameStreet = (<HTMLInputElement> document.querySelector(".streetName")).value;
 
-        if ((<HTMLInputElement> document.querySelector(".lengthRoad")).value != '') {
-            this.roadList[this.indexSelectedElement].Length = 
-                (<HTMLInputElement> document.querySelector(".lengthRoad")).valueAsNumber;
+        if (nameStreet.length >= 1 && nameStreet.length <=30) {
+            this.roadList[this.indexSelectedElement].Street.Name = nameStreet;
         } else {
-            alert('Введите значение длины');
+            alert('Длина название улица должны быть от 1 до 30');
+            return;
         }
 
-        this.roadList[this.indexSelectedElement].TypeCover.Name= 
-            (<HTMLInputElement> document.querySelector(".typeCoverName")).value;
+        let lengthRoad = (<HTMLInputElement> document.querySelector(".lengthRoad")).value;
+        let numberLengthRoad;
 
-        if ((<HTMLInputElement> document.querySelector(".coeffCover")).valueAsNumber <= 2 && (<HTMLInputElement> document.querySelector(".coeffCover")).valueAsNumber >= 1) {
-            this.roadList[this.indexSelectedElement].TypeCover.CoefficientBraking = 
-                (<HTMLInputElement> document.querySelector(".coeffCover")).valueAsNumber;
+        if (lengthRoad != '') {
+            numberLengthRoad = Number(lengthRoad);
         } else {
-            alert ('Коэффициент торможения должен быть в диапазоне от 1 до 2')
+            alert('Введите значение длины');
+            return;
+        }
+
+        if (numberLengthRoad >= 1 && numberLengthRoad <= 10) {
+            this.roadList[this.indexSelectedElement].Length = numberLengthRoad;
+        } else {
+            alert('Длина дороги должна быть от 1 до 10');
+            return;
+        }
+
+        let nameTypeCover = (<HTMLInputElement> document.querySelector(".typeCoverName")).value;
+        if (nameTypeCover.length <= 15) {
+            this.roadList[this.indexSelectedElement].TypeCover.Name = nameTypeCover;
+        } else {
+            alert('Длина названия покрытия должна быть до 15 символов');
+            return;
+        }
+
+        let coefficientBrakingRoad = (<HTMLInputElement> document.querySelector(".coeffCover")).value;
+        let numberCoefficientBrakingRoad;
+
+        if (coefficientBrakingRoad != '') {
+            numberCoefficientBrakingRoad = Number(coefficientBrakingRoad);
+        } else {
+            alert('Введите коэффициент тормажения');
+            return;
+        }
+        
+        if (numberCoefficientBrakingRoad >= 1 && numberCoefficientBrakingRoad <= 2) {
+            this.roadList[this.indexSelectedElement].TypeCover.CoefficientBraking = numberCoefficientBrakingRoad;
+        } else {
+            alert ('Коэффициент торможения должен быть в диапазоне от 1 до 2');
+            return;
         }
 
         if (this.roadList[this.indexSelectedElement].TrafficSigns != null) {
@@ -622,14 +677,29 @@ export class AdminPageComponent {
         }
 
         if (this.roadList[this.indexSelectedElement].PolicePost != null) {
-            this.roadList[this.indexSelectedElement].PolicePost!.Corruption.Name= 
-                (<HTMLInputElement> document.querySelector(".nameCoeffCorumpInput")).value;
+            let nameCorruption =  (<HTMLInputElement> document.querySelector(".nameCoeffCorumpInput")).value;
+            if (nameCorruption.length <= 15) {
+                this.roadList[this.indexSelectedElement].PolicePost!.Corruption.Name = nameCorruption;
+            } else {
+                alert('Длина названия коэффициента коррумпированности должна быть до 20 символов');
+                return;
+            }
 
-            if ((<HTMLInputElement> document.querySelector(".coeffCorumpInput")).valueAsNumber <= 2 && (<HTMLInputElement> document.querySelector(".coeffCorumpInput")).valueAsNumber >= 1) {
-                this.roadList[this.indexSelectedElement].PolicePost!.Corruption.CoefficientCorruption = 
-                    (<HTMLInputElement> document.querySelector(".coeffCorumpInput")).valueAsNumber;
+            let coeffCorumpInput = (<HTMLInputElement> document.querySelector(".coeffCorumpInput")).value;
+            let numberСoeffCorumpInput;
+
+            if (coeffCorumpInput != '') {
+                numberСoeffCorumpInput = Number(coeffCorumpInput);
+            } else {
+                alert('Введите коэффициент коррумпированности');
+                return;
+            }
+            
+            if (numberСoeffCorumpInput >= 1 && numberСoeffCorumpInput <= 2) {
+                this.roadList[this.indexSelectedElement].PolicePost!.Corruption.CoefficientCorruption = numberСoeffCorumpInput;
             } else {
                 alert ('Коэффициент коррумпированности должен быть в диапазоне от 1 до 2')
+                return;
             }
         }
 
