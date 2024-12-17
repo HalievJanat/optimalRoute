@@ -5,7 +5,7 @@ export interface FuelType {
 
 export interface Vehicle {
     brand: string;
-    typeFuel: FuelType;
+    type_fuel: FuelType;
     consumption_fuel: number;
     max_speed: number;
 }

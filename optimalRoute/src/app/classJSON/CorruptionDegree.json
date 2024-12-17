@@ -1,0 +1,10 @@
+[
+    {
+        "name": "Степень1",
+        "coefficient_corruption": 1
+    },
+    {
+        "name": "Степень2",
+        "coefficient_corruption": 1
+    }
+]

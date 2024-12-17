@@ -1,5 +1,17 @@
 
 export namespace ClassOptimalRoute {
+    export class UDS {
+        name: string;
+        crossroads: Crossroad[];
+        roads: Road[];
+
+        constructor() {
+            this.name = '';
+            this.crossroads = [];
+            this.roads = [];
+        }
+    }
+
     export class Crossroad {
         private x: number;
         private y: number;
@@ -328,7 +340,7 @@ export namespace ClassOptimalRoute {
 
     export class Vehicle {
         private brand: string;
-        private typeFuel: TypeFuel;
+        private type_fuel: TypeFuel;
         private consumption_fuel: number;
         private max_speed: number;
 
@@ -341,11 +353,11 @@ export namespace ClassOptimalRoute {
         }
 
         public get TypeFuel(): TypeFuel {
-            return this.typeFuel;
+            return this.type_fuel;
         }
 
         public set TypeFuel(value: TypeFuel) {
-            this.typeFuel = value;
+            this.type_fuel = value;
         }
 
         public get ConsumptionFuel(): number {
@@ -366,7 +378,7 @@ export namespace ClassOptimalRoute {
 
         constructor() {
             this.brand = "";
-            this.typeFuel = new TypeFuel();
+            this.type_fuel = new TypeFuel();
             this.consumption_fuel = 0;
             this.max_speed = 0;
         }

@@ -1,0 +1,62 @@
+[
+    {
+        "name": "Никита",
+        "surname": "Юрьеивч",
+        "family": "Шатилов",
+        "infringer": false,
+        "vehicle": {
+            "brand": "audi",
+            "type_fuel": {
+                "name": "Топливо",
+                "price": 55
+            },
+            "consumption_fuel": 12,
+            "max_speed": 300
+        }
+    },
+    {
+        "name": "Жанат",
+        "surname": "Тлекешевич",
+        "family": "Халиев",
+        "infringer": true,
+        "vehicle": {
+            "brand": "Девятка",
+            "type_fuel": {
+                "name": "Топливо",
+                "price": 55
+            },
+            "consumption_fuel": 12,
+            "max_speed": 10
+        }
+    },
+    {
+        "name": "Глеб",
+        "surname": "Алексеевич",
+        "family": "Уваров",
+        "infringer": true,
+        "vehicle": {
+            "brand": "Буханка",
+            "type_fuel": {
+                "name": "Топливо",
+                "price": 55
+            },
+            "consumption_fuel": 12,
+            "max_speed": 100
+        }
+    },
+    {
+        "name": "Мария",
+        "surname": "Вадимовна",
+        "family": "Петренко",
+        "infringer": true,
+        "vehicle": {
+            "brand": "Нет машины",
+            "type_fuel": {
+                "name": "Топливо",
+                "price": 55
+            },
+            "consumption_fuel": 12,
+            "max_speed": 0
+        }
+    }
+]

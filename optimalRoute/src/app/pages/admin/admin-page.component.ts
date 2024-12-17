@@ -673,10 +673,11 @@ export class AdminPageComponent {
             return;
         }
 
+        /*
         if (this.roadList[this.indexSelectedElement].TrafficSigns != null) {
             this.roadList[this.indexSelectedElement].TrafficSigns!.Speed = 
                 (<HTMLInputElement> document.querySelector(".speedInput")).valueAsNumber;
-        }
+        }*/
 
         if (this.roadList[this.indexSelectedElement].PolicePost != null) {
             let nameCorruption =  (<HTMLInputElement> document.querySelector(".nameCoeffCorumpInput")).value;
@@ -710,5 +711,18 @@ export class AdminPageComponent {
 
         this.isLeftClickCrossroad = false;
         this.isLeftClickRoad = false;
+    }
+
+    saveUDS() {
+        if (this.crossroadList.length < 2 || this.roadList.length < 1) {
+            alert('Ошибка, нельзя сохранить карту');
+            return;
+        }
+        let uds = new ClassOptimalRoute.UDS();
+        uds.name = 'Samara';
+        uds.crossroads = this.crossroadList;
+        uds.roads = this.roadList;
+        const jsonUDS: string = JSON.stringify(uds);
+        console.log(jsonUDS);
     }
 }

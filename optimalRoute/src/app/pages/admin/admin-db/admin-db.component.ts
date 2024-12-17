@@ -106,7 +106,7 @@ export class AdminDbComponent {
     vehicles: Vehicle[] = [
         {
             brand: 'audi',
-            typeFuel: {
+            type_fuel: {
                 name: 'Топливо',
                 price: 55,
             },
@@ -115,7 +115,7 @@ export class AdminDbComponent {
         },
         {
             brand: 'Девятка',
-            typeFuel: {
+            type_fuel: {
                 name: 'Топливо',
                 price: 55,
             },
@@ -124,7 +124,7 @@ export class AdminDbComponent {
         },
         {
             brand: 'Буханка',
-            typeFuel: {
+            type_fuel: {
                 name: 'Топливо',
                 price: 55,
             },
@@ -142,7 +142,7 @@ export class AdminDbComponent {
             infringer: false,
             vehicle: {
                 brand: 'audi',
-                typeFuel: {
+                type_fuel: {
                     name: 'Топливо',
                     price: 55,
                 },
@@ -157,7 +157,7 @@ export class AdminDbComponent {
             infringer: true,
             vehicle: {
                 brand: 'Девятка',
-                typeFuel: {
+                type_fuel: {
                     name: 'Топливо',
                     price: 55,
                 },
@@ -172,7 +172,7 @@ export class AdminDbComponent {
             infringer: true,
             vehicle: {
                 brand: 'Буханка',
-                typeFuel: {
+                type_fuel: {
                     name: 'Топливо',
                     price: 55,
                 },
@@ -187,7 +187,7 @@ export class AdminDbComponent {
             infringer: true,
             vehicle: {
                 brand: 'Нет машины',
-                typeFuel: {
+                type_fuel: {
                     name: 'Топливо',
                     price: 55,
                 },
@@ -202,7 +202,7 @@ export class AdminDbComponent {
             infringer: true,
             vehicle: {
                 brand: 'Нет машины',
-                typeFuel: {
+                type_fuel: {
                     name: 'Топливо',
                     price: 55,
                 },
@@ -217,7 +217,7 @@ export class AdminDbComponent {
             infringer: true,
             vehicle: {
                 brand: 'Нет машины',
-                typeFuel: {
+                type_fuel: {
                     name: 'Топливо',
                     price: 55,
                 },
@@ -443,7 +443,7 @@ export class AdminDbComponent {
         this.vehicles.forEach((vehicle) => {
             const addedVehicleGroup = this.fb.nonNullable.group({
                 brand: [vehicle.brand, [Validators.required, stringRangeValidator(15)]],
-                typeFuel: [vehicle.typeFuel.name, Validators.required],
+                typeFuel: [vehicle.type_fuel.name, Validators.required],
                 consumption_fuel: [
                     vehicle.consumption_fuel,
                     [Validators.required, rangeValidator(1, 20)],
@@ -633,7 +633,7 @@ export class AdminDbComponent {
 
         this.vehicles.push({
             brand: control.brand.value,
-            typeFuel: vehicleTypeFuel,
+            type_fuel: vehicleTypeFuel,
             consumption_fuel: control.consumption_fuel.value,
             max_speed: control.max_speed.value,
         });
@@ -669,7 +669,7 @@ export class AdminDbComponent {
 
         this.vehicles[this.editVehicleNumber] = {
             brand: control.brand.value,
-            typeFuel: vehicleTypeFuel,
+            type_fuel: vehicleTypeFuel,
             consumption_fuel: control.consumption_fuel.value,
             max_speed: control.max_speed.value,
         };
@@ -681,7 +681,7 @@ export class AdminDbComponent {
     cancelEditVehicle() {
         this.vehicleEditForm.controls[this.editVehicleNumber].setValue({
             brand: this.vehicles[this.editVehicleNumber].brand,
-            typeFuel: this.vehicles[this.editVehicleNumber].typeFuel.name,
+            typeFuel: this.vehicles[this.editVehicleNumber].type_fuel.name,
             consumption_fuel:
                 this.vehicles[this.editVehicleNumber].consumption_fuel,
             max_speed: this.vehicles[this.editVehicleNumber].max_speed,

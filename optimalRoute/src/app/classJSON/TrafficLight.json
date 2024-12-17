@@ -1,0 +1,10 @@
+[
+    {
+        "time_green_signal": 25,
+        "time_red_signal": 30
+    },
+    {
+        "time_green_signal": 30,
+        "time_red_signal": 35
+    }
+]

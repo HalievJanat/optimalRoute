@@ -1,0 +1,29 @@
+[
+    {
+        "brand": "audi",
+        "type_fuel": {
+            "name": "Топливо1",
+            "price": 55
+        },
+        "consumption_fuel": 12,
+        "max_speed": 300
+    },
+    {
+        "brand": "Девятка",
+        "type_fuel": {
+            "name": "Топливо2",
+            "price": 55
+        },
+        "consumption_fuel": 12,
+        "max_speed": 10
+    },
+    {
+        "brand": "Буханка",
+        "type_fuel": {
+            "name": "Топливо3",
+            "price": 55
+        },
+        "consumption_fuel": 12,
+        "max_speed": 10000
+    }
+]

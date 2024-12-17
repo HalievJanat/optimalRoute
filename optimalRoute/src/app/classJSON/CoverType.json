@@ -1,0 +1,10 @@
+[
+    {
+        "name": "Имя1",
+        "coefficient_braking": 1
+    },
+    {
+        "name": "Имя2",
+        "coefficient_braking": 1
+    }
+]
