@@ -199,9 +199,21 @@
                         </div>
                         <p>Скорость</p>
                         <select>
-                            <option>30</option>
-                            <option>40</option>
-                            <option>50</option>
+                            @if (roadList[indexSelectedElement].TrafficSigns?.Speed == 30) {
+                                <option selected>30</option>
+                            } @else {
+                                <option>30</option>
+                            }
+                            @if (roadList[indexSelectedElement].TrafficSigns?.Speed == 40) {
+                                <option selected>40</option>
+                            } @else {
+                                <option>40</option>
+                            }
+                            @if (roadList[indexSelectedElement].TrafficSigns?.Speed == 50) {
+                                <option selected>50</option>
+                            } @else {
+                                <option>50</option>
+                            }
                         </select>
                     </div>
                 }
