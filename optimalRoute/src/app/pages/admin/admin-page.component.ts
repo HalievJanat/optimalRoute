@@ -620,6 +620,8 @@ export class AdminPageComponent {
     }
 
     modifyRoadParamener():void {
+        // this.roadList[this.indexSelectedElement].Direction = 2;
+
         let nameStreet = (<HTMLInputElement> document.querySelector(".streetName")).value;
 
         if (nameStreet.length >= 1 && nameStreet.length <=30) {

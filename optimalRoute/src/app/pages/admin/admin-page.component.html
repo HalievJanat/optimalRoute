@@ -159,10 +159,22 @@
                 </div>
                 <div>
                     <p>Направления движения</p>
-                    <select [value]="roadList[indexSelectedElement].Direction">
-                        <option>0</option>
-                        <option>1</option>
-                        <option>2</option>
+                    <select>
+                        @if (roadList[indexSelectedElement].Direction == 0) {
+                            <option selected>0</option>
+                        } @else {
+                            <option>0</option>
+                        }
+                        @if (roadList[indexSelectedElement].Direction == 1) {
+                            <option selected>1</option>
+                        } @else {
+                            <option>1</option>
+                        }
+                        @if (roadList[indexSelectedElement].Direction == 2) {
+                            <option selected>2</option>
+                        } @else {
+                            <option>2</option>
+                        }
                     </select>
                 </div>
                 <div>
