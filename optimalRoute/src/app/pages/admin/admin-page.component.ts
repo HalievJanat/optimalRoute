@@ -35,6 +35,10 @@ export class AdminPageComponent {
     isLeftClickCrossroad = false;
     isLeftClickRoad = false;
 
+    isAddTrafficLights = false;
+    isAddPolicePost = false;
+    isAddTrafficSigns = false;
+
     [x: string]: any;
     isLeftPanelOpen = true;
     isRightPanelOpen = true;
@@ -60,6 +64,9 @@ export class AdminPageComponent {
     methodRightPanelOpen(): void {
         this.isLeftClickCrossroad = false;
         this.isLeftClickRoad = false;
+        this.isAddTrafficLights = false;
+        this.isAddPolicePost = false;
+        this.isAddTrafficSigns = false;
         this.isRightPanelOpen = !this.isRightPanelOpen;
         this.gridDrowSize();
 
@@ -120,6 +127,9 @@ export class AdminPageComponent {
     addCrossroad(): void {
         this.isLeftClickCrossroad = false;
         this.isLeftClickRoad = false;
+        this.isAddTrafficLights = false;
+        this.isAddPolicePost = false;
+        this.isAddTrafficSigns = false;
         if (this.crossroadList.length == 30) {
             alert('Больше 30 нельзя');
             return;
@@ -134,6 +144,9 @@ export class AdminPageComponent {
         this.isContextMenuVisibleRoad = false;      // Показывать ли 
         this.isLeftClickCrossroad = false;
         this.isLeftClickRoad = false;
+        this.isAddTrafficLights = false;
+        this.isAddPolicePost = false;
+        this.isAddTrafficSigns = false;
         let X = Math.round(coordX / this.gridSize) * this.gridSize;
         let Y = Math.round(coordY / this.gridSize) * this.gridSize;
         if (X == 0) X += this.gridSize;
@@ -310,6 +323,9 @@ export class AdminPageComponent {
 
     evenDoubleClickConvas(X: number, Y: number): void {
         this.isCrossroadAdd = false;
+        this.isAddTrafficLights = false;
+        this.isAddPolicePost = false;
+        this.isAddTrafficSigns = false;
         if (this.defineClickCrossroad(X, Y)) {
             this.isLeftClickCrossroad = true;
         } else if (this.defineClickRoad(X, Y)) {
@@ -320,6 +336,9 @@ export class AdminPageComponent {
     addRoad(): void {
         this.isLeftClickCrossroad = false;
         this.isLeftClickRoad = false;
+        this.isAddTrafficLights = false;
+        this.isAddPolicePost = false;
+        this.isAddTrafficSigns = false;
         if (this.crossroadList.length == 60) {
             alert('Больше 60 нельзя');
             return;
@@ -331,6 +350,9 @@ export class AdminPageComponent {
 
     replaceSizeGrid(flag: boolean): void {
         this.isLeftClickCrossroad = false;
+        this.isAddTrafficLights = false;
+        this.isAddPolicePost = false;
+        this.isAddTrafficSigns = false;
         this.isLeftClickRoad = false;
         let tempGridSize = this.gridSize;
         if (!flag && this.gridSize > 30) this.gridSize -= 10;
@@ -453,6 +475,9 @@ export class AdminPageComponent {
     openContextMenu(event: MouseEvent): void {
         this.isLeftClickCrossroad = false;
         this.isLeftClickRoad = false;
+        this.isAddTrafficLights = false;
+        this.isAddPolicePost = false;
+        this.isAddTrafficSigns = false;
         event.preventDefault(); // Отключаем стандартное меню браузера
         if (this.defineClickCrossroad(event.layerX, event.layerY)) {    
             this.isContextMenuVisibleCrossroad = true;
@@ -512,31 +537,46 @@ export class AdminPageComponent {
     }
 
     actionAddTrafficLights(): void {
-        this.crossroadList[this.indexSelectedElement].TrafficLights = new ClassOptimalRoute.TrafficLights();
+        this.isAddTrafficLights = true;
+    
         this.closeContextMenu();
     }
 
     actionDeleteTrafficLights(): void {
+        this.isAddTrafficLights = false;
+        this.isAddPolicePost = false;
+        this.isAddTrafficSigns = false;
+
         this.crossroadList[this.indexSelectedElement].TrafficLights = null;
         this.closeContextMenu();
     }
 
     actionAddTrafficSigns(): void {
-        this.roadList[this.indexSelectedElement].TrafficSigns = new ClassOptimalRoute.TrafficSigns();
+        this.isAddTrafficSigns = true;
+
         this.closeContextMenu();
     }
 
     actionDeleteTrafficSigns(): void {
+        this.isAddTrafficLights = false;
+        this.isAddPolicePost = false;
+        this.isAddTrafficSigns = false;
+
         this.roadList[this.indexSelectedElement].TrafficSigns = null;
         this.closeContextMenu();
     }
 
     actionAddPolicePost(): void {
-        this.roadList[this.indexSelectedElement].PolicePost = new ClassOptimalRoute.PolicePost();
+        this.isAddPolicePost = true;
+
         this.closeContextMenu();
     }
 
     actionDeletePolicePost(): void {
+        this.isAddTrafficLights = false;
+        this.isAddPolicePost = false;
+        this.isAddTrafficSigns = false;
+
         this.roadList[this.indexSelectedElement].PolicePost = null;
         this.closeContextMenu();
     }
@@ -596,8 +636,20 @@ export class AdminPageComponent {
     }
 
     modifyCrossroadParamener():void {
-        let timeRedSignal = (<HTMLInputElement> document.querySelector(".timeRedSignal")).valueAsNumber;
-        let timeGreenSignal = (<HTMLInputElement> document.querySelector(".timeGreenSignal")).valueAsNumber;
+        let timeRedSignalString = (<HTMLInputElement> document.querySelector(".timeRedSignal")).value;
+        let timeGreenSignalString = (<HTMLInputElement> document.querySelector(".timeGreenSignal")).value;
+        if (timeRedSignalString == "") {
+            alert('Введите значение для длительности красной фазы');
+            return;
+        }
+        if (timeGreenSignalString == "") {
+            alert('Введите значение для длительности зеденой фазы');
+            return;
+        }
+
+        let timeRedSignal = Number(timeRedSignalString);
+        let timeGreenSignal = Number(timeGreenSignalString);
+
         if (timeRedSignal >= 20 && timeRedSignal <= 120) {
             this.crossroadList[this.indexSelectedElement].TrafficLights!.TimeRedSignal = timeRedSignal;
         } else {
@@ -615,12 +667,14 @@ export class AdminPageComponent {
         const jsonCrossroad: string = JSON.stringify(this.crossroadList);
         console.log(jsonCrossroad);
         
+        this.isAddTrafficLights = false;
         this.isLeftClickCrossroad = false;
         this.isLeftClickRoad = false;
     }
 
     modifyRoadParamener():void {
-        // this.roadList[this.indexSelectedElement].Direction = 2;
+        let directionString = (<HTMLInputElement> document.querySelector("#direction")).value;
+        this.roadList[this.indexSelectedElement].Direction = Number(directionString);
 
         let nameStreet = (<HTMLInputElement> document.querySelector(".streetName")).value;
 
@@ -673,11 +727,10 @@ export class AdminPageComponent {
             return;
         }
 
-        /*
         if (this.roadList[this.indexSelectedElement].TrafficSigns != null) {
-            this.roadList[this.indexSelectedElement].TrafficSigns!.Speed = 
-                (<HTMLInputElement> document.querySelector(".speedInput")).valueAsNumber;
-        }*/
+            let speedString = (<HTMLInputElement> document.querySelector("#speedInput")).value;
+            this.roadList[this.indexSelectedElement].TrafficSigns!.Speed =  Number(speedString);
+        }
 
         if (this.roadList[this.indexSelectedElement].PolicePost != null) {
             let nameCorruption =  (<HTMLInputElement> document.querySelector(".nameCoeffCorumpInput")).value;
@@ -709,11 +762,91 @@ export class AdminPageComponent {
         const jsonRoad: string = JSON.stringify(this.roadList);
         console.log(jsonRoad);
 
+        this.isAddPolicePost = false;
+        this.isAddTrafficSigns = false;
         this.isLeftClickCrossroad = false;
         this.isLeftClickRoad = false;
     }
 
-    saveUDS() {
+    addTrafficLights():void {
+        let timeRedSignalString = (<HTMLInputElement> document.querySelector(".timeRedSignal")).value;
+        let timeGreenSignalString = (<HTMLInputElement> document.querySelector(".timeGreenSignal")).value;
+        if (timeRedSignalString == "") {
+            alert('Введите значение для длительности красной фазы');
+            return;
+        }
+        if (timeGreenSignalString == "") {
+            alert('Введите значение для длительности зеденой фазы');
+            return;
+        }
+
+        let timeRedSignal = Number(timeRedSignalString);
+        let timeGreenSignal = Number(timeGreenSignalString);
+
+        if (timeRedSignal < 20 || timeRedSignal > 120) {
+            alert('Значение красного сигнала должно быть от 20 до 120');
+            return;
+        }
+
+        if (timeGreenSignal < 20 || timeGreenSignal > 120) {
+            alert('Значение зеленого сигнала должно быть от 20 до 120');
+            return;
+        }
+
+        this.crossroadList[this.indexSelectedElement].TrafficLights = new ClassOptimalRoute.TrafficLights();
+        this.crossroadList[this.indexSelectedElement].TrafficLights!.TimeRedSignal = timeRedSignal;
+        this.crossroadList[this.indexSelectedElement].TrafficLights!.TimeGreenSignal =  timeGreenSignal;
+
+  
+        const jsonCrossroad: string = JSON.stringify(this.crossroadList);
+        console.log(jsonCrossroad);
+        
+        this.isAddTrafficLights = false;
+    }
+
+    addPolicePost(): void {
+        let nameCorruption =  (<HTMLInputElement> document.querySelector(".nameCoeffCorumpInput")).value;
+        if (nameCorruption.length >= 15) {
+            alert('Длина названия коэффициента коррумпированности должна быть до 20 символов');
+            return;
+        }
+
+        let coeffCorumpInput = (<HTMLInputElement> document.querySelector(".coeffCorumpInput")).value;
+        let numberСoeffCorumpInput;
+
+        if (coeffCorumpInput != '') {
+            numberСoeffCorumpInput = Number(coeffCorumpInput);
+        } else {
+            alert('Введите коэффициент коррумпированности');
+            return;
+        }
+        
+        if (numberСoeffCorumpInput < 1 || numberСoeffCorumpInput > 2) {
+            alert ('Коэффициент коррумпированности должен быть в диапазоне от 1 до 2')
+            return;
+        }
+        this.roadList[this.indexSelectedElement].PolicePost = new ClassOptimalRoute.PolicePost();
+        this.roadList[this.indexSelectedElement].PolicePost!.Corruption.Name = nameCorruption;
+        this.roadList[this.indexSelectedElement].PolicePost!.Corruption.CoefficientCorruption = numberСoeffCorumpInput;
+
+        const jsonRoad: string = JSON.stringify(this.roadList);
+        console.log(jsonRoad);
+
+        this.isAddPolicePost = false;
+    }
+
+    addTrafficSigns():void {
+        this.roadList[this.indexSelectedElement].TrafficSigns = new ClassOptimalRoute.TrafficSigns();
+        let speedString = (<HTMLInputElement> document.querySelector("#speedInput")).value;
+        this.roadList[this.indexSelectedElement].TrafficSigns!.Speed =  Number(speedString);
+
+        const jsonRoad: string = JSON.stringify(this.roadList);
+        console.log(jsonRoad);
+
+        this.isAddTrafficSigns = false;
+    }
+
+    saveUDS(): void {
         if (this.crossroadList.length < 2 || this.roadList.length < 1) {
             alert('Ошибка, нельзя сохранить карту');
             return;

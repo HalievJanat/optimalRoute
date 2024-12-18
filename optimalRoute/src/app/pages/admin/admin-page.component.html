@@ -150,6 +150,19 @@
                 }
             </div>
         }
+        @if (isAddTrafficLights) {
+            <div class=".right-panel-body-2">
+                <div>
+                    <p>Добавить светофор</p>
+                </div>
+                <p>Длительность красной фазы</p>
+                <input type="number" class="timeRedSignal">
+                <p>Длительность зеленой фазы</p>
+                <input type="number" class="timeGreenSignal">
+                <br>
+                <button (click)="addTrafficLights()">Добавить</button>
+            </div>
+        }
 
         <!--Прогон-->
         @if (isLeftClickRoad) {
@@ -159,7 +172,7 @@
                 </div>
                 <div>
                     <p>Направления движения</p>
-                    <select>
+                    <select id="direction">
                         @if (roadList[indexSelectedElement].Direction == 0) {
                             <option selected>0</option>
                         } @else {
@@ -198,7 +211,7 @@
                             <p>Знак дорожного движения</p>
                         </div>
                         <p>Скорость</p>
-                        <select>
+                        <select id="speedInput">
                             @if (roadList[indexSelectedElement].TrafficSigns?.Speed == 30) {
                                 <option selected>30</option>
                             } @else {
@@ -230,6 +243,37 @@
                 }
                 <br>
                 <button (click)="modifyRoadParamener()">Сохранить</button>
+            </div>
+        }
+
+        @if (isAddPolicePost) {
+            <div class=".right-panel-body-2">
+                <div>
+                    <p>Добавить полицеский пост</p>
+                </div>
+                <p>Название</p>
+                <input type="text" class="nameCoeffCorumpInput">
+                <p>Коэффициент коррумпированности</p>
+                <input type="number" class="coeffCorumpInput">
+            
+                <button (click)="addPolicePost()">Добавить</button>
+            </div>
+        }
+
+        @if (isAddTrafficSigns) {
+            <div class=".right-panel-body-2">
+                <div>
+                    <p>Добавить знак дорожного движения</p>
+                </div>
+                <p>Скорость</p>
+                <select id="speedInput">
+                    <option>30</option>
+                    <option>40</option>
+                    <option>50</option>
+                </select>
+                <br>
+            
+                <button (click)="addTrafficSigns()">Добавить</button>
             </div>
         }
     </div>
