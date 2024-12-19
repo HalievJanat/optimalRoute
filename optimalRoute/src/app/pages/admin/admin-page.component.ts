@@ -117,10 +117,10 @@ export class AdminPageComponent {
         const height = this.stage.height();
 
         for (let x = 0; x < width; x += this.gridSize) {
-            this.drawLine(x, 0, x, height, '#ddd');
+            this.drawLine(x, 0, x, height, '#ddd', -1);
         }
         for (let y = 0; y < height; y += this.gridSize) {
-            this.drawLine(0, y, width, y, '#ddd');
+            this.drawLine(0, y, width, y, '#ddd', -1);
         }
     }
 
@@ -268,17 +268,18 @@ export class AdminPageComponent {
                 y2 = Y - this.radius;
             }
 
+            let road = new ClassOptimalRoute.Road();
             this.drawLine(
                 x1,
                 y1,
                 x2,
                 y2,
-                '#000'
+                '#000',
+                road.Direction
             );
 
             this.isRoadAdd = false;
 
-            let road = new ClassOptimalRoute.Road();
             road.Crossroad1 = this.indexCrossroad1;
             road.Crossroad2 = i;
             this.roadList.push(road);
@@ -431,19 +432,40 @@ export class AdminPageComponent {
                 y1,
                 x2,
                 y2,
-                '#000'
+                '#000',
+                this.roadList[i].Direction
             );
         }
     }
 
-    private drawLine(x1: number, y1: number, x2: number, y2: number, stroke: string): void {
-        this.layer.add(
-            new Konva.Line({
-                points: [x1, y1, x2, y2],
-                stroke: stroke,
-                strokeWidth: 1,
-            })
-        );
+    private drawLine(x1: number, y1: number, x2: number, y2: number, stroke: string, direction: number): void {
+        if (direction == -1 || direction == 0) {
+            this.layer.add(
+                new Konva.Line({
+                    points: [x1, y1, x2, y2],
+                    stroke: stroke,
+                    strokeWidth: 1,
+                })
+            );
+        } else if (direction == 1) {
+            this.layer.add(
+                new Konva.Arrow({
+                    points: [x1, y1, x2, y2],
+                    stroke: stroke,
+                    strokeWidth: 1,
+                    fill: 'black'
+                })
+            );
+        } else if (direction == 2) {
+            this.layer.add(
+                new Konva.Arrow({
+                    points: [x2, y2, x1, y1],
+                    stroke: stroke,
+                    strokeWidth: 1,
+                    fill: 'black'
+                })
+            );
+        }      
     }
 
     private calculateKLine(x1: number, y1: number, x2: number, y2: number): number {
@@ -761,6 +783,9 @@ export class AdminPageComponent {
 
         const jsonRoad: string = JSON.stringify(this.roadList);
         console.log(jsonRoad);
+
+        this.gridDrowSize();
+        this.drawScaleCanvas(this.gridSize);
 
         this.isAddPolicePost = false;
         this.isAddTrafficSigns = false;
