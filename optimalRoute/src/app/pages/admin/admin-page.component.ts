@@ -164,6 +164,12 @@ export class AdminPageComponent {
                     return;
                 }
             }
+
+            if(!this.checkIntersectionRoad(X, Y)) {
+                alert("Здесь нельзя установить перекресток");
+                return;
+            }
+
             const circle = new Konva.Circle({
                 x: X,
                 y: Y,
@@ -245,6 +251,11 @@ export class AdminPageComponent {
                 ky,
                 this.crossroadList[this.indexCrossroad1].X
             );
+
+            if(!this.checkIntersectionCrossroad(ky, by, this.indexCrossroad1, i)) {
+                alert("Здесь нельзя установить прогон");
+                return;
+            }
             let x1;
             let x2;
             let y1;
@@ -320,6 +331,74 @@ export class AdminPageComponent {
             }
             this.indexCrossroad1 = i;
         }
+    }
+
+    checkIntersectionCrossroad(ky: number, by:number, crossroad1:number, crossroad2:number): boolean { 
+        let x1 = this.crossroadList[crossroad1].X;
+        let y1 = this.crossroadList[crossroad1].Y;
+        let x2 = this.crossroadList[crossroad2].X;
+        let y2 = this.crossroadList[crossroad2].Y;
+
+        if (x1 < x2) {
+            x1 = this.crossroadList[crossroad2].X;
+            x2 = this.crossroadList[crossroad1].X;
+        }
+        if (y1 < y2) {
+            y1 = this.crossroadList[crossroad2].Y;
+            y2 = this.crossroadList[crossroad1].Y;
+        }
+
+        for (let i = 0; i < this.crossroadList.length; i++) {
+            if (i == crossroad1 || i == crossroad2) continue;
+            let x = this.crossroadList[i].X;
+            let y = this.crossroadList[i].Y;
+            if (x > x1 || x < x2 || y > y1 || y < y2) continue;
+            if (ky != Infinity && ky != -Infinity) {
+                if(this.calculateXCoordinate(ky, by, x, y, this.radius, true) != -1000) return false;
+            } else if (x == x1) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    checkIntersectionRoad(x: number, y:number): boolean {
+        for(let i = 0; i <this.roadList.length; i++) {
+            let x1 = this.crossroadList[this.roadList[i].Crossroad1].X;
+            let x2 = this.crossroadList[this.roadList[i].Crossroad2].X;
+            let y1 = this.crossroadList[this.roadList[i].Crossroad1].Y;
+            let y2 = this.crossroadList[this.roadList[i].Crossroad2].Y;
+
+            let ky = this.calculateKLine(
+                x1,
+                y1,
+                x2,
+                y2,
+            );
+            let by = this.calculateBLine(
+                y1,
+                ky,
+                x1
+            );
+
+            if (x1 < x2) {
+                x1 = x2;
+                x2 = this.crossroadList[this.roadList[i].Crossroad1].X;
+            }
+            if (y1 < y2) {
+                y1 = y2;
+                y2 = this.crossroadList[this.roadList[i].Crossroad1].Y;
+            }
+
+            if (x > x1 || x < x2 || y > y1 || y < y2) continue;
+            
+            if (ky != Infinity && ky != -Infinity) {
+                if(this.calculateXCoordinate(ky, by, x, y, this.radius, true) != -1000) return false;
+            } else if (x == x1) {
+                return false;
+            }
+        }
+        return true;
     }
 
     evenDoubleClickConvas(X: number, Y: number): void {
@@ -482,6 +561,7 @@ export class AdminPageComponent {
         let c = Math.pow(xc,2) +  Math.pow(yc,2) - Math.pow(r,2) + Math.pow(by,2) - 2*by*yc;
 
         let d = Math.pow(b,2) - 4*a*c;
+        if (d < 0 ) return -1000;
         let x;
 
         if (flag) x = (-b - Math.sqrt(d))/(2*a);
