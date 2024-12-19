@@ -4,6 +4,7 @@ import { RegistrationComponent } from './pages/auth/registration/registration.co
 import { LoginComponent } from './pages/auth/login/login.component';
 import { AdminDbComponent } from './pages/admin/admin-db/admin-db.component';
 import { AdminPageComponent } from './pages/admin/admin-page.component';
+import { UserPageComponent } from './pages/user-page/user-page.component';
 
 export const routes: Routes = [
     {
@@ -25,5 +26,9 @@ export const routes: Routes = [
     {
         path: 'admin-page/db',
         component: AdminDbComponent,
+    },
+    {
+        path: 'user-page',
+        component: UserPageComponent,
     }
 ];
