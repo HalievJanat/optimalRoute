@@ -280,6 +280,7 @@ export class AdminPageComponent {
             }
 
             let road = new ClassOptimalRoute.Road();
+            road.Direction = 1;
             this.drawLine(
                 x1,
                 y1,
@@ -293,6 +294,7 @@ export class AdminPageComponent {
 
             road.Crossroad1 = this.indexCrossroad1;
             road.Crossroad2 = i;
+           
             this.roadList.push(road);
             const jsonRoad: string = JSON.stringify(this.roadList);
             console.log(jsonRoad);
@@ -518,7 +520,7 @@ export class AdminPageComponent {
     }
 
     private drawLine(x1: number, y1: number, x2: number, y2: number, stroke: string, direction: number): void {
-        if (direction == -1 || direction == 0) {
+        if (direction == -1) {
             this.layer.add(
                 new Konva.Line({
                     points: [x1, y1, x2, y2],
@@ -526,13 +528,24 @@ export class AdminPageComponent {
                     strokeWidth: 1,
                 })
             );
-        } else if (direction == 1) {
+        } else if (direction == 0) {
             this.layer.add(
                 new Konva.Arrow({
                     points: [x1, y1, x2, y2],
                     stroke: stroke,
                     strokeWidth: 1,
-                    fill: 'black'
+                    fill: 'black',
+                    pointerAtBeginning: true
+                })
+            );
+        }
+            else if (direction == 1) {
+            this.layer.add(
+                new Konva.Arrow({
+                    points: [x1, y1, x2, y2],
+                    stroke: stroke,
+                    strokeWidth: 1,
+                    fill: 'black',
                 })
             );
         } else if (direction == 2) {
@@ -719,7 +732,7 @@ export class AdminPageComponent {
                     yMin = this.crossroadList[this.roadList[i].Crossroad1].Y;
                 }
 
-                if (x > x1 - 3 && x < x1 + 3 && y > yMin && y < yMax) {
+                if (x > x1 - 6 && x < x1 + 6 && y > yMin && y < yMax) {
                     this.indexSelectedElement = i;
                     return true;
                 }

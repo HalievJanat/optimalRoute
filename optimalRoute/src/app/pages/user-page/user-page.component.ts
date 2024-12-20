@@ -36,4 +36,14 @@ export class UserPageComponent {
       }*/
   }
 
+  addUDS() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', 'assets/UDS.json', false);
+    xhr.send();
+    if(xhr.status != 200) {
+        console.log('Ошибка ' + xhr.status + ': ' + xhr.statusText);
+    } else {
+        console.log(xhr.responseText);
+    }
+  }
 }

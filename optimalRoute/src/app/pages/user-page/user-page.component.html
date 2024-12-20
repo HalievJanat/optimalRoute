@@ -1,5 +1,5 @@
 <app-header>
-    <a class="btn bg-transparent button">Загрузить карту</a>
+    <a class="btn bg-transparent button" (click)="addUDS()">Загрузить карту</a>
     <a href="./" class="btn bg-transparent button">Справочная информация</a>
 </app-header>
 
@@ -66,15 +66,15 @@
     </button>
 
         <div class="graph-editor">
-            <!--
-            <div
-                (click)="eventClickConvas($event.layerX, $event.layerY)"
-                (contextmenu)="openContextMenu($event)"
-                (dblclick)="evenDoubleClickConvas($event.layerX, $event.layerY)"
+            @if (isAddUDS) {
+                <div
+
                 data-toggle="context"
                 id="container"
-            ></div>
-            -->
+                ></div>
+            }
+            
+            
         </div>
 
     <div class="right-panel" [hidden]="!isRightPanelOpen">
@@ -99,7 +99,6 @@
                 </svg>
                 <span class="visually-hidden">Button</span>
             </button>
-            <h5 class="offcanvas-title">Параметры элементов УДС</h5>
         </div>
     </div>
     <button
