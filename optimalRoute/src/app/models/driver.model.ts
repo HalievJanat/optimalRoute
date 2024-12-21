@@ -1,11 +1,11 @@
-export interface FuelType {
+export interface TypeFuel {
     name: string;
     price: number;
 }
 
 export interface Vehicle {
     brand: string;
-    type_fuel: FuelType;
+    type_fuel: TypeFuel;
     consumption_fuel: number;
     max_speed: number;
 }

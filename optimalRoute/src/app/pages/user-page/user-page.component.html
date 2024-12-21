@@ -1,6 +1,6 @@
 <app-header>
     <a class="btn bg-transparent button" (click)="addUDS()">Загрузить карту</a>
-    <a href="./" class="btn bg-transparent button">Справочная информация</a>
+    <a class="btn bg-transparent button" (click)="showOptimalRoute()">Справочная информация</a>
 </app-header>
 
 <div class="editor-container">
@@ -66,15 +66,10 @@
     </button>
 
         <div class="graph-editor">
-            @if (isAddUDS) {
-                <div
-
+            <div
                 data-toggle="context"
                 id="container"
-                ></div>
-            }
-            
-            
+            ></div>     
         </div>
 
     <div class="right-panel" [hidden]="!isRightPanelOpen">
