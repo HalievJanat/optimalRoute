@@ -4,11 +4,11 @@ import Konva from 'konva';
 import { ClassOptimalRoute } from '../../classJSON/ClassOptimalRoute';
 import { CommonModule } from '@angular/common';
 import { NgbDropdownModule, NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
-import { TrafficLight } from '../../models/traffic-light.model';
+import { TrafficLights } from '../../models/traffic-light.model';
 import { Street } from '../../models/street.model';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { CoverType } from '../../models/cover-type.model';
-import { CorruptionDegree } from '../../models/corruption-degree.model';
+import { TypeCover } from '../../models/cover-type.model';
+import { DegreeCorruption } from '../../models/police-post.model';
 
 @Component({
     selector: 'app-admin-page',
@@ -41,7 +41,7 @@ export class AdminPageComponent {
     dropdownTrafficSign = '';
     dropdownCorruptionCoef = '';
 
-    trafficLights: TrafficLight[] = [{
+    trafficLights: TrafficLights[] = [{
         time_green_signal: 20,
         time_red_signal: 20
     },
@@ -57,7 +57,7 @@ export class AdminPageComponent {
         name: 'Московское шоссе'
     }];
 
-    coverTypes: CoverType[] = [{
+    coverTypes: TypeCover[] = [{
         name: 'Асфальт',
         coefficient_braking: 1
     },
@@ -66,7 +66,7 @@ export class AdminPageComponent {
         coefficient_braking: 2
     }];
 
-    corruptionCoefs: CorruptionDegree[] = [{
+    corruptionCoefs: DegreeCorruption[] = [{
         name: 'Очень жадный',
         coefficient_corruption: 2
     },
