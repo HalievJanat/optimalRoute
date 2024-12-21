@@ -3,12 +3,17 @@ import { HeaderComponent } from '../../header/header.component';
 import Konva from 'konva';
 import { ClassOptimalRoute } from '../../classJSON/ClassOptimalRoute';
 import { CommonModule } from '@angular/common';
-import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDropdownModule, NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
+import { TrafficLight } from '../../models/traffic-light.model';
+import { Street } from '../../models/street.model';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { CoverType } from '../../models/cover-type.model';
+import { CorruptionDegree } from '../../models/corruption-degree.model';
 
 @Component({
     selector: 'app-admin-page',
     standalone: true,
-    imports: [HeaderComponent, CommonModule],
+    imports: [HeaderComponent, CommonModule, NgbDropdownModule, ReactiveFormsModule],
     templateUrl: './admin-page.component.html',
     styleUrl: './admin-page.component.scss',
 })
@@ -27,10 +32,55 @@ export class AdminPageComponent {
 		this.modalService.open(content);
 	}
 
+    dropdownGreenDuration = '';
+    dropdownRedDuration = '';
+    dropdownMoveDirection = '';
+    dropdownStreet = '';
+    roadLength: FormControl<number | null> = new FormControl(null);
+    dropdownCoverType = '';
+    dropdownTrafficSign = '';
+    dropdownCorruptionCoef = '';
+
+    trafficLights: TrafficLight[] = [{
+        time_green_signal: 20,
+        time_red_signal: 20
+    },
+    {
+        time_green_signal: 25,
+        time_red_signal: 40 
+    }];
+
+    streets: Street[] = [{
+        name: 'Лукачёва'
+    },
+    {
+        name: 'Московское шоссе'
+    }];
+
+    coverTypes: CoverType[] = [{
+        name: 'Асфальт',
+        coefficient_braking: 1
+    },
+    {
+        name: 'Другое',
+        coefficient_braking: 2
+    }];
+
+    corruptionCoefs: CorruptionDegree[] = [{
+        name: 'Очень жадный',
+        coefficient_corruption: 2
+    },
+    {
+        name: 'Средне жадный',
+        coefficient_corruption: 1.5
+    }]
+
     isContextMenuVisibleCrossroad = false; // Показывать ли меню
     isContextMenuVisibleRoad = false; // Показывать ли меню
     contextMenuPosition = { x: 0, y: 0 }; // Координаты меню
     indexSelectedElement = -1;
+
+    rightPanelHeaderText = 'Параметры элементов УДС';
 
     isLeftClickCrossroad = false;
     isLeftClickRoad = false;
@@ -62,6 +112,16 @@ export class AdminPageComponent {
 
     //Метод для правой панели
     methodRightPanelOpen(): void {
+        this.rightPanelHeaderText = 'Параметры элементов УДС';
+        this.dropdownGreenDuration = '';
+        this.dropdownRedDuration = '';
+        this.dropdownMoveDirection = '';
+        this.dropdownStreet = '';
+        this.roadLength.setValue(null);
+        this.dropdownCoverType = '';
+        this.dropdownTrafficSign = '';
+        this.dropdownCorruptionCoef = '';
+
         this.isLeftClickCrossroad = false;
         this.isLeftClickRoad = false;
         this.isAddTrafficLights = false;
@@ -125,6 +185,15 @@ export class AdminPageComponent {
     }
 
     addCrossroad(): void {
+        this.rightPanelHeaderText = 'Параметры элементов УДС';
+        this.dropdownGreenDuration = '';
+        this.dropdownRedDuration = '';
+        this.dropdownMoveDirection = '';
+        this.dropdownStreet = '';
+        this.roadLength.setValue(null);
+        this.dropdownCoverType = '';
+        this.dropdownTrafficSign = '';
+        this.dropdownCorruptionCoef = '';
         this.isLeftClickCrossroad = false;
         this.isLeftClickRoad = false;
         this.isAddTrafficLights = false;
@@ -140,6 +209,15 @@ export class AdminPageComponent {
     }
 
     eventClickConvas(coordX: number, coordY: number): void {
+        this.rightPanelHeaderText = 'Параметры элементов УДС';
+        this.dropdownGreenDuration = '';
+        this.dropdownRedDuration = '';
+        this.dropdownMoveDirection = '';
+        this.dropdownStreet = '';
+        this.roadLength.setValue(null);
+        this.dropdownCoverType = '';
+        this.dropdownTrafficSign = '';
+        this.dropdownCorruptionCoef = '';
         this.isContextMenuVisibleCrossroad = false; // Показывать ли меню
         this.isContextMenuVisibleRoad = false;      // Показывать ли 
         this.isLeftClickCrossroad = false;
@@ -404,18 +482,61 @@ export class AdminPageComponent {
     }
 
     evenDoubleClickConvas(X: number, Y: number): void {
+        this.dropdownGreenDuration = '';
+        this.dropdownRedDuration = '';
+        this.dropdownMoveDirection = '';
+        this.dropdownStreet = '';
+        this.roadLength.setValue(null);
+        this.dropdownCoverType = '';
+        this.dropdownTrafficSign = '';
+        this.dropdownCorruptionCoef = '';
         this.isCrossroadAdd = false;
         this.isAddTrafficLights = false;
         this.isAddPolicePost = false;
         this.isAddTrafficSigns = false;
         if (this.defineClickCrossroad(X, Y)) {
+            this.rightPanelHeaderText = 'Параметры перекрёстка';
+            const crossroad = this.crossroadList[this.indexSelectedElement].TrafficLights;
+            if (crossroad) {
+                this.dropdownGreenDuration = crossroad.TimeGreenSignal.toString();
+                this.dropdownRedDuration = crossroad.TimeRedSignal.toString();
+            }
             this.isLeftClickCrossroad = true;
         } else if (this.defineClickRoad(X, Y)) {
+            this.rightPanelHeaderText = 'Параметры прогона';
+            const road = this.roadList[this.indexSelectedElement];
+            if (road.Length) {
+                this.roadLength.setValue(road.Length);
+            }
+            if (road.Direction) {
+                this.dropdownMoveDirection = road.Direction.toString();
+            }
+            if (road.Street) {
+                this.dropdownStreet = road.Street.Name;
+            }
+            if (road.TypeCover) {
+                this.dropdownCoverType = road.TypeCover.Name;
+            }
+            if (road.TrafficSigns) {
+                this.dropdownTrafficSign = road.TrafficSigns.Speed.toString();
+            }
+            if (road.PolicePost) {
+                this.dropdownCorruptionCoef = road.PolicePost.Corruption.Name;
+            }
             this.isLeftClickRoad = true;
         }
     }
 
     addRoad(): void {
+        this.rightPanelHeaderText = 'Параметры элементов УДС';
+        this.dropdownGreenDuration = '';
+        this.dropdownRedDuration = '';
+        this.dropdownMoveDirection = '';
+        this.dropdownStreet = '';
+        this.roadLength.setValue(null);
+        this.dropdownCoverType = '';
+        this.dropdownTrafficSign = '';
+        this.dropdownCorruptionCoef = '';
         this.isLeftClickCrossroad = false;
         this.isLeftClickRoad = false;
         this.isAddTrafficLights = false;
@@ -431,6 +552,15 @@ export class AdminPageComponent {
     }
 
     replaceSizeGrid(flag: boolean): void {
+        this.rightPanelHeaderText = 'Параметры элементов УДС';
+        this.dropdownGreenDuration = '';
+        this.dropdownRedDuration = '';
+        this.dropdownMoveDirection = '';
+        this.dropdownStreet = '';
+        this.roadLength.setValue(null);
+        this.dropdownCoverType = '';
+        this.dropdownTrafficSign = '';
+        this.dropdownCorruptionCoef = '';
         this.isLeftClickCrossroad = false;
         this.isAddTrafficLights = false;
         this.isAddPolicePost = false;
@@ -588,6 +718,15 @@ export class AdminPageComponent {
     }
 
     openContextMenu(event: MouseEvent): void {
+        this.rightPanelHeaderText = 'Параметры элементов УДС';
+        this.dropdownGreenDuration = '';
+        this.dropdownRedDuration = '';
+        this.dropdownMoveDirection = '';
+        this.dropdownStreet = '';
+        this.roadLength.setValue(null);
+        this.dropdownCoverType = '';
+        this.dropdownTrafficSign = '';
+        this.dropdownCorruptionCoef = '';
         this.isLeftClickCrossroad = false;
         this.isLeftClickRoad = false;
         this.isAddTrafficLights = false;
@@ -652,12 +791,28 @@ export class AdminPageComponent {
     }
 
     actionAddTrafficLights(): void {
+        this.dropdownMoveDirection = '';
+        this.dropdownStreet = '';
+        this.roadLength.setValue(null);
+        this.dropdownCoverType = '';
+        this.dropdownTrafficSign = '';
+        this.dropdownCorruptionCoef = '';
         this.isAddTrafficLights = true;
+        this.rightPanelHeaderText = 'Добавить светофор';
     
         this.closeContextMenu();
     }
 
     actionDeleteTrafficLights(): void {
+        this.rightPanelHeaderText = 'Параметры элементов УДС';
+        this.dropdownGreenDuration = '';
+        this.dropdownRedDuration = '';
+        this.dropdownMoveDirection = '';
+        this.dropdownStreet = '';
+        this.roadLength.setValue(null);
+        this.dropdownCoverType = '';
+        this.dropdownTrafficSign = '';
+        this.dropdownCorruptionCoef = '';
         this.isAddTrafficLights = false;
         this.isAddPolicePost = false;
         this.isAddTrafficSigns = false;
@@ -668,11 +823,21 @@ export class AdminPageComponent {
 
     actionAddTrafficSigns(): void {
         this.isAddTrafficSigns = true;
+        this.rightPanelHeaderText = 'Добавить знак дорожного движения';
 
         this.closeContextMenu();
     }
 
     actionDeleteTrafficSigns(): void {
+        this.rightPanelHeaderText = 'Параметры элементов УДС';
+        this.dropdownGreenDuration = '';
+        this.dropdownRedDuration = '';
+        this.dropdownMoveDirection = '';
+        this.dropdownStreet = '';
+        this.roadLength.setValue(null);
+        this.dropdownCoverType = '';
+        this.dropdownTrafficSign = '';
+        this.dropdownCorruptionCoef = '';
         this.isAddTrafficLights = false;
         this.isAddPolicePost = false;
         this.isAddTrafficSigns = false;
@@ -683,11 +848,21 @@ export class AdminPageComponent {
 
     actionAddPolicePost(): void {
         this.isAddPolicePost = true;
+        this.rightPanelHeaderText = 'Добавить полицейский пост';
 
         this.closeContextMenu();
     }
 
     actionDeletePolicePost(): void {
+        this.rightPanelHeaderText = 'Параметры элементов УДС';
+        this.dropdownGreenDuration = '';
+        this.dropdownRedDuration = '';
+        this.dropdownMoveDirection = '';
+        this.dropdownStreet = '';
+        this.roadLength.setValue(null);
+        this.dropdownCoverType = '';
+        this.dropdownTrafficSign = '';
+        this.dropdownCorruptionCoef = '';
         this.isAddTrafficLights = false;
         this.isAddPolicePost = false;
         this.isAddTrafficSigns = false;
@@ -751,127 +926,32 @@ export class AdminPageComponent {
     }
 
     modifyCrossroadParamener():void {
-        let timeRedSignalString = (<HTMLInputElement> document.querySelector(".timeRedSignal")).value;
-        let timeGreenSignalString = (<HTMLInputElement> document.querySelector(".timeGreenSignal")).value;
-        if (timeRedSignalString == "") {
-            alert('Введите значение для длительности красной фазы');
-            return;
-        }
-        if (timeGreenSignalString == "") {
-            alert('Введите значение для длительности зеденой фазы');
-            return;
-        }
-
-        let timeRedSignal = Number(timeRedSignalString);
-        let timeGreenSignal = Number(timeGreenSignalString);
-
-        if (timeRedSignal >= 20 && timeRedSignal <= 120) {
-            this.crossroadList[this.indexSelectedElement].TrafficLights!.TimeRedSignal = timeRedSignal;
-        } else {
-            alert('Значение красного сигнала должно быть от 20 до 120');
-            return;
-        }
-
-        if (timeGreenSignal >= 20 && timeGreenSignal <= 120) {
-            this.crossroadList[this.indexSelectedElement].TrafficLights!.TimeGreenSignal =  timeGreenSignal;
-        } else {
-            alert('Значение зеленого сигнала должно быть от 20 до 120');
-            return;
-        }
+        this.crossroadList[this.indexSelectedElement].TrafficLights!.TimeGreenSignal = Number(this.dropdownGreenDuration);
+        this.crossroadList[this.indexSelectedElement].TrafficLights!.TimeRedSignal = Number(this.dropdownRedDuration);
   
         const jsonCrossroad: string = JSON.stringify(this.crossroadList);
         console.log(jsonCrossroad);
         
+        this.rightPanelHeaderText = 'Параметры элементов УДС';
+        this.dropdownGreenDuration = '';
+        this.dropdownRedDuration = '';
         this.isAddTrafficLights = false;
         this.isLeftClickCrossroad = false;
         this.isLeftClickRoad = false;
     }
 
     modifyRoadParamener():void {
-        let directionString = (<HTMLInputElement> document.querySelector("#direction")).value;
-        this.roadList[this.indexSelectedElement].Direction = Number(directionString);
+        this.roadList[this.indexSelectedElement].Direction = Number(this.dropdownMoveDirection);
+        this.roadList[this.indexSelectedElement].Street.Name = this.dropdownStreet;
+        this.roadList[this.indexSelectedElement].Length = this.roadLength.value as number;  
+        this.roadList[this.indexSelectedElement].TypeCover.Name = this.dropdownCoverType;
 
-        let nameStreet = (<HTMLInputElement> document.querySelector(".streetName")).value;
-
-        if (nameStreet.length >= 1 && nameStreet.length <=30) {
-            this.roadList[this.indexSelectedElement].Street.Name = nameStreet;
-        } else {
-            alert('Длина название улица должны быть от 1 до 30');
-            return;
+        if (this.roadList[this.indexSelectedElement].TrafficSigns !== null) {
+            this.roadList[this.indexSelectedElement].TrafficSigns!.Speed =  Number(this.dropdownTrafficSign);
         }
 
-        let lengthRoad = (<HTMLInputElement> document.querySelector(".lengthRoad")).value;
-        let numberLengthRoad;
-
-        if (lengthRoad != '') {
-            numberLengthRoad = Number(lengthRoad);
-        } else {
-            alert('Введите значение длины');
-            return;
-        }
-
-        if (numberLengthRoad >= 1 && numberLengthRoad <= 10) {
-            this.roadList[this.indexSelectedElement].Length = numberLengthRoad;
-        } else {
-            alert('Длина дороги должна быть от 1 до 10');
-            return;
-        }
-
-        let nameTypeCover = (<HTMLInputElement> document.querySelector(".typeCoverName")).value;
-        if (nameTypeCover.length <= 15) {
-            this.roadList[this.indexSelectedElement].TypeCover.Name = nameTypeCover;
-        } else {
-            alert('Длина названия покрытия должна быть до 15 символов');
-            return;
-        }
-
-        let coefficientBrakingRoad = (<HTMLInputElement> document.querySelector(".coeffCover")).value;
-        let numberCoefficientBrakingRoad;
-
-        if (coefficientBrakingRoad != '') {
-            numberCoefficientBrakingRoad = Number(coefficientBrakingRoad);
-        } else {
-            alert('Введите коэффициент тормажения');
-            return;
-        }
-        
-        if (numberCoefficientBrakingRoad >= 1 && numberCoefficientBrakingRoad <= 2) {
-            this.roadList[this.indexSelectedElement].TypeCover.CoefficientBraking = numberCoefficientBrakingRoad;
-        } else {
-            alert ('Коэффициент торможения должен быть в диапазоне от 1 до 2');
-            return;
-        }
-
-        if (this.roadList[this.indexSelectedElement].TrafficSigns != null) {
-            let speedString = (<HTMLInputElement> document.querySelector("#speedInput")).value;
-            this.roadList[this.indexSelectedElement].TrafficSigns!.Speed =  Number(speedString);
-        }
-
-        if (this.roadList[this.indexSelectedElement].PolicePost != null) {
-            let nameCorruption =  (<HTMLInputElement> document.querySelector(".nameCoeffCorumpInput")).value;
-            if (nameCorruption.length <= 15) {
-                this.roadList[this.indexSelectedElement].PolicePost!.Corruption.Name = nameCorruption;
-            } else {
-                alert('Длина названия коэффициента коррумпированности должна быть до 20 символов');
-                return;
-            }
-
-            let coeffCorumpInput = (<HTMLInputElement> document.querySelector(".coeffCorumpInput")).value;
-            let numberСoeffCorumpInput;
-
-            if (coeffCorumpInput != '') {
-                numberСoeffCorumpInput = Number(coeffCorumpInput);
-            } else {
-                alert('Введите коэффициент коррумпированности');
-                return;
-            }
-            
-            if (numberСoeffCorumpInput >= 1 && numberСoeffCorumpInput <= 2) {
-                this.roadList[this.indexSelectedElement].PolicePost!.Corruption.CoefficientCorruption = numberСoeffCorumpInput;
-            } else {
-                alert ('Коэффициент коррумпированности должен быть в диапазоне от 1 до 2')
-                return;
-            }
+        if (this.roadList[this.indexSelectedElement].PolicePost !== null) {
+            this.roadList[this.indexSelectedElement].PolicePost!.Corruption.Name =  this.dropdownCorruptionCoef;
         }
 
         const jsonRoad: string = JSON.stringify(this.roadList);
@@ -884,84 +964,94 @@ export class AdminPageComponent {
         this.isAddTrafficSigns = false;
         this.isLeftClickCrossroad = false;
         this.isLeftClickRoad = false;
+
+        this.dropdownMoveDirection = '';
+        this.dropdownStreet = '';
+        this.roadLength.setValue(null);
+        this.dropdownCoverType = '';
+        this.dropdownTrafficSign = '';
+        this.dropdownCorruptionCoef = '';
+    }
+
+    setDropdownTrafficLight(trafficLightIndex: number) {
+        this.dropdownGreenDuration = this.trafficLights[trafficLightIndex].time_green_signal.toString();
+        this.dropdownRedDuration = this.trafficLights[trafficLightIndex].time_red_signal.toString();
+    }
+
+    setDropdownStreet(streetIndex: number) {
+        this.dropdownStreet = this.streets[streetIndex].name;
+    }
+
+    setDropdownCoverType(coverTypeIndex: number) {
+        this.dropdownCoverType = this.coverTypes[coverTypeIndex].name;
+    }
+
+    setDropdownCorruptionCoef(corruptionCoef: number) {
+        this.dropdownCorruptionCoef = this.corruptionCoefs[corruptionCoef].name;
+    }
+
+    setDropdownMoveDirectionValue(value: string) {
+        this.dropdownMoveDirection = value;
+    }
+
+    setDropdownTrafficSignValue(value: string) {
+        this.dropdownTrafficSign = value;
+    }
+
+
+    cancelAdding() {
+        this.isAddPolicePost = false;
+        this.isAddTrafficSigns = false;
+        this.isLeftClickCrossroad = false;
+        this.isLeftClickRoad = false;
+        this.isAddTrafficLights = false;
+        this.rightPanelHeaderText = 'Параметры элементов УДС';
+
+        this.dropdownGreenDuration = '';
+        this.dropdownRedDuration = '';
+        this.dropdownMoveDirection = '';
+        this.dropdownStreet = '';
+        this.roadLength.setValue(null);
+        this.dropdownCoverType = '';
+        this.dropdownTrafficSign = '';
+        this.dropdownCorruptionCoef = '';
     }
 
     addTrafficLights():void {
-        let timeRedSignalString = (<HTMLInputElement> document.querySelector(".timeRedSignal")).value;
-        let timeGreenSignalString = (<HTMLInputElement> document.querySelector(".timeGreenSignal")).value;
-        if (timeRedSignalString == "") {
-            alert('Введите значение для длительности красной фазы');
-            return;
-        }
-        if (timeGreenSignalString == "") {
-            alert('Введите значение для длительности зеденой фазы');
-            return;
-        }
-
-        let timeRedSignal = Number(timeRedSignalString);
-        let timeGreenSignal = Number(timeGreenSignalString);
-
-        if (timeRedSignal < 20 || timeRedSignal > 120) {
-            alert('Значение красного сигнала должно быть от 20 до 120');
-            return;
-        }
-
-        if (timeGreenSignal < 20 || timeGreenSignal > 120) {
-            alert('Значение зеленого сигнала должно быть от 20 до 120');
-            return;
-        }
-
         this.crossroadList[this.indexSelectedElement].TrafficLights = new ClassOptimalRoute.TrafficLights();
-        this.crossroadList[this.indexSelectedElement].TrafficLights!.TimeRedSignal = timeRedSignal;
-        this.crossroadList[this.indexSelectedElement].TrafficLights!.TimeGreenSignal =  timeGreenSignal;
+        this.crossroadList[this.indexSelectedElement].TrafficLights!.TimeRedSignal = Number(this.dropdownRedDuration);
+        this.crossroadList[this.indexSelectedElement].TrafficLights!.TimeGreenSignal =  Number(this.dropdownGreenDuration);
 
+        this.dropdownRedDuration = '';
+        this.dropdownGreenDuration = '';
   
         const jsonCrossroad: string = JSON.stringify(this.crossroadList);
         console.log(jsonCrossroad);
         
+        this.rightPanelHeaderText = 'Параметры элементов УДС';
         this.isAddTrafficLights = false;
     }
 
     addPolicePost(): void {
-        let nameCorruption =  (<HTMLInputElement> document.querySelector(".nameCoeffCorumpInput")).value;
-        if (nameCorruption.length >= 15) {
-            alert('Длина названия коэффициента коррумпированности должна быть до 20 символов');
-            return;
-        }
-
-        let coeffCorumpInput = (<HTMLInputElement> document.querySelector(".coeffCorumpInput")).value;
-        let numberСoeffCorumpInput;
-
-        if (coeffCorumpInput != '') {
-            numberСoeffCorumpInput = Number(coeffCorumpInput);
-        } else {
-            alert('Введите коэффициент коррумпированности');
-            return;
-        }
-        
-        if (numberСoeffCorumpInput < 1 || numberСoeffCorumpInput > 2) {
-            alert ('Коэффициент коррумпированности должен быть в диапазоне от 1 до 2')
-            return;
-        }
         this.roadList[this.indexSelectedElement].PolicePost = new ClassOptimalRoute.PolicePost();
-        this.roadList[this.indexSelectedElement].PolicePost!.Corruption.Name = nameCorruption;
-        this.roadList[this.indexSelectedElement].PolicePost!.Corruption.CoefficientCorruption = numberСoeffCorumpInput;
+        this.roadList[this.indexSelectedElement].PolicePost!.Corruption.Name = this.dropdownCorruptionCoef;
 
         const jsonRoad: string = JSON.stringify(this.roadList);
         console.log(jsonRoad);
 
         this.isAddPolicePost = false;
+        this.dropdownCorruptionCoef = '';
     }
 
     addTrafficSigns():void {
         this.roadList[this.indexSelectedElement].TrafficSigns = new ClassOptimalRoute.TrafficSigns();
-        let speedString = (<HTMLInputElement> document.querySelector("#speedInput")).value;
-        this.roadList[this.indexSelectedElement].TrafficSigns!.Speed =  Number(speedString);
+        this.roadList[this.indexSelectedElement].TrafficSigns!.Speed =  Number(this.dropdownTrafficSign);
 
         const jsonRoad: string = JSON.stringify(this.roadList);
         console.log(jsonRoad);
 
         this.isAddTrafficSigns = false;
+        this.dropdownTrafficSign = '';
     }
 
     saveUDS(): void {

@@ -27,8 +27,7 @@
     
     <a class="btn bg-transparent button" (click)="saveUDS()">Сохранить</a>
     <a href="./" class="btn bg-transparent button">О системе</a>
-    <div class="btn btn-lg btn-outline-primary" (click)="open(content)"><a class="btn bg-transparent button"
-        >О разработчиках</a></div>
+    <a class="btn bg-transparent button" (click)="open(content)">О разработчиках</a>
     
 </app-header>
 <div class="editor-container">
@@ -125,155 +124,233 @@
                 </svg>
                 <span class="visually-hidden">Button</span>
             </button>
-            <h5 class="offcanvas-title">Параметры элементов УДС</h5>
+            <h5 class="offcanvas-title">{{ rightPanelHeaderText }}</h5>
         </div>
         
 
         <!--Перекресток-->
-        @if (isLeftClickCrossroad) {
-            <div class=".right-panel-body-2">
-                <div>
-                    <p class="name-element-uds">Перекресток</p>
-                </div>
-                @if (crossroadList[indexSelectedElement].TrafficLights != null) {
-                    <div>
-                        <div>
-                            <p>Светофор</p>
+        @if (isLeftClickCrossroad && crossroadList[indexSelectedElement].TrafficLights != null) {
+            <div class="right-panel-body">
+                <div class="panel-el">
+                    <span>Длительность зелёной фазы</span>
+                    <div ngbDropdown [autoClose]="true" class="d-inline-block">
+                        <button type="button" class="btn btn-outline-primary dropdown-button" ngbDropdownToggle>
+                            {{ dropdownGreenDuration }}
+                        </button>
+                        <div ngbDropdownMenu aria-labelledby="dropdownBasic">
+                            @for(trafficLight of trafficLights; track $index) {
+                                <button ngbDropdownItem (click)="setDropdownTrafficLight($index)">
+                                    {{ trafficLight.time_green_signal }} 
+                                </button>
+                            }
                         </div>
-                        <p>Длительность красной фазы</p>
-                        <input type="number" class="timeRedSignal" [value]="crossroadList[indexSelectedElement].TrafficLights?.TimeRedSignal">
-                        <p>Длительность зеленой фазы</p>
-                        <input type="number" class="timeGreenSignal" [value]="crossroadList[indexSelectedElement].TrafficLights?.TimeGreenSignal">
-                        <br>
-                        <button (click)="modifyCrossroadParamener()">Сохранить</button>
                     </div>
-                }
+                </div>
+                <div class="panel-el">
+                    <span>Длительность красной фазы</span>
+                    <div ngbDropdown [autoClose]="true" class="d-inline-block">
+                        <button type="button" class="btn btn-outline-primary dropdown-button" ngbDropdownToggle>
+                         {{ dropdownRedDuration }} 
+                        </button>
+                        <div ngbDropdownMenu aria-labelledby="dropdownBasic">
+                            @for(trafficLight of trafficLights; track $index) {
+                                <button ngbDropdownItem (click)="setDropdownTrafficLight($index)">
+                                    {{ trafficLight.time_red_signal }} 
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <button class="submit-button" (click)="cancelAdding()">Отмена</button>
+                <button class="submit-button" (click)="modifyCrossroadParamener()" [disabled]="!dropdownRedDuration || !dropdownGreenDuration">Сохранить</button>
             </div>
         }
         @if (isAddTrafficLights) {
-            <div class=".right-panel-body-2">
-                <div>
-                    <p>Добавить светофор</p>
+            <div class="right-panel-body">
+                <div class="panel-el">
+                    <div ngbDropdown [autoClose]="true" class="d-inline-block">
+                        <button type="button" class="btn btn-outline-primary dropdown-button" ngbDropdownToggle>
+                            {{ dropdownGreenDuration || "Выберите длительность зелёной фазы*"}}
+                        </button>
+                        <div ngbDropdownMenu aria-labelledby="dropdownBasic">
+                            @for(trafficLight of trafficLights; track $index) {
+                                <button ngbDropdownItem (click)="setDropdownTrafficLight($index)">
+                                    {{ trafficLight.time_green_signal }} 
+                                </button>
+                            }
+                        </div>
+                    </div>
                 </div>
-                <p>Длительность красной фазы</p>
-                <input type="number" class="timeRedSignal">
-                <p>Длительность зеленой фазы</p>
-                <input type="number" class="timeGreenSignal">
-                <br>
-                <button (click)="addTrafficLights()">Добавить</button>
+                <div class="panel-el">
+                    <div ngbDropdown [autoClose]="true" class="d-inline-block">
+                        <button type="button" class="btn btn-outline-primary dropdown-button" ngbDropdownToggle>
+                         {{ dropdownRedDuration || "Выберите длительность красной фазы*"}} 
+                        </button>
+                        <div ngbDropdownMenu aria-labelledby="dropdownBasic">
+                            @for(trafficLight of trafficLights; track $index) {
+                                <button ngbDropdownItem (click)="setDropdownTrafficLight($index)">
+                                    {{ trafficLight.time_red_signal }} 
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <button class="submit-button" (click)="cancelAdding()">Отмена</button>
+                <button class="submit-button" (click)="addTrafficLights()" [disabled]="!dropdownRedDuration || !dropdownGreenDuration">Добавить</button>
             </div>
         }
 
         <!--Прогон-->
         @if (isLeftClickRoad) {
-            <div class=".right-panel-body-2">
-                <div>
-                    <p class="name-element-uds">Дорога</p>
+            <div class="right-panel-body">
+                <div class="panel-el">
+                    <span>Направление движения</span>
+                    <div ngbDropdown [autoClose]="true" class="d-inline-block">
+                        <button type="button" class="btn btn-outline-primary dropdown-button" ngbDropdownToggle>
+                           {{ dropdownMoveDirection }}
+                        </button>
+                        <div ngbDropdownMenu aria-labelledby="dropdownBasic">
+                            <button ngbDropdownItem (click)="setDropdownMoveDirectionValue('0')">
+                                В обе стороны 
+                            </button>
+                            <button ngbDropdownItem (click)="setDropdownMoveDirectionValue('1')">
+                                От 1-го ко 2-му 
+                            </button>
+                            <button ngbDropdownItem (click)="setDropdownMoveDirectionValue('2')">
+                                От 2-го к 1-му 
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <p>Направления движения</p>
-                    <select id="direction">
-                        @if (roadList[indexSelectedElement].Direction == 0) {
-                            <option selected>0</option>
-                        } @else {
-                            <option>0</option>
+                <div class="panel-el">
+                    <span>Улица</span>
+                    <div ngbDropdown [autoClose]="true" class="d-inline-block">
+                        <button type="button" class="btn btn-outline-primary dropdown-button" ngbDropdownToggle>
+                            {{ dropdownStreet || 'Название улицы*' }} 
+                        </button>
+                        <div ngbDropdownMenu aria-labelledby="dropdownBasic">
+                            @for(street of streets; track $index) {
+                                <button ngbDropdownItem (click)="setDropdownStreet($index)">
+                                    {{ street.name }} 
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-el">
+                    <div class="input-with-err-container">
+                        <div>
+                            <span>Длина улицы</span>
+                            <input type="number" [class.error-input]="roadLength.dirty && roadLength.touched && roadLength.invalid" class="form-control" [formControl]="roadLength" placeholder="Длина улицы*"/>
+                        </div>
+                        @if (roadLength.value !== null) {
+                            @if(roadLength.value > 10 || roadLength.value < 1) {
+                                <span class="error-span">Длина дороги должна быть от 1 до 10</span>
+                            }
                         }
-                        @if (roadList[indexSelectedElement].Direction == 1) {
-                            <option selected>1</option>
-                        } @else {
-                            <option>1</option>
-                        }
-                        @if (roadList[indexSelectedElement].Direction == 2) {
-                            <option selected>2</option>
-                        } @else {
-                            <option>2</option>
-                        }
-                    </select>
+                    </div>
                 </div>
-                <div>
-                    <p>Улица</p>
-                    <input type="text" class="streetName" [value]="roadList[indexSelectedElement].Street.Name">
-                </div>
-                <div>
-                    <p>Длина</p>
-                    <input type="number" class="lengthRoad" [value]="roadList[indexSelectedElement].Length">
-                </div>
-                <div>
-                    <p>Тип покрытия</p>
-                    <input type="string" class="typeCoverName" [value]="roadList[indexSelectedElement].TypeCover.Name">
-                    <p>Коэффициент тормажения</p>
-                    <input type="number" class="coeffCover" [value]="roadList[indexSelectedElement].TypeCover.CoefficientBraking">
-                        
+                <div class="panel-el">
+                    <span>Дорожное покрытие</span>
+                    <div ngbDropdown [autoClose]="true" class="d-inline-block">
+                        <button type="button" class="btn btn-outline-primary dropdown-button" ngbDropdownToggle>
+                            {{ dropdownCoverType || 'Название покрытия*' }} 
+                        </button>
+                        <div ngbDropdownMenu aria-labelledby="dropdownBasic">
+                            @for(coverType of coverTypes; track $index) {
+                                <button ngbDropdownItem (click)="setDropdownCoverType($index)">
+                                    {{ coverType.name }} 
+                                </button>
+                            }
+                        </div>
+                    </div>
                 </div>
                 @if (roadList[indexSelectedElement].TrafficSigns != null) {
-                    <div>
-                        <div>
-                            <p>Знак дорожного движения</p>
+                    <div class="panel-el">
+                        <span>Знак дорожного движения</span>
+                        <div ngbDropdown [autoClose]="true" class="d-inline-block">
+                            <button type="button" class="btn btn-outline-primary dropdown-button" ngbDropdownToggle>
+                                {{ dropdownTrafficSign }} 
+                            </button>
+                            <div ngbDropdownMenu aria-labelledby="dropdownBasic">
+                                <button ngbDropdownItem (click)="setDropdownTrafficSignValue('30')">
+                                    30 
+                                </button>
+                                <button ngbDropdownItem (click)="setDropdownTrafficSignValue('40')">
+                                    40 
+                                </button>
+                                <button ngbDropdownItem (click)="setDropdownTrafficSignValue('50')">
+                                    50 
+                                </button>
+                            </div>
                         </div>
-                        <p>Скорость</p>
-                        <select id="speedInput">
-                            @if (roadList[indexSelectedElement].TrafficSigns?.Speed == 30) {
-                                <option selected>30</option>
-                            } @else {
-                                <option>30</option>
-                            }
-                            @if (roadList[indexSelectedElement].TrafficSigns?.Speed == 40) {
-                                <option selected>40</option>
-                            } @else {
-                                <option>40</option>
-                            }
-                            @if (roadList[indexSelectedElement].TrafficSigns?.Speed == 50) {
-                                <option selected>50</option>
-                            } @else {
-                                <option>50</option>
-                            }
-                        </select>
                     </div>
                 }
                 @if (roadList[indexSelectedElement].PolicePost != null) {
-                    <div>
-                        <div>
-                            <p>Полицеский пост</p>
+                    <div class="panel-el">
+                        <span>Полицейский пост</span>
+                        <div ngbDropdown [autoClose]="true" class="d-inline-block">
+                            <button type="button" class="btn btn-outline-primary dropdown-button" ngbDropdownToggle>
+                                {{ dropdownCorruptionCoef }} 
+                            </button>
+                            <div ngbDropdownMenu aria-labelledby="dropdownBasic">
+                                @for(corruptionCoef of corruptionCoefs; track $index) {
+                                    <button ngbDropdownItem (click)="setDropdownCorruptionCoef($index)">
+                                        {{ corruptionCoef.name }} 
+                                    </button>
+                                }
+                            </div>
                         </div>
-                        <p>Название</p>
-                        <input type="text" class="nameCoeffCorumpInput" [value]="roadList[indexSelectedElement].PolicePost?.Corruption?.Name">
-                        <p>Коэффициент коррумпированности</p>
-                        <input type="number" class="coeffCorumpInput" [value]="roadList[indexSelectedElement].PolicePost?.Corruption?.CoefficientCorruption">
                     </div>
                 }
-                <br>
-                <button (click)="modifyRoadParamener()">Сохранить</button>
+                <button class="submit-button" (click)="cancelAdding()">Отмена</button>
+                <button class="submit-button" (click)="modifyRoadParamener()" [disabled]="!dropdownStreet || !roadLength.value || roadLength.value < 1 || roadLength.value > 10 || !dropdownCoverType">Сохранить</button>
             </div>
-        }
+    }
 
         @if (isAddPolicePost) {
-            <div class=".right-panel-body-2">
-                <div>
-                    <p>Добавить полицеский пост</p>
+            <div class="right-panel-body">
+                <div class="panel-el">
+                    <div ngbDropdown [autoClose]="true" class="d-inline-block">
+                        <button type="button" class="btn btn-outline-primary dropdown-button" ngbDropdownToggle>
+                            {{ dropdownCorruptionCoef || 'Название степени коррумпированности*' }} 
+                        </button>
+                        <div ngbDropdownMenu aria-labelledby="dropdownBasic">
+                            @for(corruptionCoef of corruptionCoefs; track $index) {
+                                <button ngbDropdownItem (click)="setDropdownCorruptionCoef($index)">
+                                    {{ corruptionCoef.name }} 
+                                </button>
+                            }
+                        </div>
+                    </div>
                 </div>
-                <p>Название</p>
-                <input type="text" class="nameCoeffCorumpInput">
-                <p>Коэффициент коррумпированности</p>
-                <input type="number" class="coeffCorumpInput">
-            
-                <button (click)="addPolicePost()">Добавить</button>
+                <button class="submit-button" (click)="cancelAdding()">Отмена</button>
+                <button class="submit-button" (click)="addPolicePost()" [disabled]="!dropdownCorruptionCoef">Добавить</button>
             </div>
         }
 
         @if (isAddTrafficSigns) {
-            <div class=".right-panel-body-2">
-                <div>
-                    <p>Добавить знак дорожного движения</p>
+            <div class="right-panel-body">
+                <div class="panel-el">
+                    <div ngbDropdown [autoClose]="true" class="d-inline-block">
+                        <button type="button" class="btn btn-outline-primary dropdown-button" ngbDropdownToggle>
+                            {{ dropdownTrafficSign || 'Скорость*' }} 
+                        </button>
+                        <div ngbDropdownMenu aria-labelledby="dropdownBasic">
+                            <button ngbDropdownItem (click)="setDropdownTrafficSignValue('30')">
+                                30 
+                            </button>
+                            <button ngbDropdownItem (click)="setDropdownTrafficSignValue('40')">
+                                40 
+                            </button>
+                            <button ngbDropdownItem (click)="setDropdownTrafficSignValue('50')">
+                                50 
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <p>Скорость</p>
-                <select id="speedInput">
-                    <option>30</option>
-                    <option>40</option>
-                    <option>50</option>
-                </select>
-                <br>
-            
-                <button (click)="addTrafficSigns()">Добавить</button>
+                <button class="submit-button" (click)="cancelAdding()">Отмена</button>
+                <button class="submit-button" (click)="addTrafficSigns()" [disabled]="!dropdownTrafficSign">Добавить</button>
             </div>
         }
     </div>
