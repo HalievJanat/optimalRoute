@@ -1,9 +1,33 @@
 
 export namespace ClassOptimalRoute {
     export class UDS {
-        name: string;
-        crossroads: Crossroad[];
-        roads: Road[];
+        private name: string;
+        private crossroads: Crossroad[];
+        private roads: Road[];
+
+        public get Name(): string {
+            return this.name;
+        }
+
+        public set Name(value: string) {
+            this.name = value;
+        }
+
+        public get Crossroads(): Crossroad[] {
+            return this.crossroads;
+        }
+        
+        public set Crossroads(value: Crossroad[]) {
+            this.crossroads = value;
+        }
+
+        public get Roads(): Road[] {
+            return this.roads;
+        }
+        
+        public set Roads(value: Road[]) {
+            this.roads = value;
+        }
 
         constructor() {
             this.name = '';

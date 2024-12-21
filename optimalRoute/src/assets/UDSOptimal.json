@@ -170,5 +170,39 @@
             "direction":0
         }
     ],
-    "route": null
+    "route": {
+        "start_crossroad": 0,
+        "end_crossroad": 1,
+        "driver": {
+        "name": "Иванов",
+        "surname": "Иван",
+        "family": "Иванович",
+        "infringer": true,
+        "vehicle": {
+            "brand": "Lada",
+            "type_fuel": {
+            "name": "Бензин",
+            "Price": 51.77
+            },
+            "consumption_fuel": 6.8,
+            "max_speed": 193
+        }
+        },
+        "criteria_searche": "Стоимость",
+        "crossroads": [0, 2, 3, 5, 1],
+        "type_fines": [
+        {
+            "name": "Превышение скорости",
+            "price": 5000
+        },
+        {
+            "name": "Проезд на красный свет",
+            "price": 5000
+        },
+        {
+            "name": "Проезд под 'кирпич'",
+            "price": 5000
+        }
+        ]
+    }
 }

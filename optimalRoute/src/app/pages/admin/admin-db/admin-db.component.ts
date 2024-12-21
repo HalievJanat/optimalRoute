@@ -16,12 +16,12 @@ import {
     ValidatorFn,
     Validators,
 } from '@angular/forms';
-import { Driver, FuelType, Vehicle } from '../../../models/driver.model';
-import { CorruptionDegree } from '../../../models/corruption-degree.model';
+import { Driver, TypeFuel, Vehicle } from '../../../models/driver.model';
+import { DegreeCorruption } from '../../../models/police-post.model';
 import { Street } from '../../../models/street.model';
-import { CoverType } from '../../../models/cover-type.model';
-import { TrafficLight } from '../../../models/traffic-light.model';
-import { FineType } from '../../../models/fine-type.model';
+import { TypeCover } from '../../../models/cover-type.model';
+import { TrafficLights } from '../../../models/traffic-light.model';
+import { TypeFine } from '../../../models/fine-type.model';
 
 @Component({
     selector: 'app-admin-db',
@@ -42,7 +42,7 @@ export class AdminDbComponent {
 
     private fb = inject(FormBuilder);
 
-    fineTypes: FineType[] = [
+    fineTypes: TypeFine[] = [
         {
             name: 'Имя1',
             price: 300,
@@ -53,7 +53,7 @@ export class AdminDbComponent {
         },
     ];
 
-    trafficLights: TrafficLight[] = [
+    trafficLights: TrafficLights[] = [
         {
             time_green_signal: 25,
             time_red_signal: 30,
@@ -64,7 +64,7 @@ export class AdminDbComponent {
         },
     ];
 
-    coverTypes: CoverType[] = [
+    coverTypes: TypeCover[] = [
         {
             name: 'Имя1',
             coefficient_braking: 1,
@@ -84,7 +84,7 @@ export class AdminDbComponent {
         },
     ];
 
-    corruptionDegrees: CorruptionDegree[] = [
+    corruptionDegrees: DegreeCorruption[] = [
         {
             name: 'Степень1',
             coefficient_corruption: 1,
@@ -95,7 +95,7 @@ export class AdminDbComponent {
         },
     ];
 
-    typeFuels: FuelType[] = [
+    typeFuels: TypeFuel[] = [
         {
             name: 'Топливо',
             price: 55,
@@ -285,7 +285,7 @@ export class AdminDbComponent {
 
     editTypeFuelNumber = 0;
 
-    pageTypeFuelsShowing: FuelType[] = [];
+    pageTypeFuelsShowing: TypeFuel[] = [];
 
     typeFuelsArrSize = 0;
 
@@ -307,7 +307,7 @@ export class AdminDbComponent {
 
     editCorruptionDegreeNumber = 0;
 
-    pageCorruptionDegreeShowing: CorruptionDegree[] = [];
+    pageCorruptionDegreeShowing: DegreeCorruption[] = [];
 
     corruptionDegreeArrSize = 0;
 
@@ -352,7 +352,7 @@ export class AdminDbComponent {
 
     editCoverTypeNumber = 0;
 
-    pageCoverTypeShowing: CoverType[] = [];
+    pageCoverTypeShowing: TypeCover[] = [];
 
     coverTypesArrSize = 0;
 
@@ -377,7 +377,7 @@ export class AdminDbComponent {
 
     editTrafficLightNumber = 0;
 
-    pageTrafficLightShowing: TrafficLight[] = [];
+    pageTrafficLightShowing: TrafficLights[] = [];
 
     trafficLightsArrSize = 0;
 
@@ -399,7 +399,7 @@ export class AdminDbComponent {
 
     editFineTypeNumber = 0;
 
-    pageFineTypeShowing: FineType[] = [];
+    pageFineTypeShowing: TypeFine[] = [];
 
     fineTypesArrSize = 0;
 
@@ -629,7 +629,7 @@ export class AdminDbComponent {
         const control = this.vehicleAddForm.controls;
         const vehicleTypeFuel = this.typeFuels.find(
             (typeFuel) => typeFuel.name === control.typeFuel.value
-        ) as FuelType;
+        ) as TypeFuel;
 
         this.vehicles.push({
             brand: control.brand.value,
@@ -665,7 +665,7 @@ export class AdminDbComponent {
 
         const vehicleTypeFuel = this.typeFuels.find(
             (typeFuel) => typeFuel.name === control.typeFuel.value
-        ) as FuelType;
+        ) as TypeFuel;
 
         this.vehicles[this.editVehicleNumber] = {
             brand: control.brand.value,

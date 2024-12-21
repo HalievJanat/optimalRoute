@@ -970,9 +970,9 @@ export class AdminPageComponent {
             return;
         }
         let uds = new ClassOptimalRoute.UDS();
-        uds.name = 'Samara';
-        uds.crossroads = this.crossroadList;
-        uds.roads = this.roadList;
+        uds.Name = 'Samara';
+        uds.Crossroads = this.crossroadList;
+        uds.Roads = this.roadList;
         const jsonUDS: string = JSON.stringify(uds);
         console.log(jsonUDS);
     }
