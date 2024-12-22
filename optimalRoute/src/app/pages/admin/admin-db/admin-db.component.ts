@@ -22,6 +22,7 @@ import { Street } from '../../../models/street.model';
 import { TypeCover } from '../../../models/cover-type.model';
 import { TrafficLights } from '../../../models/traffic-light.model';
 import { TypeFine } from '../../../models/fine-type.model';
+import { HttpService } from '../../../services/http-service.service';
 
 @Component({
     selector: 'app-admin-db',
@@ -95,12 +96,7 @@ export class AdminDbComponent {
         },
     ];
 
-    typeFuels: TypeFuel[] = [
-        {
-            name: 'Топливо',
-            price: 55,
-        },
-    ];
+    typeFuels: TypeFuel[] = [];
 
     //TODO
     vehicles: Vehicle[] = [
@@ -417,10 +413,29 @@ export class AdminDbComponent {
         }>
     >([]);
 
-    constructor() {
+    constructor(private httpService: HttpService) {
+        this.httpService.getTypeFuel().subscribe((typeFuels) => {
+            this.typeFuels = typeFuels;
+            this.typeFuelsArrSize = this.typeFuels.length;
+            this.typeFuels.forEach((typeFuel) => {
+                const addedTypeFuelGroup = this.fb.nonNullable.group({
+                    name: [
+                        typeFuel.name,
+                        [Validators.required, stringRangeValidator(15)],
+                    ],
+                    price: [
+                        typeFuel.price,
+                        [Validators.required, rangeValidator(50, 150)],
+                    ],
+                });
+                addedTypeFuelGroup.disable();
+
+                this.typeFuelEditForm.push(addedTypeFuelGroup);
+            });
+        });
+
         this.driversArrSize = this.drivers.length;
         this.vehiclesArrSize = this.vehicles.length;
-        this.typeFuelsArrSize = this.typeFuels.length;
         this.corruptionDegreeArrSize = this.corruptionDegrees.length;
         this.streetsArrSize = this.streets.length;
         this.coverTypesArrSize = this.streets.length;
@@ -429,9 +444,18 @@ export class AdminDbComponent {
 
         this.drivers.forEach((driver) => {
             const addedDriverGroup = this.fb.nonNullable.group({
-                name: [driver.name, [Validators.required, stringRangeValidator(15)]],
-                surname: [driver.surname, [Validators.required, stringRangeValidator(20)]],
-                family: [driver.family, [Validators.required, stringRangeValidator(15)]],
+                name: [
+                    driver.name,
+                    [Validators.required, stringRangeValidator(15)],
+                ],
+                surname: [
+                    driver.surname,
+                    [Validators.required, stringRangeValidator(20)],
+                ],
+                family: [
+                    driver.family,
+                    [Validators.required, stringRangeValidator(15)],
+                ],
                 infringer: [driver.infringer, Validators.required],
                 vehicle: [driver.vehicle.brand, Validators.required],
             });
@@ -442,7 +466,10 @@ export class AdminDbComponent {
 
         this.vehicles.forEach((vehicle) => {
             const addedVehicleGroup = this.fb.nonNullable.group({
-                brand: [vehicle.brand, [Validators.required, stringRangeValidator(15)]],
+                brand: [
+                    vehicle.brand,
+                    [Validators.required, stringRangeValidator(15)],
+                ],
                 typeFuel: [vehicle.type_fuel.name, Validators.required],
                 consumption_fuel: [
                     vehicle.consumption_fuel,
@@ -458,25 +485,12 @@ export class AdminDbComponent {
             this.vehicleEditForm.push(addedVehicleGroup);
         });
 
-        this.typeFuels.forEach((typeFuel) => {
-            const addedTypeFuelGroup = this.fb.nonNullable.group({
-                name: [
-                    typeFuel.name,
-                    [Validators.required, stringRangeValidator(15)],
-                ],
-                price: [
-                    typeFuel.price,
-                    [Validators.required, rangeValidator(50, 150)],
-                ],
-            });
-            addedTypeFuelGroup.disable();
-
-            this.typeFuelEditForm.push(addedTypeFuelGroup);
-        });
-
         this.corruptionDegrees.forEach((corruptionDegree) => {
             const addedCorruptionDegreeGroup = this.fb.nonNullable.group({
-                name: [corruptionDegree.name, [Validators.required, stringRangeValidator(30)]],
+                name: [
+                    corruptionDegree.name,
+                    [Validators.required, stringRangeValidator(30)],
+                ],
                 coefficient_corruption: [
                     corruptionDegree.coefficient_corruption,
                     [
@@ -639,7 +653,10 @@ export class AdminDbComponent {
         });
 
         const addedVehicleGroup = this.fb.nonNullable.group({
-            brand: [control.brand.value, [Validators.required, stringRangeValidator(15)]],
+            brand: [
+                control.brand.value,
+                [Validators.required, stringRangeValidator(15)],
+            ],
             typeFuel: [control.typeFuel.value, Validators.required],
             consumption_fuel: [
                 control.consumption_fuel.value,
@@ -706,7 +723,10 @@ export class AdminDbComponent {
         });
 
         const addedCorruptionDegreeGroup = this.fb.nonNullable.group({
-            name: [control.name.value, [Validators.required, stringRangeValidator(30)]],
+            name: [
+                control.name.value,
+                [Validators.required, stringRangeValidator(30)],
+            ],
             coefficient_corruption: [
                 control.coefficient_corruption.value,
                 [Validators.required, rangeValidator(1, 2), floatValidator()],
