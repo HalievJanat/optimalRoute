@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, Type } from '@angular/core';
 import { HeaderComponent } from '../../../header/header.component';
 import {
     NgbDropdownModule,
@@ -43,185 +43,14 @@ export class AdminDbComponent {
 
     private fb = inject(FormBuilder);
 
-    fineTypes: TypeFine[] = [
-        {
-            name: 'Имя1',
-            price: 300,
-        },
-        {
-            name: 'Имя2',
-            price: 300,
-        },
-    ];
-
-    trafficLights: TrafficLights[] = [
-        {
-            time_green_signal: 25,
-            time_red_signal: 30,
-        },
-        {
-            time_green_signal: 30,
-            time_red_signal: 35,
-        },
-    ];
-
-    coverTypes: TypeCover[] = [
-        {
-            name: 'Имя1',
-            coefficient_braking: 1,
-        },
-        {
-            name: 'Имя2',
-            coefficient_braking: 1,
-        },
-    ];
-
-    streets: Street[] = [
-        {
-            name: 'Лукачёва',
-        },
-        {
-            name: 'Московское шоссе',
-        },
-    ];
-
-    corruptionDegrees: DegreeCorruption[] = [
-        {
-            name: 'Степень1',
-            coefficient_corruption: 1,
-        },
-        {
-            name: 'Степень2',
-            coefficient_corruption: 1,
-        },
-    ];
-
+    fineTypes: TypeFine[] = [];
+    trafficLights: TrafficLights[] = [];
+    coverTypes: TypeCover[] = [];
+    streets: Street[] = [];
+    corruptionDegrees: DegreeCorruption[] = [];
     typeFuels: TypeFuel[] = [];
-
-    //TODO
-    vehicles: Vehicle[] = [
-        {
-            brand: 'audi',
-            type_fuel: {
-                name: 'Топливо',
-                price: 55,
-            },
-            consumption_fuel: 12,
-            max_speed: 300,
-        },
-        {
-            brand: 'Девятка',
-            type_fuel: {
-                name: 'Топливо',
-                price: 55,
-            },
-            consumption_fuel: 12,
-            max_speed: 10,
-        },
-        {
-            brand: 'Буханка',
-            type_fuel: {
-                name: 'Топливо',
-                price: 55,
-            },
-            consumption_fuel: 12,
-            max_speed: 10000,
-        },
-    ];
-
-    //TODO ПОКА ЧТО ДАННЫЕ ЗАМОКАНЫ
-    drivers: Driver[] = [
-        {
-            name: 'Никита',
-            surname: 'Юрьеивч',
-            family: 'Шатилов',
-            infringer: false,
-            vehicle: {
-                brand: 'audi',
-                type_fuel: {
-                    name: 'Топливо',
-                    price: 55,
-                },
-                consumption_fuel: 12,
-                max_speed: 300,
-            },
-        },
-        {
-            name: 'Жанат',
-            surname: 'Тлекешевич',
-            family: 'Халиев',
-            infringer: true,
-            vehicle: {
-                brand: 'Девятка',
-                type_fuel: {
-                    name: 'Топливо',
-                    price: 55,
-                },
-                consumption_fuel: 12,
-                max_speed: 10,
-            },
-        },
-        {
-            name: 'Глеб',
-            surname: 'Алексеевич',
-            family: 'Уваров',
-            infringer: true,
-            vehicle: {
-                brand: 'Буханка',
-                type_fuel: {
-                    name: 'Топливо',
-                    price: 55,
-                },
-                consumption_fuel: 12,
-                max_speed: 10000,
-            },
-        },
-        {
-            name: 'Мария',
-            surname: 'Вадимовна',
-            family: 'Петренко',
-            infringer: true,
-            vehicle: {
-                brand: 'Нет машины',
-                type_fuel: {
-                    name: 'Топливо',
-                    price: 55,
-                },
-                consumption_fuel: 12,
-                max_speed: 0,
-            },
-        },
-        {
-            name: '',
-            surname: '',
-            family: '',
-            infringer: true,
-            vehicle: {
-                brand: 'Нет машины',
-                type_fuel: {
-                    name: 'Топливо',
-                    price: 55,
-                },
-                consumption_fuel: 12,
-                max_speed: 0,
-            },
-        },
-        {
-            name: '',
-            surname: '',
-            family: '',
-            infringer: true,
-            vehicle: {
-                brand: 'Нет машины',
-                type_fuel: {
-                    name: 'Топливо',
-                    price: 55,
-                },
-                consumption_fuel: 12,
-                max_speed: 0,
-            },
-        },
-    ];
+    vehicles: Vehicle[] = [];
+    drivers: Driver[] = [];
 
     isDriverEdit = false;
 
@@ -414,160 +243,199 @@ export class AdminDbComponent {
     >([]);
 
     constructor(private httpService: HttpService) {
-        this.httpService.getTypeFuel().subscribe((typeFuels) => {
-            this.typeFuels = typeFuels;
-            this.typeFuelsArrSize = this.typeFuels.length;
-            this.typeFuels.forEach((typeFuel) => {
-                const addedTypeFuelGroup = this.fb.nonNullable.group({
-                    name: [
-                        typeFuel.name,
-                        [Validators.required, stringRangeValidator(15)],
-                    ],
-                    price: [
-                        typeFuel.price,
-                        [Validators.required, rangeValidator(50, 150)],
-                    ],
+        this.httpService
+            .getAdminDbMapData<TypeFuel[]>('fuel')
+            .subscribe((typeFuels) => {
+                this.typeFuels = typeFuels;
+                this.typeFuelsArrSize = this.typeFuels.length;
+                this.typeFuels.forEach((typeFuel) => {
+                    const addedTypeFuelGroup = this.fb.nonNullable.group({
+                        name: [
+                            typeFuel.name,
+                            [Validators.required, stringRangeValidator(15)],
+                        ],
+                        price: [
+                            typeFuel.price,
+                            [Validators.required, rangeValidator(50, 150)],
+                        ],
+                    });
+                    addedTypeFuelGroup.disable();
+
+                    this.typeFuelEditForm.push(addedTypeFuelGroup);
                 });
-                addedTypeFuelGroup.disable();
-
-                this.typeFuelEditForm.push(addedTypeFuelGroup);
             });
-        });
 
-        this.driversArrSize = this.drivers.length;
-        this.vehiclesArrSize = this.vehicles.length;
-        this.corruptionDegreeArrSize = this.corruptionDegrees.length;
-        this.streetsArrSize = this.streets.length;
-        this.coverTypesArrSize = this.streets.length;
-        this.trafficLightsArrSize = this.trafficLights.length;
-        this.fineTypesArrSize = this.fineTypes.length;
+        this.httpService
+            .getAdminDbMapData<TypeFine[]>('???')
+            .subscribe((typeFines) => {
+                this.fineTypes = typeFines;
+                this.fineTypesArrSize = this.fineTypes.length;
+                this.fineTypes.forEach((fineType) => {
+                    const addedfineTypeGroup = this.fb.nonNullable.group({
+                        name: [
+                            fineType.name,
+                            [Validators.required, stringRangeValidator(40)],
+                        ],
+                        price: [
+                            fineType.price,
+                            [Validators.required, rangeValidator(300, 20000)],
+                        ],
+                    });
+                    addedfineTypeGroup.disable();
 
-        this.drivers.forEach((driver) => {
-            const addedDriverGroup = this.fb.nonNullable.group({
-                name: [
-                    driver.name,
-                    [Validators.required, stringRangeValidator(15)],
-                ],
-                surname: [
-                    driver.surname,
-                    [Validators.required, stringRangeValidator(20)],
-                ],
-                family: [
-                    driver.family,
-                    [Validators.required, stringRangeValidator(15)],
-                ],
-                infringer: [driver.infringer, Validators.required],
-                vehicle: [driver.vehicle.brand, Validators.required],
+                    this.fineTypeEditForm.push(addedfineTypeGroup);
+                });
             });
-            addedDriverGroup.disable();
 
-            this.driverEditForm.push(addedDriverGroup);
-        });
+        this.httpService
+            .getAdminDbMapData<TrafficLights[]>('???')
+            .subscribe((trafficLights) => {
+                this.trafficLights = trafficLights;
+                this.trafficLightsArrSize = this.trafficLights.length;
+                this.trafficLights.forEach((trafficLight) => {
+                    const addedTrafficLightGroup = this.fb.nonNullable.group({
+                        time_green_signal: [
+                            trafficLight.time_green_signal,
+                            [Validators.required, rangeValidator(20, 120)],
+                        ],
+                        time_red_signal: [
+                            trafficLight.time_red_signal,
+                            [Validators.required, rangeValidator(20, 120)],
+                        ],
+                    });
+                    addedTrafficLightGroup.disable();
 
-        this.vehicles.forEach((vehicle) => {
-            const addedVehicleGroup = this.fb.nonNullable.group({
-                brand: [
-                    vehicle.brand,
-                    [Validators.required, stringRangeValidator(15)],
-                ],
-                typeFuel: [vehicle.type_fuel.name, Validators.required],
-                consumption_fuel: [
-                    vehicle.consumption_fuel,
-                    [Validators.required, rangeValidator(1, 20)],
-                ],
-                max_speed: [
-                    vehicle.max_speed,
-                    [Validators.required, rangeValidator(1, 300)],
-                ],
+                    this.trafficLightEditForm.push(addedTrafficLightGroup);
+                });
             });
-            addedVehicleGroup.disable();
 
-            this.vehicleEditForm.push(addedVehicleGroup);
-        });
+        this.httpService
+            .getAdminDbMapData<TypeCover[]>('???')
+            .subscribe((coverTypes) => {
+                this.coverTypes = coverTypes;
+                this.coverTypesArrSize = this.coverTypes.length;
+                this.coverTypes.forEach((coverType) => {
+                    const addedCoverTypeGroup = this.fb.nonNullable.group({
+                        name: [
+                            coverType.name,
+                            [Validators.required, stringRangeValidator(30)],
+                        ],
+                        coefficient_braking: [
+                            coverType.coefficient_braking,
+                            [
+                                Validators.required,
+                                rangeValidator(1, 2),
+                                floatValidator(),
+                            ],
+                        ],
+                    });
+                    addedCoverTypeGroup.disable();
 
-        this.corruptionDegrees.forEach((corruptionDegree) => {
-            const addedCorruptionDegreeGroup = this.fb.nonNullable.group({
-                name: [
-                    corruptionDegree.name,
-                    [Validators.required, stringRangeValidator(30)],
-                ],
-                coefficient_corruption: [
-                    corruptionDegree.coefficient_corruption,
-                    [
-                        Validators.required,
-                        rangeValidator(1, 2),
-                        floatValidator(),
-                    ],
-                ],
+                    this.coverTypeEditForm.push(addedCoverTypeGroup);
+                });
             });
-            addedCorruptionDegreeGroup.disable();
 
-            this.corruptionDegreeEditForm.push(addedCorruptionDegreeGroup);
-        });
+        this.httpService
+            .getAdminDbMapData<Street[]>('???')
+            .subscribe((streets) => {
+                this.streets = streets;
+                this.streetsArrSize = this.streets.length;
+                this.streets.forEach((street) => {
+                    const addedStreetGroup = this.fb.nonNullable.group({
+                        name: [
+                            street.name,
+                            [Validators.required, stringRangeValidator(30)],
+                        ],
+                    });
+                    addedStreetGroup.disable();
 
-        this.streets.forEach((street) => {
-            const addedStreetGroup = this.fb.nonNullable.group({
-                name: [
-                    street.name,
-                    [Validators.required, stringRangeValidator(30)],
-                ],
+                    this.streetEditForm.push(addedStreetGroup);
+                });
             });
-            addedStreetGroup.disable();
 
-            this.streetEditForm.push(addedStreetGroup);
-        });
+        this.httpService
+            .getAdminDbMapData<DegreeCorruption[]>('???')
+            .subscribe((corruptionDegrees) => {
+                this.corruptionDegrees = corruptionDegrees;
+                this.corruptionDegreeArrSize = this.corruptionDegrees.length;
+                this.corruptionDegrees.forEach((corruptionDegree) => {
+                    const addedCorruptionDegreeGroup =
+                        this.fb.nonNullable.group({
+                            name: [
+                                corruptionDegree.name,
+                                [Validators.required, stringRangeValidator(30)],
+                            ],
+                            coefficient_corruption: [
+                                corruptionDegree.coefficient_corruption,
+                                [
+                                    Validators.required,
+                                    rangeValidator(1, 2),
+                                    floatValidator(),
+                                ],
+                            ],
+                        });
+                    addedCorruptionDegreeGroup.disable();
 
-        this.coverTypes.forEach((coverType) => {
-            const addedCoverTypeGroup = this.fb.nonNullable.group({
-                name: [
-                    coverType.name,
-                    [Validators.required, stringRangeValidator(30)],
-                ],
-                coefficient_braking: [
-                    coverType.coefficient_braking,
-                    [
-                        Validators.required,
-                        rangeValidator(1, 2),
-                        floatValidator(),
-                    ],
-                ],
+                    this.corruptionDegreeEditForm.push(
+                        addedCorruptionDegreeGroup
+                    );
+                });
             });
-            addedCoverTypeGroup.disable();
 
-            this.coverTypeEditForm.push(addedCoverTypeGroup);
-        });
+        this.httpService
+            .getAdminDbMapData<Vehicle[]>('???')
+            .subscribe((vehicles) => {
+                this.vehicles = vehicles;
+                this.vehiclesArrSize = this.vehicles.length;
+                this.vehicles.forEach((vehicle) => {
+                    const addedVehicleGroup = this.fb.nonNullable.group({
+                        brand: [
+                            vehicle.brand,
+                            [Validators.required, stringRangeValidator(15)],
+                        ],
+                        typeFuel: [vehicle.type_fuel.name, Validators.required],
+                        consumption_fuel: [
+                            vehicle.consumption_fuel,
+                            [Validators.required, rangeValidator(1, 20)],
+                        ],
+                        max_speed: [
+                            vehicle.max_speed,
+                            [Validators.required, rangeValidator(1, 300)],
+                        ],
+                    });
+                    addedVehicleGroup.disable();
 
-        this.trafficLights.forEach((trafficLight) => {
-            const addedTrafficLightGroup = this.fb.nonNullable.group({
-                time_green_signal: [
-                    trafficLight.time_green_signal,
-                    [Validators.required, rangeValidator(20, 120)],
-                ],
-                time_red_signal: [
-                    trafficLight.time_red_signal,
-                    [Validators.required, rangeValidator(20, 120)],
-                ],
+                    this.vehicleEditForm.push(addedVehicleGroup);
+                });
             });
-            addedTrafficLightGroup.disable();
+            
+        this.httpService
+            .getAdminDbMapData<Driver[]>('???')
+            .subscribe((drivers) => {
+                this.drivers = drivers;
+                this.driversArrSize = this.drivers.length;
+                this.drivers.forEach((driver) => {
+                    const addedDriverGroup = this.fb.nonNullable.group({
+                        name: [
+                            driver.name,
+                            [Validators.required, stringRangeValidator(15)],
+                        ],
+                        surname: [
+                            driver.surname,
+                            [Validators.required, stringRangeValidator(20)],
+                        ],
+                        family: [
+                            driver.family,
+                            [Validators.required, stringRangeValidator(15)],
+                        ],
+                        infringer: [driver.infringer, Validators.required],
+                        vehicle: [driver.vehicle.brand, Validators.required],
+                    });
+                    addedDriverGroup.disable();
 
-            this.trafficLightEditForm.push(addedTrafficLightGroup);
-        });
-
-        this.fineTypes.forEach((fineType) => {
-            const addedfineTypeGroup = this.fb.nonNullable.group({
-                name: [
-                    fineType.name,
-                    [Validators.required, stringRangeValidator(40)],
-                ],
-                price: [
-                    fineType.price,
-                    [Validators.required, rangeValidator(300, 20000)],
-                ],
+                    this.driverEditForm.push(addedDriverGroup);
+                });
             });
-            addedfineTypeGroup.disable();
-
-            this.fineTypeEditForm.push(addedfineTypeGroup);
-        });
     }
 
     addDriver() {

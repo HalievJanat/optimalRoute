@@ -1,6 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { TypeFuel } from '../models/driver.model';
+import { TypeFine } from '../models/fine-type.model';
 
 @Injectable({
     providedIn: 'root',
@@ -14,7 +16,7 @@ export class HttpService {
         return this.http.post(`${this.apiUrl}/admin/fuel`, newFuel);
     }
 
-    getTypeFuel(): Observable<any> {
-        return this.http.get(`${this.apiUrl}/admin/fuel`);
+    getAdminDbMapData<T>(dataUrl: string): Observable<T> {
+        return this.http.get<T>(`${this.apiUrl}/admin/${dataUrl}`);
     }
 }
