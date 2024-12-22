@@ -49,7 +49,7 @@
                                     }}
                                 </button>
                                 <div ngbDropdownMenu aria-labelledby="dropdownBasic">
-                                    @for (vehicle of vehicles; track
+                                    @for (vehicle of httpService.vehicles; track
                                     vehicle.brand) {
                                     <button ngbDropdownItem (click)="
                                             driverAddForm.controls.vehicle.setValue(
@@ -126,7 +126,7 @@
                                         }}
                                     </button>
                                     <div ngbDropdownMenu aria-labelledby="dropdownBasic">
-                                        @for (vehicle of vehicles; track
+                                        @for (vehicle of httpService.vehicles; track
                                         vehicle.brand) {
                                         <button ngbDropdownItem (click)="
                                             driver.controls.vehicle.setValue(
@@ -226,7 +226,7 @@
                                     }}
                                 </button>
                                 <div ngbDropdownMenu aria-labelledby="dropdownBasic">
-                                    @for (typeFuel of typeFuels; track
+                                    @for (typeFuel of httpService.typeFuels; track
                                     typeFuel.name) {
                                     <button ngbDropdownItem (click)="
                                             vehicleAddForm.controls.typeFuel.setValue(
@@ -293,7 +293,7 @@
                                         }}
                                     </button>
                                     <div ngbDropdownMenu aria-labelledby="dropdownBasic">
-                                        @for (typeFuel of typeFuels; track
+                                        @for (typeFuel of httpService.typeFuels; track
                                         typeFuel.name) {
                                         <button ngbDropdownItem (click)="
                                                 vehicle.controls.typeFuel.setValue(

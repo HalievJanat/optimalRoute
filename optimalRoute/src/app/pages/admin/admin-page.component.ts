@@ -1,14 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { HeaderComponent } from '../../header/header.component';
 import Konva from 'konva';
 import { ClassOptimalRoute } from '../../classJSON/ClassOptimalRoute';
 import { CommonModule } from '@angular/common';
 import { NgbDropdownModule, NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
-import { TrafficLights } from '../../models/traffic-light.model';
-import { Street } from '../../models/street.model';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { TypeCover } from '../../models/cover-type.model';
-import { DegreeCorruption } from '../../models/police-post.model';
+import { HttpService } from '../../services/http-service.service';
 
 @Component({
     selector: 'app-admin-page',
@@ -19,6 +16,8 @@ import { DegreeCorruption } from '../../models/police-post.model';
 })
 
 export class AdminPageComponent {
+    httpService = inject(HttpService);
+
     constructor(
 		config: NgbModalConfig,
 		private modalService: NgbModal,
@@ -40,40 +39,6 @@ export class AdminPageComponent {
     dropdownCoverType = '';
     dropdownTrafficSign = '';
     dropdownCorruptionCoef = '';
-
-    trafficLights: TrafficLights[] = [{
-        time_green_signal: 20,
-        time_red_signal: 20
-    },
-    {
-        time_green_signal: 25,
-        time_red_signal: 40 
-    }];
-
-    streets: Street[] = [{
-        name: 'Лукачёва'
-    },
-    {
-        name: 'Московское шоссе'
-    }];
-
-    coverTypes: TypeCover[] = [{
-        name: 'Асфальт',
-        coefficient_braking: 1
-    },
-    {
-        name: 'Другое',
-        coefficient_braking: 2
-    }];
-
-    corruptionCoefs: DegreeCorruption[] = [{
-        name: 'Очень жадный',
-        coefficient_corruption: 2
-    },
-    {
-        name: 'Средне жадный',
-        coefficient_corruption: 1.5
-    }]
 
     isContextMenuVisibleCrossroad = false; // Показывать ли меню
     isContextMenuVisibleRoad = false; // Показывать ли меню
@@ -974,20 +939,20 @@ export class AdminPageComponent {
     }
 
     setDropdownTrafficLight(trafficLightIndex: number) {
-        this.dropdownGreenDuration = this.trafficLights[trafficLightIndex].time_green_signal.toString();
-        this.dropdownRedDuration = this.trafficLights[trafficLightIndex].time_red_signal.toString();
+        this.dropdownGreenDuration = this.httpService.trafficLigths[trafficLightIndex].time_green_signal.toString();
+        this.dropdownRedDuration = this.httpService.trafficLigths[trafficLightIndex].time_red_signal.toString();
     }
 
     setDropdownStreet(streetIndex: number) {
-        this.dropdownStreet = this.streets[streetIndex].name;
+        this.dropdownStreet = this.httpService.streets[streetIndex].name;
     }
 
     setDropdownCoverType(coverTypeIndex: number) {
-        this.dropdownCoverType = this.coverTypes[coverTypeIndex].name;
+        this.dropdownCoverType = this.httpService.coverTypes[coverTypeIndex].name;
     }
 
     setDropdownCorruptionCoef(corruptionCoef: number) {
-        this.dropdownCorruptionCoef = this.corruptionCoefs[corruptionCoef].name;
+        this.dropdownCorruptionCoef = this.httpService.corruptionDegrees[corruptionCoef].name;
     }
 
     setDropdownMoveDirectionValue(value: string) {
