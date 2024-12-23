@@ -1,6 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
 import { Driver, TypeFuel, Vehicle } from '../models/driver.model';
 import { TypeFine } from '../models/fine-type.model';
 import { DegreeCorruption } from '../models/police-post.model';
@@ -24,6 +23,7 @@ export class HttpService {
 	trafficLigths: TrafficLights[] = [];
 
 	constructor(private httpClient: HttpClient) {
+		console.log('ya servis');
 		this.getMapDbValue<Driver>(this.drivers, 'driver');
 		this.getMapDbValue<Vehicle>(this.vehicles, 'car');
 		this.getMapDbValue<TypeFine>(this.fineTypes, 'fine');

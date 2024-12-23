@@ -201,9 +201,9 @@ export class AdminDbComponent {
 
     trafficLightsTabPage = 1;
 
-    trafficLightAddForm = this.fb.nonNullable.group({
-        time_green_signal: [20, [Validators.required, rangeValidator(20, 120)]],
-        time_red_signal: [20, [Validators.required, rangeValidator(20, 120)]],
+    trafficLightAddForm = this.fb.group({
+        time_green_signal: [null, [Validators.required, rangeValidator(20, 120)]],
+        time_red_signal: [null, [Validators.required, rangeValidator(20, 120)]],
     });
 
     trafficLightEditForm = this.fb.array<
@@ -757,6 +757,7 @@ export class AdminDbComponent {
         this.coverTypeAddForm.reset();
 
         this.coverTypesArrSize++;
+        console.log(this.httpService.coverTypes);
     }
 
     //TODO
@@ -795,8 +796,8 @@ export class AdminDbComponent {
         const control = this.trafficLightAddForm.controls;
 
         const addedTrafficLight = {
-            time_green_signal: control.time_green_signal.value,
-            time_red_signal: control.time_red_signal.value,
+            time_green_signal: control.time_green_signal.value as unknown as number,
+            time_red_signal: control.time_red_signal.value as unknown as number,
         };
 
         this.httpService.trafficLigths.push(addedTrafficLight);
@@ -804,11 +805,11 @@ export class AdminDbComponent {
 
         const addedTrafficLightGroup = this.fb.nonNullable.group({
             time_green_signal: [
-                control.time_green_signal.value,
+                control.time_green_signal.value as unknown as number,
                 [Validators.required, rangeValidator(20, 120)],
             ],
             time_red_signal: [
-                control.time_red_signal.value,
+                control.time_red_signal.value as unknown as number,
                 [Validators.required, rangeValidator(20, 120)],
             ],
         });
