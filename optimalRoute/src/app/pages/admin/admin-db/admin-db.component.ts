@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, Type } from '@angular/core';
 import { HeaderComponent } from '../../../header/header.component';
 import {
     NgbDropdownModule,
@@ -22,6 +22,8 @@ import { Street } from '../../../models/street.model';
 import { TypeCover } from '../../../models/cover-type.model';
 import { TrafficLights } from '../../../models/traffic-light.model';
 import { TypeFine } from '../../../models/fine-type.model';
+import { HttpService } from '../../../services/http-service.service';
+import { FuelType } from '../../../models/fuel-type.model';
 
 @Component({
     selector: 'app-admin-db',
@@ -41,191 +43,7 @@ export class AdminDbComponent {
     activeRightElement = 1;
 
     private fb = inject(FormBuilder);
-
-    fineTypes: TypeFine[] = [
-        {
-            name: 'Имя1',
-            price: 300,
-        },
-        {
-            name: 'Имя2',
-            price: 300,
-        },
-    ];
-
-    trafficLights: TrafficLights[] = [
-        {
-            time_green_signal: 25,
-            time_red_signal: 30,
-        },
-        {
-            time_green_signal: 30,
-            time_red_signal: 35,
-        },
-    ];
-
-    coverTypes: TypeCover[] = [
-        {
-            name: 'Имя1',
-            coefficient_braking: 1,
-        },
-        {
-            name: 'Имя2',
-            coefficient_braking: 1,
-        },
-    ];
-
-    streets: Street[] = [
-        {
-            name: 'Лукачёва',
-        },
-        {
-            name: 'Московское шоссе',
-        },
-    ];
-
-    corruptionDegrees: DegreeCorruption[] = [
-        {
-            name: 'Степень1',
-            coefficient_corruption: 1,
-        },
-        {
-            name: 'Степень2',
-            coefficient_corruption: 1,
-        },
-    ];
-
-    typeFuels: TypeFuel[] = [
-        {
-            name: 'Топливо',
-            price: 55,
-        },
-    ];
-
-    //TODO
-    vehicles: Vehicle[] = [
-        {
-            brand: 'audi',
-            type_fuel: {
-                name: 'Топливо',
-                price: 55,
-            },
-            consumption_fuel: 12,
-            max_speed: 300,
-        },
-        {
-            brand: 'Девятка',
-            type_fuel: {
-                name: 'Топливо',
-                price: 55,
-            },
-            consumption_fuel: 12,
-            max_speed: 10,
-        },
-        {
-            brand: 'Буханка',
-            type_fuel: {
-                name: 'Топливо',
-                price: 55,
-            },
-            consumption_fuel: 12,
-            max_speed: 10000,
-        },
-    ];
-
-    //TODO ПОКА ЧТО ДАННЫЕ ЗАМОКАНЫ
-    drivers: Driver[] = [
-        {
-            name: 'Никита',
-            surname: 'Юрьеивч',
-            family: 'Шатилов',
-            infringer: false,
-            vehicle: {
-                brand: 'audi',
-                type_fuel: {
-                    name: 'Топливо',
-                    price: 55,
-                },
-                consumption_fuel: 12,
-                max_speed: 300,
-            },
-        },
-        {
-            name: 'Жанат',
-            surname: 'Тлекешевич',
-            family: 'Халиев',
-            infringer: true,
-            vehicle: {
-                brand: 'Девятка',
-                type_fuel: {
-                    name: 'Топливо',
-                    price: 55,
-                },
-                consumption_fuel: 12,
-                max_speed: 10,
-            },
-        },
-        {
-            name: 'Глеб',
-            surname: 'Алексеевич',
-            family: 'Уваров',
-            infringer: true,
-            vehicle: {
-                brand: 'Буханка',
-                type_fuel: {
-                    name: 'Топливо',
-                    price: 55,
-                },
-                consumption_fuel: 12,
-                max_speed: 10000,
-            },
-        },
-        {
-            name: 'Мария',
-            surname: 'Вадимовна',
-            family: 'Петренко',
-            infringer: true,
-            vehicle: {
-                brand: 'Нет машины',
-                type_fuel: {
-                    name: 'Топливо',
-                    price: 55,
-                },
-                consumption_fuel: 12,
-                max_speed: 0,
-            },
-        },
-        {
-            name: '',
-            surname: '',
-            family: '',
-            infringer: true,
-            vehicle: {
-                brand: 'Нет машины',
-                type_fuel: {
-                    name: 'Топливо',
-                    price: 55,
-                },
-                consumption_fuel: 12,
-                max_speed: 0,
-            },
-        },
-        {
-            name: '',
-            surname: '',
-            family: '',
-            infringer: true,
-            vehicle: {
-                brand: 'Нет машины',
-                type_fuel: {
-                    name: 'Топливо',
-                    price: 55,
-                },
-                consumption_fuel: 12,
-                max_speed: 0,
-            },
-        },
-    ];
+    httpService = inject(HttpService);
 
     isDriverEdit = false;
 
@@ -383,9 +201,9 @@ export class AdminDbComponent {
 
     trafficLightsTabPage = 1;
 
-    trafficLightAddForm = this.fb.nonNullable.group({
-        time_green_signal: [20, [Validators.required, rangeValidator(20, 120)]],
-        time_red_signal: [20, [Validators.required, rangeValidator(20, 120)]],
+    trafficLightAddForm = this.fb.group({
+        time_green_signal: [null, [Validators.required, rangeValidator(20, 120)]],
+        time_red_signal: [null, [Validators.required, rangeValidator(20, 120)]],
     });
 
     trafficLightEditForm = this.fb.array<
@@ -418,47 +236,8 @@ export class AdminDbComponent {
     >([]);
 
     constructor() {
-        this.driversArrSize = this.drivers.length;
-        this.vehiclesArrSize = this.vehicles.length;
-        this.typeFuelsArrSize = this.typeFuels.length;
-        this.corruptionDegreeArrSize = this.corruptionDegrees.length;
-        this.streetsArrSize = this.streets.length;
-        this.coverTypesArrSize = this.streets.length;
-        this.trafficLightsArrSize = this.trafficLights.length;
-        this.fineTypesArrSize = this.fineTypes.length;
-
-        this.drivers.forEach((driver) => {
-            const addedDriverGroup = this.fb.nonNullable.group({
-                name: [driver.name, [Validators.required, stringRangeValidator(15)]],
-                surname: [driver.surname, [Validators.required, stringRangeValidator(20)]],
-                family: [driver.family, [Validators.required, stringRangeValidator(15)]],
-                infringer: [driver.infringer, Validators.required],
-                vehicle: [driver.vehicle.brand, Validators.required],
-            });
-            addedDriverGroup.disable();
-
-            this.driverEditForm.push(addedDriverGroup);
-        });
-
-        this.vehicles.forEach((vehicle) => {
-            const addedVehicleGroup = this.fb.nonNullable.group({
-                brand: [vehicle.brand, [Validators.required, stringRangeValidator(15)]],
-                typeFuel: [vehicle.type_fuel.name, Validators.required],
-                consumption_fuel: [
-                    vehicle.consumption_fuel,
-                    [Validators.required, rangeValidator(1, 20)],
-                ],
-                max_speed: [
-                    vehicle.max_speed,
-                    [Validators.required, rangeValidator(1, 300)],
-                ],
-            });
-            addedVehicleGroup.disable();
-
-            this.vehicleEditForm.push(addedVehicleGroup);
-        });
-
-        this.typeFuels.forEach((typeFuel) => {
+        this.typeFuelsArrSize = this.httpService.typeFuels.length;
+        this.httpService.typeFuels.forEach((typeFuel) => {
             const addedTypeFuelGroup = this.fb.nonNullable.group({
                 name: [
                     typeFuel.name,
@@ -474,36 +253,42 @@ export class AdminDbComponent {
             this.typeFuelEditForm.push(addedTypeFuelGroup);
         });
 
-        this.corruptionDegrees.forEach((corruptionDegree) => {
-            const addedCorruptionDegreeGroup = this.fb.nonNullable.group({
-                name: [corruptionDegree.name, [Validators.required, stringRangeValidator(30)]],
-                coefficient_corruption: [
-                    corruptionDegree.coefficient_corruption,
-                    [
-                        Validators.required,
-                        rangeValidator(1, 2),
-                        floatValidator(),
-                    ],
-                ],
-            });
-            addedCorruptionDegreeGroup.disable();
-
-            this.corruptionDegreeEditForm.push(addedCorruptionDegreeGroup);
-        });
-
-        this.streets.forEach((street) => {
-            const addedStreetGroup = this.fb.nonNullable.group({
+        this.fineTypesArrSize = this.httpService.fineTypes.length;
+        this.httpService.fineTypes.forEach((fineType) => {
+            const addedfineTypeGroup = this.fb.nonNullable.group({
                 name: [
-                    street.name,
-                    [Validators.required, stringRangeValidator(30)],
+                    fineType.name,
+                    [Validators.required, stringRangeValidator(40)],
+                ],
+                price: [
+                    fineType.price,
+                    [Validators.required, rangeValidator(300, 20000)],
                 ],
             });
-            addedStreetGroup.disable();
+            addedfineTypeGroup.disable();
 
-            this.streetEditForm.push(addedStreetGroup);
+            this.fineTypeEditForm.push(addedfineTypeGroup);
         });
 
-        this.coverTypes.forEach((coverType) => {
+        this.trafficLightsArrSize = this.httpService.trafficLigths.length;
+        this.httpService.trafficLigths.forEach((trafficLight) => {
+            const addedTrafficLightGroup = this.fb.nonNullable.group({
+                time_green_signal: [
+                    trafficLight.time_green_signal,
+                    [Validators.required, rangeValidator(20, 120)],
+                ],
+                time_red_signal: [
+                    trafficLight.time_red_signal,
+                    [Validators.required, rangeValidator(20, 120)],
+                ],
+            });
+            addedTrafficLightGroup.disable();
+
+            this.trafficLightEditForm.push(addedTrafficLightGroup);
+        });
+
+        this.coverTypesArrSize = this.httpService.coverTypes.length;
+        this.httpService.coverTypes.forEach((coverType) => {
             const addedCoverTypeGroup = this.fb.nonNullable.group({
                 name: [
                     coverType.name,
@@ -523,52 +308,103 @@ export class AdminDbComponent {
             this.coverTypeEditForm.push(addedCoverTypeGroup);
         });
 
-        this.trafficLights.forEach((trafficLight) => {
-            const addedTrafficLightGroup = this.fb.nonNullable.group({
-                time_green_signal: [
-                    trafficLight.time_green_signal,
-                    [Validators.required, rangeValidator(20, 120)],
-                ],
-                time_red_signal: [
-                    trafficLight.time_red_signal,
-                    [Validators.required, rangeValidator(20, 120)],
+        this.streetsArrSize = this.httpService.streets.length;
+        this.httpService.streets.forEach((street) => {
+            const addedStreetGroup = this.fb.nonNullable.group({
+                name: [
+                    street.name,
+                    [Validators.required, stringRangeValidator(30)],
                 ],
             });
-            addedTrafficLightGroup.disable();
+            addedStreetGroup.disable();
 
-            this.trafficLightEditForm.push(addedTrafficLightGroup);
+            this.streetEditForm.push(addedStreetGroup);
         });
 
-        this.fineTypes.forEach((fineType) => {
-            const addedfineTypeGroup = this.fb.nonNullable.group({
+        this.corruptionDegreeArrSize = this.httpService.corruptionDegrees.length;
+        this.httpService.corruptionDegrees.forEach((corruptionDegree) => {
+            const addedCorruptionDegreeGroup = this.fb.nonNullable.group({
                 name: [
-                    fineType.name,
-                    [Validators.required, stringRangeValidator(40)],
+                    corruptionDegree.name,
+                    [Validators.required, stringRangeValidator(30)],
                 ],
-                price: [
-                    fineType.price,
-                    [Validators.required, rangeValidator(300, 20000)],
+                coefficient_corruption: [
+                    corruptionDegree.coefficient_corruption,
+                    [
+                        Validators.required,
+                        rangeValidator(1, 2),
+                        floatValidator(),
+                    ],
                 ],
             });
-            addedfineTypeGroup.disable();
+            addedCorruptionDegreeGroup.disable();
 
-            this.fineTypeEditForm.push(addedfineTypeGroup);
+            this.corruptionDegreeEditForm.push(addedCorruptionDegreeGroup);
+        });
+
+        this.vehiclesArrSize = this.httpService.vehicles.length;
+        this.httpService.vehicles.forEach((vehicle) => {
+            const addedVehicleGroup = this.fb.nonNullable.group({
+                brand: [
+                    vehicle.brand,
+                    [Validators.required, stringRangeValidator(15)],
+                ],
+                typeFuel: [vehicle.type_fuel.name, Validators.required],
+                consumption_fuel: [
+                    vehicle.consumption_fuel,
+                    [Validators.required, rangeValidator(1, 20)],
+                ],
+                max_speed: [
+                    vehicle.max_speed,
+                    [Validators.required, rangeValidator(1, 300)],
+                ],
+            });
+            addedVehicleGroup.disable();
+
+            this.vehicleEditForm.push(addedVehicleGroup);
+        });
+
+        this.driversArrSize = this.httpService.drivers.length;
+        this.httpService.drivers.forEach((driver) => {
+            const addedDriverGroup = this.fb.nonNullable.group({
+                name: [
+                    driver.name,
+                    [Validators.required, stringRangeValidator(15)],
+                ],
+                surname: [
+                    driver.surname,
+                    [Validators.required, stringRangeValidator(20)],
+                ],
+                family: [
+                    driver.family,
+                    [Validators.required, stringRangeValidator(15)],
+                ],
+                infringer: [driver.infringer, Validators.required],
+                vehicle: [driver.vehicle.brand, Validators.required],
+            });
+            addedDriverGroup.disable();
+
+            this.driverEditForm.push(addedDriverGroup);
         });
     }
 
     addDriver() {
         const control = this.driverAddForm.controls;
-        const driverAuto = this.vehicles.find(
+        const driverAuto = this.httpService.vehicles.find(
             (vehicle) => vehicle.brand === control.vehicle.value
         ) as Vehicle;
 
-        this.drivers.push({
+        const addedDriver = {
             name: control.name.value,
             surname: control.surname.value,
             family: control.family.value,
             infringer: control.infringer.value,
             vehicle: driverAuto,
-        });
+        };
+
+        this.httpService.drivers.push(addedDriver);
+
+        this.httpService.addMapDbValue<Driver>(addedDriver, 'driver');
 
         const addedDriverGroup = this.fb.nonNullable.group({
             name: ['', [Validators.required, stringRangeValidator(15)]],
@@ -586,15 +422,16 @@ export class AdminDbComponent {
         this.driversArrSize++;
     }
 
+    //TODO с бд пока нет редактирования
     editDriver() {
         const control =
             this.driverEditForm.controls[this.editDriverNumber].controls;
 
-        const driverAuto = this.vehicles.find(
+        const driverAuto = this.httpService.vehicles.find(
             (vehicle) => vehicle.brand === control.vehicle.value
         ) as Vehicle;
 
-        this.drivers[this.editDriverNumber] = {
+        this.httpService.drivers[this.editDriverNumber] = {
             name: control.name.value,
             surname: control.surname.value,
             family: control.family.value,
@@ -608,38 +445,45 @@ export class AdminDbComponent {
 
     cancelEditDriver() {
         this.driverEditForm.controls[this.editDriverNumber].setValue({
-            name: this.drivers[this.editDriverNumber].name,
-            surname: this.drivers[this.editDriverNumber].surname,
-            family: this.drivers[this.editDriverNumber].family,
-            infringer: this.drivers[this.editDriverNumber].infringer,
-            vehicle: this.drivers[this.editDriverNumber].vehicle.brand,
+            name: this.httpService.drivers[this.editDriverNumber].name,
+            surname: this.httpService.drivers[this.editDriverNumber].surname,
+            family: this.httpService.drivers[this.editDriverNumber].family,
+            infringer: this.httpService.drivers[this.editDriverNumber].infringer,
+            vehicle: this.httpService.drivers[this.editDriverNumber].vehicle.brand,
         });
 
         this.isDriverEdit = false;
         this.driverEditForm.controls[this.editDriverNumber].disable();
     }
 
+    //TODO в бд пока нет
     driverDelete(index: number) {
-        this.drivers.splice(index, 1);
+        this.httpService.drivers.splice(index, 1);
         this.driverEditForm.controls.splice(index, 1);
         this.driversArrSize--;
     }
 
     addVehicle() {
         const control = this.vehicleAddForm.controls;
-        const vehicleTypeFuel = this.typeFuels.find(
+        const vehicleTypeFuel = this.httpService.typeFuels.find(
             (typeFuel) => typeFuel.name === control.typeFuel.value
         ) as TypeFuel;
 
-        this.vehicles.push({
+        const addedVehicle = {
             brand: control.brand.value,
             type_fuel: vehicleTypeFuel,
             consumption_fuel: control.consumption_fuel.value,
             max_speed: control.max_speed.value,
-        });
+        };
+
+        this.httpService.vehicles.push(addedVehicle);
+        this.httpService.addMapDbValue<Vehicle>(addedVehicle, 'car')
 
         const addedVehicleGroup = this.fb.nonNullable.group({
-            brand: [control.brand.value, [Validators.required, stringRangeValidator(15)]],
+            brand: [
+                control.brand.value,
+                [Validators.required, stringRangeValidator(15)],
+            ],
             typeFuel: [control.typeFuel.value, Validators.required],
             consumption_fuel: [
                 control.consumption_fuel.value,
@@ -659,15 +503,16 @@ export class AdminDbComponent {
         this.vehiclesArrSize++;
     }
 
+    //TODO v bd net
     editVehicle() {
         const control =
             this.vehicleEditForm.controls[this.editVehicleNumber].controls;
 
-        const vehicleTypeFuel = this.typeFuels.find(
+        const vehicleTypeFuel = this.httpService.typeFuels.find(
             (typeFuel) => typeFuel.name === control.typeFuel.value
         ) as TypeFuel;
 
-        this.vehicles[this.editVehicleNumber] = {
+        this.httpService.vehicles[this.editVehicleNumber] = {
             brand: control.brand.value,
             type_fuel: vehicleTypeFuel,
             consumption_fuel: control.consumption_fuel.value,
@@ -680,19 +525,20 @@ export class AdminDbComponent {
 
     cancelEditVehicle() {
         this.vehicleEditForm.controls[this.editVehicleNumber].setValue({
-            brand: this.vehicles[this.editVehicleNumber].brand,
-            typeFuel: this.vehicles[this.editVehicleNumber].type_fuel.name,
+            brand: this.httpService.vehicles[this.editVehicleNumber].brand,
+            typeFuel: this.httpService.vehicles[this.editVehicleNumber].type_fuel.name,
             consumption_fuel:
-                this.vehicles[this.editVehicleNumber].consumption_fuel,
-            max_speed: this.vehicles[this.editVehicleNumber].max_speed,
+                this.httpService.vehicles[this.editVehicleNumber].consumption_fuel,
+            max_speed: this.httpService.vehicles[this.editVehicleNumber].max_speed,
         });
 
         this.isVehicleEdit = false;
         this.vehicleEditForm.controls[this.editVehicleNumber].disable();
     }
 
+    //TODO v bd net
     vehicleDelete(index: number) {
-        this.vehicles.splice(index, 1);
+        this.httpService.vehicles.splice(index, 1);
         this.vehicleEditForm.controls.splice(index, 1);
         this.vehiclesArrSize--;
     }
@@ -700,13 +546,19 @@ export class AdminDbComponent {
     addCorruptionDegree() {
         const control = this.corruptionDegreeAddForm.controls;
 
-        this.corruptionDegrees.push({
+        const addedCorruptionDegree = {
             name: control.name.value,
             coefficient_corruption: control.coefficient_corruption.value,
-        });
+        };
+
+        this.httpService.corruptionDegrees.push(addedCorruptionDegree);
+        this.httpService.addMapDbValue<DegreeCorruption>(addedCorruptionDegree, 'corruption')
 
         const addedCorruptionDegreeGroup = this.fb.nonNullable.group({
-            name: [control.name.value, [Validators.required, stringRangeValidator(30)]],
+            name: [
+                control.name.value,
+                [Validators.required, stringRangeValidator(30)],
+            ],
             coefficient_corruption: [
                 control.coefficient_corruption.value,
                 [Validators.required, rangeValidator(1, 2), floatValidator()],
@@ -721,13 +573,14 @@ export class AdminDbComponent {
         this.corruptionDegreeArrSize++;
     }
 
+    //TODO v bd net
     editCorruptionDegree() {
         const control =
             this.corruptionDegreeEditForm.controls[
                 this.editCorruptionDegreeNumber
             ].controls;
 
-        this.corruptionDegrees[this.editCorruptionDegreeNumber] = {
+        this.httpService.corruptionDegrees[this.editCorruptionDegreeNumber] = {
             name: control.name.value,
             coefficient_corruption: control.coefficient_corruption.value,
         };
@@ -742,9 +595,9 @@ export class AdminDbComponent {
         this.corruptionDegreeEditForm.controls[
             this.editCorruptionDegreeNumber
         ].setValue({
-            name: this.corruptionDegrees[this.editCorruptionDegreeNumber].name,
+            name: this.httpService.corruptionDegrees[this.editCorruptionDegreeNumber].name,
             coefficient_corruption:
-                this.corruptionDegrees[this.editCorruptionDegreeNumber]
+                this.httpService.corruptionDegrees[this.editCorruptionDegreeNumber]
                     .coefficient_corruption,
         });
 
@@ -754,8 +607,9 @@ export class AdminDbComponent {
         ].disable();
     }
 
+    //TODO v bd net
     corruptionDegreeDelete(index: number) {
-        this.corruptionDegrees.splice(index, 1);
+        this.httpService.corruptionDegrees.splice(index, 1);
         this.corruptionDegreeEditForm.controls.splice(index, 1);
         this.corruptionDegreeArrSize--;
     }
@@ -763,10 +617,13 @@ export class AdminDbComponent {
     addTypeFuel() {
         const control = this.typeFuelAddForm.controls;
 
-        this.typeFuels.push({
+        const addedTypeFuel = {
             name: control.name.value,
             price: control.price.value,
-        });
+        };
+
+        this.httpService.typeFuels.push(addedTypeFuel);
+        this.httpService.addMapDbValue<FuelType>(addedTypeFuel,'fuel');
 
         const addedTypeFuelGroup = this.fb.nonNullable.group({
             name: [
@@ -787,11 +644,12 @@ export class AdminDbComponent {
         this.typeFuelsArrSize++;
     }
 
+    //TODO
     editTypeFuel() {
         const control =
             this.typeFuelEditForm.controls[this.editTypeFuelNumber].controls;
 
-        this.typeFuels[this.editTypeFuelNumber] = {
+        this.httpService.typeFuels[this.editTypeFuelNumber] = {
             name: control.name.value,
             price: control.price.value,
         };
@@ -802,16 +660,17 @@ export class AdminDbComponent {
 
     cancelEditTypeFuel() {
         this.typeFuelEditForm.controls[this.editTypeFuelNumber].setValue({
-            name: this.typeFuels[this.editTypeFuelNumber].name,
-            price: this.typeFuels[this.editTypeFuelNumber].price,
+            name: this.httpService.typeFuels[this.editTypeFuelNumber].name,
+            price: this.httpService.typeFuels[this.editTypeFuelNumber].price,
         });
 
         this.isTypeFuelEdit = false;
         this.typeFuelEditForm.controls[this.editTypeFuelNumber].disable();
     }
 
+    //TODO
     typeFuelDelete(index: number) {
-        this.typeFuels.splice(index, 1);
+        this.httpService.typeFuels.splice(index, 1);
         this.typeFuelEditForm.controls.splice(index, 1);
         this.typeFuelsArrSize--;
     }
@@ -819,9 +678,12 @@ export class AdminDbComponent {
     addStreet() {
         const control = this.streetAddForm.controls;
 
-        this.streets.push({
+        const addedStreet = {
             name: control.name.value,
-        });
+        };
+
+        this.httpService.streets.push(addedStreet);
+        this.httpService.addMapDbValue<Street>(addedStreet, 'street')
 
         const addedStreetGroup = this.fb.nonNullable.group({
             name: [
@@ -838,11 +700,12 @@ export class AdminDbComponent {
         this.streetsArrSize++;
     }
 
+    //TODO
     editStreet() {
         const control =
             this.streetEditForm.controls[this.editStreetNumber].controls;
 
-        this.streets[this.editStreetNumber] = {
+        this.httpService.streets[this.editStreetNumber] = {
             name: control.name.value,
         };
 
@@ -852,15 +715,16 @@ export class AdminDbComponent {
 
     cancelEditStreet() {
         this.streetEditForm.controls[this.editStreetNumber].setValue({
-            name: this.streets[this.editStreetNumber].name,
+            name: this.httpService.streets[this.editStreetNumber].name,
         });
 
         this.isStreetEdit = false;
         this.streetEditForm.controls[this.editStreetNumber].disable();
     }
 
+    //TODO
     streetDelete(index: number) {
-        this.streets.splice(index, 1);
+        this.httpService.streets.splice(index, 1);
         this.streetEditForm.controls.splice(index, 1);
         this.streetsArrSize--;
     }
@@ -868,10 +732,13 @@ export class AdminDbComponent {
     addCoverType() {
         const control = this.coverTypeAddForm.controls;
 
-        this.coverTypes.push({
+        const addedCoverType = {
             name: control.name.value,
             coefficient_braking: control.coefficient_braking.value,
-        });
+        };
+
+        this.httpService.coverTypes.push(addedCoverType);
+        this.httpService.addMapDbValue<TypeCover>(addedCoverType, 'coverage');
 
         const addedCoverTypeGroup = this.fb.nonNullable.group({
             name: [
@@ -890,13 +757,15 @@ export class AdminDbComponent {
         this.coverTypeAddForm.reset();
 
         this.coverTypesArrSize++;
+        console.log(this.httpService.coverTypes);
     }
 
+    //TODO
     editCoverType() {
         const control =
             this.coverTypeEditForm.controls[this.editCoverTypeNumber].controls;
 
-        this.coverTypes[this.editCoverTypeNumber] = {
+        this.httpService.coverTypes[this.editCoverTypeNumber] = {
             name: control.name.value,
             coefficient_braking: control.coefficient_braking.value,
         };
@@ -907,17 +776,18 @@ export class AdminDbComponent {
 
     cancelEditCoverType() {
         this.coverTypeEditForm.controls[this.editCoverTypeNumber].setValue({
-            name: this.coverTypes[this.editCoverTypeNumber].name,
+            name: this.httpService.coverTypes[this.editCoverTypeNumber].name,
             coefficient_braking:
-                this.coverTypes[this.editCoverTypeNumber].coefficient_braking,
+                this.httpService.coverTypes[this.editCoverTypeNumber].coefficient_braking,
         });
 
         this.isCoverTypeEdit = false;
         this.coverTypeEditForm.controls[this.editCoverTypeNumber].disable();
     }
 
+    //TODO
     coverTypeDelete(index: number) {
-        this.coverTypes.splice(index, 1);
+        this.httpService.coverTypes.splice(index, 1);
         this.coverTypeEditForm.controls.splice(index, 1);
         this.coverTypesArrSize--;
     }
@@ -925,18 +795,21 @@ export class AdminDbComponent {
     addTrafficLight() {
         const control = this.trafficLightAddForm.controls;
 
-        this.trafficLights.push({
-            time_green_signal: control.time_green_signal.value,
-            time_red_signal: control.time_red_signal.value,
-        });
+        const addedTrafficLight = {
+            time_green_signal: control.time_green_signal.value as unknown as number,
+            time_red_signal: control.time_red_signal.value as unknown as number,
+        };
+
+        this.httpService.trafficLigths.push(addedTrafficLight);
+        this.httpService.addMapDbValue<TrafficLights>(addedTrafficLight, 'traffic-light')
 
         const addedTrafficLightGroup = this.fb.nonNullable.group({
             time_green_signal: [
-                control.time_green_signal.value,
+                control.time_green_signal.value as unknown as number,
                 [Validators.required, rangeValidator(20, 120)],
             ],
             time_red_signal: [
-                control.time_red_signal.value,
+                control.time_red_signal.value as unknown as number,
                 [Validators.required, rangeValidator(20, 120)],
             ],
         });
@@ -949,12 +822,13 @@ export class AdminDbComponent {
         this.trafficLightsArrSize++;
     }
 
+    //TODO
     editTrafficLights() {
         const control =
             this.trafficLightEditForm.controls[this.editTrafficLightNumber]
                 .controls;
 
-        this.trafficLights[this.editTrafficLightNumber] = {
+        this.httpService.trafficLigths[this.editTrafficLightNumber] = {
             time_green_signal: control.time_green_signal.value,
             time_red_signal: control.time_red_signal.value,
         };
@@ -970,10 +844,10 @@ export class AdminDbComponent {
             this.editTrafficLightNumber
         ].setValue({
             time_green_signal:
-                this.trafficLights[this.editTrafficLightNumber]
+                this.httpService.trafficLigths[this.editTrafficLightNumber]
                     .time_green_signal,
             time_red_signal:
-                this.trafficLights[this.editTrafficLightNumber].time_red_signal,
+                this.httpService.trafficLigths[this.editTrafficLightNumber].time_red_signal,
         });
 
         this.isTrafficLightEdit = false;
@@ -982,8 +856,9 @@ export class AdminDbComponent {
         ].disable();
     }
 
+    //TODO
     trafficLightDelete(index: number) {
-        this.trafficLights.splice(index, 1);
+        this.httpService.trafficLigths.splice(index, 1);
         this.trafficLightEditForm.controls.splice(index, 1);
         this.trafficLightsArrSize--;
     }
@@ -991,10 +866,13 @@ export class AdminDbComponent {
     addFineType() {
         const control = this.fineTypeAddForm.controls;
 
-        this.fineTypes.push({
+        const addedFineType = {
             name: control.name.value,
             price: control.price.value,
-        });
+        };
+
+        this.httpService.fineTypes.push(addedFineType);
+        this.httpService.addMapDbValue<TypeFine>(addedFineType, 'fine');
 
         const addedFineTypeGroup = this.fb.nonNullable.group({
             name: [
@@ -1015,11 +893,12 @@ export class AdminDbComponent {
         this.fineTypesArrSize++;
     }
 
+    //TODO
     editFineTypes() {
         const control =
             this.fineTypeEditForm.controls[this.editFineTypeNumber].controls;
 
-        this.fineTypes[this.editFineTypeNumber] = {
+        this.httpService.fineTypes[this.editFineTypeNumber] = {
             name: control.name.value,
             price: control.price.value,
         };
@@ -1030,16 +909,17 @@ export class AdminDbComponent {
 
     cancelEditFineTypes() {
         this.fineTypeEditForm.controls[this.editFineTypeNumber].setValue({
-            name: this.fineTypes[this.editFineTypeNumber].name,
-            price: this.fineTypes[this.editFineTypeNumber].price,
+            name: this.httpService.fineTypes[this.editFineTypeNumber].name,
+            price: this.httpService.fineTypes[this.editFineTypeNumber].price,
         });
 
         this.isFineTypeEdit = false;
         this.fineTypeEditForm.controls[this.editFineTypeNumber].disable();
     }
 
+    //TODO
     fineTypeDelete(index: number) {
-        this.fineTypes.splice(index, 1);
+        this.httpService.fineTypes.splice(index, 1);
         this.fineTypeEditForm.controls.splice(index, 1);
         this.fineTypesArrSize--;
     }
@@ -1061,7 +941,7 @@ export class AdminDbComponent {
 
     driverDuplicateValidation() {
         let hasDuplicate = false;
-        this.drivers.forEach((driver) => {
+        this.httpService.drivers.forEach((driver) => {
             const control = this.driverAddForm.controls;
             if (
                 driver.family === control.family.value &&
@@ -1078,7 +958,7 @@ export class AdminDbComponent {
 
     vehicleDuplicateValidation() {
         let hasDuplicate = false;
-        this.vehicles.forEach((vehicle) => {
+        this.httpService.vehicles.forEach((vehicle) => {
             const control = this.vehicleAddForm.controls;
             if (vehicle.brand === control.brand.value) {
                 hasDuplicate = true;
@@ -1091,7 +971,7 @@ export class AdminDbComponent {
 
     typeFuelDuplicateValidation() {
         let hasDuplicate = false;
-        this.typeFuels.forEach((typeFuel) => {
+        this.httpService.typeFuels.forEach((typeFuel) => {
             const control = this.typeFuelAddForm.controls;
             if (typeFuel.name === control.name.value) {
                 hasDuplicate = true;
@@ -1104,7 +984,7 @@ export class AdminDbComponent {
 
     corruptionDegreeDuplicateValidation() {
         let hasDuplicate = false;
-        this.corruptionDegrees.forEach((corruptionDegree) => {
+        this.httpService.corruptionDegrees.forEach((corruptionDegree) => {
             const control = this.corruptionDegreeAddForm.controls;
             if (corruptionDegree.name === control.name.value) {
                 hasDuplicate = true;
@@ -1117,7 +997,7 @@ export class AdminDbComponent {
 
     streetDuplicateValidation() {
         let hasDuplicate = false;
-        this.streets.forEach((street) => {
+        this.httpService.streets.forEach((street) => {
             const control = this.streetAddForm.controls;
             if (street.name === control.name.value) {
                 hasDuplicate = true;
@@ -1130,7 +1010,7 @@ export class AdminDbComponent {
 
     coverTypeDuplicateValidation() {
         let hasDuplicate = false;
-        this.coverTypes.forEach((coverType) => {
+        this.httpService.coverTypes.forEach((coverType) => {
             const control = this.coverTypeAddForm.controls;
             if (coverType.name === control.name.value) {
                 hasDuplicate = true;
@@ -1143,7 +1023,7 @@ export class AdminDbComponent {
 
     trafficLightDuplicateValidation() {
         let hasDuplicate = false;
-        this.trafficLights.forEach((trafficLight) => {
+        this.httpService.trafficLigths.forEach((trafficLight) => {
             const control = this.trafficLightAddForm.controls;
             if (
                 trafficLight.time_green_signal ===
@@ -1160,7 +1040,7 @@ export class AdminDbComponent {
 
     fineTypeDuplicateValidation() {
         let hasDuplicate = false;
-        this.fineTypes.forEach((fineType) => {
+        this.httpService.fineTypes.forEach((fineType) => {
             const control = this.fineTypeAddForm.controls;
             if (fineType.name === control.name.value) {
                 hasDuplicate = true;
