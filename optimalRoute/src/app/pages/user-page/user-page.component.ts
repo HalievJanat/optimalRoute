@@ -19,6 +19,7 @@ export class UserPageComponent {
 
     crossroadList: Crossroad[] = [];
     roadList: Road[] = [];
+    crossroadOptimalRoute: number[] | undefined = [];
     
     gridSize = 50; // Масштаб
     radius = (this.gridSize * 2) / 5;
@@ -67,10 +68,95 @@ export class UserPageComponent {
     const UDSJson: UDS = JSON.parse(xhr.responseText);
     this.crossroadList = UDSJson.crossroads;
     this.roadList = UDSJson.roads;
-
+    this.crossroadOptimalRoute = UDSJson.route?.crossroads;
+    
     this.gridDrowSize();
-    this.drawScaleCanvas(this.gridSize);
-    console.log(UDSJson);
+    this.visualOptimalRoute(this.gridSize);
+  }
+
+  public visualOptimalRoute(tempGridSize: number) {
+    for (let i = 0; i < this.crossroadList.length; i++) {
+        this. radius = (this.gridSize * 2) / 5;
+        this.crossroadList[i].x = Math.round(this.crossroadList[i].x / tempGridSize) * this.gridSize;
+        this.crossroadList[i].y = Math.round(this.crossroadList[i].y / tempGridSize) * this.gridSize;
+
+        const circle = new Konva.Circle({
+            x: this.crossroadList[i].x,
+            y: this.crossroadList[i].y,
+            radius: this.radius,
+            stroke: '#000',
+            full: '#fff',
+            //draggable: true, // Включаем перетаскивание
+        });
+
+        this.layer.add(circle);
+
+        // Обновляем слой
+        this.layer.draw();
+    }
+
+    for (let i = 0; i < this.roadList.length; i++) {
+        let ky = this.calculateKLine(
+            this.crossroadList[this.roadList[i].crossroad_1].x,
+            this.crossroadList[this.roadList[i].crossroad_1].y,
+            this.crossroadList[this.roadList[i].crossroad_2].x,
+            this.crossroadList[this.roadList[i].crossroad_2].y
+        );
+        let by = this.calculateBLine(
+            this.crossroadList[this.roadList[i].crossroad_1].y,
+            ky,
+            this.crossroadList[this.roadList[i].crossroad_1].x
+        );
+        let x1;
+        let x2;
+        let y1;
+        let y2;
+        
+        if (ky != Infinity && ky != -Infinity) {
+            x1 = this.calculateXCoordinate(ky, by, this.crossroadList[this.roadList[i].crossroad_1].x,
+                this.crossroadList[this.roadList[i].crossroad_1].y, this.radius, 
+                this.crossroadList[this.roadList[i].crossroad_1].x > this.crossroadList[this.roadList[i].crossroad_2].x);
+            x2 = this.calculateXCoordinate(ky, by,this.crossroadList[this.roadList[i].crossroad_2].x,
+                this.crossroadList[this.roadList[i].crossroad_2].y, this.radius,
+                this.crossroadList[this.roadList[i].crossroad_1].x < this.crossroadList[this.roadList[i].crossroad_2].x);
+            y1 = this.calculateYCoordinate(ky, by, x1);
+            y2 = this.calculateYCoordinate(ky, by, x2);
+        } else if (this.crossroadList[this.roadList[i].crossroad_1].y > this.crossroadList[this.roadList[i].crossroad_2].y){
+            x1 = this.crossroadList[this.roadList[i].crossroad_1].x; 
+            x2 = this.crossroadList[this.roadList[i].crossroad_2].x;
+            y1 = this.crossroadList[this.roadList[i].crossroad_1].y - this.radius;
+            y2 = this.crossroadList[this.roadList[i].crossroad_2].y + this.radius;
+        } else {
+            x1 = this.crossroadList[this.roadList[i].crossroad_1].x; 
+            x2 = this.crossroadList[this.roadList[i].crossroad_2].x;
+            y1 = this.crossroadList[this.roadList[i].crossroad_1].y + this.radius;
+            y2 = this.crossroadList[this.roadList[i].crossroad_2].y - this.radius
+        }
+
+        let stroke: string = 'black';
+        for (let j = 0; j < this.crossroadOptimalRoute!.length - 1; j++) {
+            if (this.roadList[i].crossroad_1 == this.crossroadOptimalRoute![j] 
+                && this.roadList[i].crossroad_2 == this.crossroadOptimalRoute![j + 1]) { 
+                    stroke = 'blue';
+                    break;
+            } else if (this.roadList[i].crossroad_2 == this.crossroadOptimalRoute![j] 
+                && this.roadList[i].crossroad_1 == this.crossroadOptimalRoute![j + 1]) {
+                    stroke = 'blue';
+                    break;
+            } else {
+                stroke = 'black';
+            }
+        }
+        console.log(stroke);
+        this.drawLine(
+            x1,
+            y1,
+            x2,
+            y2,
+            stroke,
+            this.roadList[i].direction
+        );
+    }
   }
 
   public parseJSON(file: string): any {
@@ -223,7 +309,7 @@ export class UserPageComponent {
                   points: [x1, y1, x2, y2],
                   stroke: stroke,
                   strokeWidth: 1,
-                  fill: 'black',
+                  fill: stroke,
                   pointerAtBeginning: true
               })
           );
@@ -234,7 +320,7 @@ export class UserPageComponent {
                   points: [x1, y1, x2, y2],
                   stroke: stroke,
                   strokeWidth: 1,
-                  fill: 'black',
+                  fill: stroke,
               })
           );
       } else if (direction == 2) {
@@ -243,7 +329,7 @@ export class UserPageComponent {
                   points: [x2, y2, x1, y1],
                   stroke: stroke,
                   strokeWidth: 1,
-                  fill: 'black'
+                  fill: stroke
               })
           );
       }      

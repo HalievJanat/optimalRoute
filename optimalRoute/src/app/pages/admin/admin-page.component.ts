@@ -912,10 +912,12 @@ export class AdminPageComponent {
                     return true;
                 }
             } else {
+                console.log(x);
+                console.log(y);
                 for (let j = 0; j < 6; j++) {
-                    let y1 = (k*x + b + j);
-                    let y2 = (k*x + b - j);
-                    if (y == y1 || y == y2) {
+                    let y1 = Math.round(k*x + b + j);
+                    let y2 = Math.round(k*x + b - j);
+                    if (y === y1 || y === y2) {
                         this.indexSelectedElement = i;
                         return true;
                     }
