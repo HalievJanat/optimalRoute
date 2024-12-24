@@ -877,8 +877,6 @@ export class AdminPageComponent {
                     return true;
                 }
             } else {
-                console.log(x);
-                console.log(y);
                 for (let j = 0; j < 6; j++) {
                     let y1 = Math.round(k*x + b + j);
                     let y2 = Math.round(k*x + b - j);
