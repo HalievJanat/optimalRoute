@@ -6,7 +6,7 @@
 <div class="editor-container">
     <ul ngbNav #leftnav="ngbNav" class="nav-tabs left-panel" orientation="vertical">
         <li ngbNavItem>
-            <button ngbNavLink autofocus (click)="activeRightElement=1">
+            <button ngbNavLink autofocus>
                 <img src="/assets/driver.png" alt="" />
                 <span>Водитель</span>
             </button>
@@ -66,7 +66,7 @@
                             <div class="col mb-4">
                                 <span>* - поля являются обязательными</span>
                             </div>
-                        } @if (driverDuplicateValidation()) {
+                        } @if (driverDuplicateValidation(driverAddForm)) {
                             <div class="col mb-4">
                                 <span>Водитель с таким ФИО уже добавлен</span>
                             </div>
@@ -79,7 +79,7 @@
                         }
                     </div>
                     <button router class="btn btn-primary submit-button" type="button" (click)="addDriver()" [disabled]="
-                            !driverAddForm.valid || driverDuplicateValidation()
+                            !driverAddForm.valid || driverDuplicateValidation(driverAddForm)
                         ">
                         Добавить
                     </button>
@@ -144,7 +144,7 @@
                                     <button type="button" class="btn btn-outline-primary dropdown-button valid-dropdown-button" [disabled]="isDriverEdit" ngbDropdownToggle>
                                     </button>
                                     <div ngbDropdownMenu aria-labelledby="dropdownBasic">
-                                        <button ngbDropdownItem (click)="driver.enable(); editDriverNumber=$index; isDriverEdit=true">
+                                        <button ngbDropdownItem (click)="driver.enable(); editDriverNumber=(driverTabPage-1)*4+$index; isDriverEdit=true">
                                           Редактировать 
                                         </button>
                                         <button ngbDropdownItem (click)="driverDelete($index)">
@@ -162,38 +162,39 @@
                     <ngb-pagination [collectionSize]="driversArrSize" [(page)]="driverTabPage" [pageSize]="4">
                     </ngb-pagination>
                 </div>
-                @if (driverDuplicateValidation()) {
-                    <div class="col mb-4">
-                        <span class="error-span">Водитель с таким ФИО уже добавлен</span>
-                    </div>
-                }
-                @if (isRequiredError(driverEditForm.controls[editDriverNumber])) {
-                    <div class="col mb-4">
-                        <span class="error-span">* - поля являются обязательными</span>
-                    </div>
-                }
-                @if (driverEditForm.controls[editDriverNumber].controls.name.hasError('stringRange') || 
-                    driverEditForm.controls[editDriverNumber].controls.surname.hasError('stringRange') ||
-                    driverEditForm.controls[editDriverNumber].controls.family.hasError('stringRange')) {
-                    <div class="col mb-4">
-                        <span class="error-span">ФИО не должны привышать 50 символов</span>
-                    </div>
-                }
                 @if (isDriverEdit) {
+                    @if (driverDuplicateValidation(driverEditForm.controls[editDriverNumber], editDriverNumber)) {
+                        <div class="col mb-4">
+                            <span class="error-span">Водитель с таким ФИО уже добавлен</span>
+                        </div>
+                    }
+                    @if (isRequiredError(driverEditForm.controls[editDriverNumber])) {
+                        <div class="col mb-4">
+                            <span class="error-span">* - поля являются обязательными</span>
+                        </div>
+                    }
+                    @if (driverEditForm.controls[editDriverNumber].controls.name.hasError('stringRange') || 
+                        driverEditForm.controls[editDriverNumber].controls.surname.hasError('stringRange') ||
+                        driverEditForm.controls[editDriverNumber].controls.family.hasError('stringRange')) {
+                        <div class="col mb-4">
+                            <span class="error-span">ФИО не должны привышать 50 символов</span>
+                        </div>
+                    }
                     <button router class="btn btn-primary submit-button" type="button" (click)="editDriver()" [disabled]="
-                            !driverEditForm.controls[editDriverNumber].valid
+                            !driverEditForm.controls[editDriverNumber].valid || 
+                            driverDuplicateValidation(driverEditForm.controls[editDriverNumber], editDriverNumber)
                         ">
                         Сохранить
                     </button>
                     <button router class="btn btn-primary submit-button" type="button" (click)="cancelEditDriver()">
                         Отмена
-                    </button>
+                    </button>                       
                 }
             } 
             </ng-template>
         </li>
         <li ngbNavItem>
-            <button ngbNavLink (click)="activeRightElement=1">
+            <button ngbNavLink>
                 <img src="/assets/auto.png" alt="" />
                 <span>Автомобиль</span>
             </button>
@@ -255,14 +256,14 @@
                         <div class="col mb-4">
                             <span>* - поля являются обязательными</span>
                         </div>
-                        } @if (vehicleDuplicateValidation()) {
+                        } @if (vehicleDuplicateValidation(vehicleAddForm)) {
                         <div class="col mb-4">
                             <span>Данный автомобиль уже добавлен</span>
                         </div>
                         }
                     </div>
                     <button router class="btn btn-primary submit-button" type="button" (click)="addVehicle()" [disabled]="
-                            !vehicleAddForm.valid || vehicleDuplicateValidation()
+                            !vehicleAddForm.valid || vehicleDuplicateValidation(vehicleAddForm)
                         ">
                         Добавить
                     </button>
@@ -317,7 +318,7 @@
                                     <button type="button" class="btn btn-outline-primary dropdown-button valid-dropdown-button" [disabled]="isVehicleEdit" ngbDropdownToggle>
                                     </button>
                                     <div ngbDropdownMenu aria-labelledby="dropdownBasic">
-                                        <button ngbDropdownItem (click)="vehicle.enable(); editVehicleNumber=$index; isVehicleEdit=true">
+                                        <button ngbDropdownItem (click)="vehicle.enable(); editVehicleNumber=(vehiclesTabPage-1)*4+$index; isVehicleEdit=true">
                                           Редактировать 
                                         </button>
                                         <button ngbDropdownItem (click)="vehicleDelete($index)">
@@ -335,29 +336,35 @@
                     <ngb-pagination [collectionSize]="vehiclesArrSize" [(page)]="vehiclesTabPage" [pageSize]="4">
                     </ngb-pagination>
                 </div>
-                @if (vehicleEditForm.controls[editVehicleNumber].controls.brand.hasError('stringRange')) {
-                    <div class="col mb-4">
-                        <span class="error-span">Марка автомобиля должна быть не больше 15 символов</span>
-                    </div>
-                }
-                @if (vehicleEditForm.controls[editVehicleNumber].controls.consumption_fuel.hasError('range')) {
-                    <div class="col mb-4">
-                        <span class="error-span">Расход топлива должен быть больше 0 и меньше 20 л/100км</span>
-                    </div>
-                }
-                @if (vehicleEditForm.controls[editVehicleNumber].controls.max_speed.hasError('range')) {
-                    <div class="col mb-4">
-                        <span class="error-span">Скорость должна быть больше 0 и меньше 300 км/ч</span>
-                    </div>
-                }
-                @if (isRequiredError(vehicleEditForm.controls[editVehicleNumber])) {
-                    <div class="col mb-4">
-                        <span class="error-span">* - поля являются обязательными</span>
-                    </div>
-                }
                 @if (isVehicleEdit) {
+                    @if (vehicleDuplicateValidation(vehicleEditForm.controls[editVehicleNumber], editVehicleNumber)) {
+                        <div class="col mb-4">
+                            <span class="error-span">Данный автомобиль уже добавлен</span>
+                        </div>
+                    }
+                    @if (vehicleEditForm.controls[editVehicleNumber].controls.brand.hasError('stringRange')) {
+                        <div class="col mb-4">
+                            <span class="error-span">Марка автомобиля должна быть не больше 15 символов</span>
+                        </div>
+                    }
+                    @if (vehicleEditForm.controls[editVehicleNumber].controls.consumption_fuel.hasError('range')) {
+                        <div class="col mb-4">
+                            <span class="error-span">Расход топлива должен быть больше 0 и меньше 20 л/100км</span>
+                        </div>
+                    }
+                    @if (vehicleEditForm.controls[editVehicleNumber].controls.max_speed.hasError('range')) {
+                        <div class="col mb-4">
+                            <span class="error-span">Скорость должна быть больше 0 и меньше 300 км/ч</span>
+                        </div>
+                    }
+                    @if (isRequiredError(vehicleEditForm.controls[editVehicleNumber])) {
+                        <div class="col mb-4">
+                            <span class="error-span">* - поля являются обязательными</span>
+                        </div>
+                    }
                     <button router class="btn btn-primary submit-button" type="button" (click)="editVehicle()" [disabled]="
-                            !vehicleEditForm.controls[editVehicleNumber].valid
+                            !vehicleEditForm.controls[editVehicleNumber].valid ||
+                            vehicleDuplicateValidation(vehicleEditForm.controls[editVehicleNumber], editVehicleNumber)
                         ">
                         Сохранить
                     </button>
@@ -369,7 +376,7 @@
             </ng-template>
         </li>
         <li ngbNavItem>
-            <button ngbNavLink (click)="activeRightElement=1">
+            <button ngbNavLink>
                 <img src="/assets/police.png" alt="" />
                 <span>Степень коррумпированности</span>
             </button>
@@ -397,14 +404,14 @@
                             <div class="col mb-4">
                                 <span>* - поля являются обязательными</span>
                             </div>
-                            } @if (corruptionDegreeDuplicateValidation()) {
+                            } @if (corruptionDegreeDuplicateValidation(corruptionDegreeAddForm)) {
                             <div class="col mb-4">
                                 <span>Степень коррумпированности с таким названием уже добавлена</span>
                             </div>
                             }
                         </div>
                         <button router class="btn btn-primary submit-button" type="button" (click)="addCorruptionDegree()" [disabled]="
-                                !corruptionDegreeAddForm.valid || corruptionDegreeDuplicateValidation()
+                                !corruptionDegreeAddForm.valid || corruptionDegreeDuplicateValidation(corruptionDegreeAddForm)
                             ">
                             Добавить
                         </button>
@@ -433,7 +440,7 @@
                                         <button type="button" class="btn btn-outline-primary dropdown-button valid-dropdown-button" [disabled]="isCorruptionDegreeEdit" ngbDropdownToggle>
                                         </button>
                                         <div ngbDropdownMenu aria-labelledby="dropdownBasic">
-                                            <button ngbDropdownItem (click)="corruptionDegree.enable(); editCorruptionDegreeNumber=$index; isCorruptionDegreeEdit=true">
+                                            <button ngbDropdownItem (click)="corruptionDegree.enable(); editCorruptionDegreeNumber=(corruptionDegreesTabPage-1)*4+$index; isCorruptionDegreeEdit=true">
                                               Редактировать 
                                             </button>
                                             <button ngbDropdownItem (click)="corruptionDegreeDelete($index)">
@@ -451,23 +458,29 @@
                         <ngb-pagination [collectionSize]="corruptionDegreeArrSize" [(page)]="corruptionDegreesTabPage" [pageSize]="4">
                         </ngb-pagination>
                     </div>
-                    @if (corruptionDegreeEditForm.controls[editCorruptionDegreeNumber].controls.name.hasError('stringRange')) {
-                        <div class="col mb-4">
-                            <span class="error-span">Название степени коррумпированности не должно превышать 30 символов</span>
-                        </div>
-                    }
-                    @if (corruptionDegreeEditForm.controls[editCorruptionDegreeNumber].controls.coefficient_corruption.hasError('range') ||
-                         corruptionDegreeEditForm.controls[editCorruptionDegreeNumber].controls.coefficient_corruption.hasError('floatOnly')) {
-                        <span class="error-span">Коэффициент должен быть положительным числом в диапозоне от 1 до 2</span>
-                    }
-                    @if (isRequiredError(corruptionDegreeEditForm.controls[editCorruptionDegreeNumber])) {
-                        <div class="col mb-4">
-                            <span class="error-span">* - поля являются обязательными</span>
-                        </div>
-                    }
                     @if (isCorruptionDegreeEdit) {
+                        @if (corruptionDegreeDuplicateValidation(corruptionDegreeEditForm.controls[editCorruptionDegreeNumber], editCorruptionDegreeNumber)) {
+                            <div class="col mb-4">
+                                <span class="error-span">Степень коррумпированности с таким названием уже добавлена</span>
+                            </div>
+                        }
+                        @if (corruptionDegreeEditForm.controls[editCorruptionDegreeNumber].controls.name.hasError('stringRange')) {
+                            <div class="col mb-4">
+                                <span class="error-span">Название степени коррумпированности не должно превышать 30 символов</span>
+                            </div>
+                        }
+                        @if (corruptionDegreeEditForm.controls[editCorruptionDegreeNumber].controls.coefficient_corruption.hasError('range') ||
+                             corruptionDegreeEditForm.controls[editCorruptionDegreeNumber].controls.coefficient_corruption.hasError('floatOnly')) {
+                            <span class="error-span">Коэффициент должен быть положительным числом в диапозоне от 1 до 2</span>
+                        }
+                        @if (isRequiredError(corruptionDegreeEditForm.controls[editCorruptionDegreeNumber])) {
+                            <div class="col mb-4">
+                                <span class="error-span">* - поля являются обязательными</span>
+                            </div>
+                        }
                         <button router class="btn btn-primary submit-button" type="button" (click)="editCorruptionDegree()" [disabled]="
-                                !corruptionDegreeEditForm.controls[editCorruptionDegreeNumber].valid
+                                !corruptionDegreeEditForm.controls[editCorruptionDegreeNumber].valid ||
+                                corruptionDegreeDuplicateValidation(corruptionDegreeEditForm.controls[editCorruptionDegreeNumber], editCorruptionDegreeNumber)
                             ">
                             Сохранить
                         </button>
@@ -479,7 +492,7 @@
             </ng-template>
         </li>
         <li ngbNavItem>
-            <button ngbNavLink (click)="activeRightElement=1">
+            <button ngbNavLink>
                 <img src="/assets/benzine.png" alt="" />
                 <span>Топливо</span>
             </button>
@@ -506,14 +519,14 @@
                             <div class="col mb-4">
                                 <span>* - поля являются обязательными</span>
                             </div>
-                            } @if (typeFuelDuplicateValidation()) {
+                            } @if (typeFuelDuplicateValidation(typeFuelAddForm)) {
                             <div class="col mb-4">
                                 <span>Топливо с таким названием уже добавлено</span>
                             </div>
                             }
                         </div>
                         <button router class="btn btn-primary submit-button" type="button" (click)="addTypeFuel()" [disabled]="
-                                !typeFuelAddForm.valid || typeFuelDuplicateValidation()
+                                !typeFuelAddForm.valid || typeFuelDuplicateValidation(typeFuelAddForm)
                             ">
                             Добавить
                         </button>
@@ -542,7 +555,7 @@
                                         <button type="button" class="btn btn-outline-primary dropdown-button valid-dropdown-button" [disabled]="isTypeFuelEdit" ngbDropdownToggle>
                                         </button>
                                         <div ngbDropdownMenu aria-labelledby="dropdownBasic">
-                                            <button ngbDropdownItem (click)="typeFuel.enable(); editTypeFuelNumber=$index; isTypeFuelEdit=true">
+                                            <button ngbDropdownItem (click)="typeFuel.enable(); editTypeFuelNumber=(typeFuelsTabPage-1)*4+$index; isTypeFuelEdit=true">
                                               Редактировать 
                                             </button>
                                             <button ngbDropdownItem (click)="typeFuelDelete($index)">
@@ -560,24 +573,30 @@
                         <ngb-pagination [collectionSize]="typeFuelsArrSize" [(page)]="typeFuelsTabPage" [pageSize]="4">
                         </ngb-pagination>
                     </div>
-                    @if (typeFuelEditForm.controls[editTypeFuelNumber].controls.name.hasError('stringRange')) {
-                        <div class="col mb-4">
-                            <span class="error-span">Название топлива должно быть не больше 15 символов</span>
-                        </div>
-                    }
-                    @if (typeFuelEditForm.controls[editTypeFuelNumber].controls.price.hasError('range')) {
-                        <div class="col mb-4">
-                            <span class="error-span">Цена топлива должна быть в диапозоне от 50 до 150 руб/л</span>
-                        </div>
-                    }
-                    @if (isRequiredError(typeFuelEditForm.controls[editTypeFuelNumber])) {
-                        <div class="col mb-4">
-                            <span class="error-span">* - поля являются обязательными</span>
-                        </div>
-                    }
                     @if (isTypeFuelEdit) {
+                        @if (typeFuelDuplicateValidation(typeFuelEditForm.controls[editTypeFuelNumber], editTypeFuelNumber)) {
+                            <div class="col mb-4">
+                                <span class="error-span">Топливо с таким названием уже добавлено</span>
+                            </div>
+                        }
+                        @if (typeFuelEditForm.controls[editTypeFuelNumber].controls.name.hasError('stringRange')) {
+                            <div class="col mb-4">
+                                <span class="error-span">Название топлива должно быть не больше 15 символов</span>
+                            </div>
+                        }
+                        @if (typeFuelEditForm.controls[editTypeFuelNumber].controls.price.hasError('range')) {
+                            <div class="col mb-4">
+                                <span class="error-span">Цена топлива должна быть в диапозоне от 50 до 150 руб/л</span>
+                            </div>
+                        }
+                        @if (isRequiredError(typeFuelEditForm.controls[editTypeFuelNumber])) {
+                            <div class="col mb-4">
+                                <span class="error-span">* - поля являются обязательными</span>
+                            </div>
+                        }
                         <button router class="btn btn-primary submit-button" type="button" (click)="editTypeFuel()" [disabled]="
-                                !typeFuelEditForm.controls[editTypeFuelNumber].valid
+                                !typeFuelEditForm.controls[editTypeFuelNumber].valid ||
+                                typeFuelDuplicateValidation(typeFuelEditForm.controls[editTypeFuelNumber], editTypeFuelNumber)
                             ">
                             Сохранить
                         </button>
@@ -589,7 +608,7 @@
             </ng-template>
         </li>
         <li ngbNavItem>
-            <button ngbNavLink (click)="activeRightElement=1">
+            <button ngbNavLink>
                 <img src="/assets/street.png" alt="" />
                 <span>Улица</span>
             </button>
@@ -610,14 +629,14 @@
                             <div class="col mb-4">
                                 <span>* - поля являются обязательными</span>
                             </div>
-                            } @if (streetDuplicateValidation()) {
+                            } @if (streetDuplicateValidation(streetAddForm)) {
                             <div class="col mb-4">
                                 <span>Улица с таким названием уже добавлена</span>
                             </div>
                             }
                         </div>
                         <button router class="btn btn-primary submit-button" type="button" (click)="addStreet()" [disabled]="
-                                !streetAddForm.valid || streetDuplicateValidation()
+                                !streetAddForm.valid || streetDuplicateValidation(streetAddForm)
                             ">
                             Добавить
                         </button>
@@ -642,7 +661,7 @@
                                         <button type="button" class="btn btn-outline-primary dropdown-button valid-dropdown-button" [disabled]="isStreetEdit" ngbDropdownToggle>
                                         </button>
                                         <div ngbDropdownMenu aria-labelledby="dropdownBasic">
-                                            <button ngbDropdownItem (click)="street.enable(); editStreetNumber=$index; isStreetEdit=true">
+                                            <button ngbDropdownItem (click)="street.enable(); editStreetNumber=(streetsTabPage-1)*4+$index; isStreetEdit=true">
                                               Редактировать 
                                             </button>
                                             <button ngbDropdownItem (click)="streetDelete($index)">
@@ -660,19 +679,25 @@
                         <ngb-pagination [collectionSize]="streetsArrSize" [(page)]="streetsTabPage" [pageSize]="4">
                         </ngb-pagination>
                     </div>
-                    @if (streetEditForm.controls[editStreetNumber].controls.name.hasError('stringRange')) {
-                        <div class="col mb-4">
-                            <span class="error-span">Название топлива должно быть не больше 30 символов</span>
-                        </div>
-                    }
-                    @if (isRequiredError(streetEditForm.controls[editStreetNumber])) {
-                        <div class="col mb-4">
-                            <span class="error-span">* - поля являются обязательными</span>
-                        </div>
-                    }
                     @if (isStreetEdit) {
+                        @if (streetDuplicateValidation(streetEditForm.controls[editStreetNumber], editStreetNumber)) {
+                            <div class="col mb-4">
+                                <span class="error-span">Улица с таким названием уже добавлена</span>
+                            </div>
+                        }
+                        @if (streetEditForm.controls[editStreetNumber].controls.name.hasError('stringRange')) {
+                            <div class="col mb-4">
+                                <span class="error-span">Название улицы должно быть не больше 30 символов</span>
+                            </div>
+                        }
+                        @if (isRequiredError(streetEditForm.controls[editStreetNumber])) {
+                            <div class="col mb-4">
+                                <span class="error-span">* - поля являются обязательными</span>
+                            </div>
+                        }
                         <button router class="btn btn-primary submit-button" type="button" (click)="editStreet()" [disabled]="
-                                !streetEditForm.controls[editStreetNumber].valid
+                                !streetEditForm.controls[editStreetNumber].valid ||
+                                streetDuplicateValidation(streetEditForm.controls[editStreetNumber], editStreetNumber)
                             ">
                             Сохранить
                         </button>
@@ -684,7 +709,7 @@
             </ng-template>
         </li>
         <li ngbNavItem>
-            <button ngbNavLink (click)="activeRightElement=1">
+            <button ngbNavLink>
                 <img src="/assets/road-surface.png" alt="" />
                 <span>Дорожное покрытие</span>
             </button>
@@ -714,14 +739,14 @@
                             <div class="col mb-4">
                                 <span>* - поля являются обязательными</span>
                             </div>
-                            } @if (coverTypeDuplicateValidation()) {
+                            } @if (coverTypeDuplicateValidation(coverTypeAddForm)) {
                             <div class="col mb-4">
                                 <span>Покрытие с таким названием уже добавлено</span>
                             </div>
                             }
                         </div>
                         <button router class="btn btn-primary submit-button" type="button" (click)="addCoverType()" [disabled]="
-                                !coverTypeAddForm.valid || coverTypeDuplicateValidation()
+                                !coverTypeAddForm.valid || coverTypeDuplicateValidation(coverTypeAddForm)
                             ">
                             Добавить
                         </button>
@@ -750,7 +775,7 @@
                                         <button type="button" class="btn btn-outline-primary dropdown-button valid-dropdown-button" [disabled]="isCoverTypeEdit" ngbDropdownToggle>
                                         </button>
                                         <div ngbDropdownMenu aria-labelledby="dropdownBasic">
-                                            <button ngbDropdownItem (click)="coverType.enable(); editCoverTypeNumber=$index; isCoverTypeEdit=true">
+                                            <button ngbDropdownItem (click)="coverType.enable(); editCoverTypeNumber=(coverTypesTabPage-1)*4+$index; isCoverTypeEdit=true">
                                               Редактировать 
                                             </button>
                                             <button ngbDropdownItem (click)="coverTypeDelete($index)">
@@ -768,23 +793,29 @@
                         <ngb-pagination [collectionSize]="coverTypesArrSize" [(page)]="coverTypesTabPage" [pageSize]="4">
                         </ngb-pagination>
                     </div>
-                    @if (coverTypeEditForm.controls[editCoverTypeNumber].controls.name.hasError('stringRange')) {
-                        <div class="col mb-4">
-                            <span class="error-span">Название покрытия должно быть не больше 30 символов</span>
-                        </div>
-                    }
-                    @if (coverTypeEditForm.controls[editCoverTypeNumber].controls.coefficient_braking.hasError('range') ||
-                         coverTypeEditForm.controls[editCoverTypeNumber].controls.coefficient_braking.hasError('floatOnly')) {
-                        <span class="error-span">Коэффициент должен быть положительным числом в диапозоне от 1 до 2</span>
-                    }
-                    @if (isRequiredError(coverTypeEditForm.controls[editCoverTypeNumber])) {
-                        <div class="col mb-4">
-                            <span class="error-span">* - поля являются обязательными</span>
-                        </div>
-                    }
                     @if (isCoverTypeEdit) {
+                        @if (coverTypeDuplicateValidation(coverTypeEditForm.controls[editCoverTypeNumber], editCoverTypeNumber)) {
+                            <div class="col mb-4">
+                                <span class="error-span">Покрытие с таким названием уже добавлено</span>
+                            </div>
+                        }
+                        @if (coverTypeEditForm.controls[editCoverTypeNumber].controls.name.hasError('stringRange')) {
+                            <div class="col mb-4">
+                                <span class="error-span">Название покрытия должно быть не больше 30 символов</span>
+                            </div>
+                        }
+                        @if (coverTypeEditForm.controls[editCoverTypeNumber].controls.coefficient_braking.hasError('range') ||
+                             coverTypeEditForm.controls[editCoverTypeNumber].controls.coefficient_braking.hasError('floatOnly')) {
+                            <span class="error-span">Коэффициент должен быть положительным числом в диапозоне от 1 до 2</span>
+                        }
+                        @if (isRequiredError(coverTypeEditForm.controls[editCoverTypeNumber])) {
+                            <div class="col mb-4">
+                                <span class="error-span">* - поля являются обязательными</span>
+                            </div>
+                        }
                         <button router class="btn btn-primary submit-button" type="button" (click)="editCoverType()" [disabled]="
-                                !coverTypeEditForm.controls[editCoverTypeNumber].valid
+                                !coverTypeEditForm.controls[editCoverTypeNumber].valid ||
+                                coverTypeDuplicateValidation(coverTypeEditForm.controls[editCoverTypeNumber], editCoverTypeNumber)
                             ">
                             Сохранить
                         </button>
@@ -796,7 +827,7 @@
             </ng-template>
         </li>
         <li ngbNavItem>
-            <button ngbNavLink (click)="activeRightElement=1">
+            <button ngbNavLink>
                 <img src="/assets/traffic-light.png" alt="" />
                 <span>Светофор</span>
             </button>
@@ -827,14 +858,14 @@
                             <div class="col mb-4">
                                 <span>* - поля являются обязательными</span>
                             </div>
-                            } @if (trafficLightDuplicateValidation()) {
+                            } @if (trafficLightDuplicateValidation($any(trafficLightAddForm))) {
                             <div class="col mb-4">
                                 <span>Светофор с такими значениями уже добавлен</span>
                             </div>
                             }
                         </div>
                         <button router class="btn btn-primary submit-button" type="button" (click)="addTrafficLight()" [disabled]="
-                                !trafficLightAddForm.valid || trafficLightDuplicateValidation()
+                                !trafficLightAddForm.valid || trafficLightDuplicateValidation($any(trafficLightAddForm))
                             ">
                             Добавить
                         </button>
@@ -863,7 +894,7 @@
                                         <button type="button" class="btn btn-outline-primary dropdown-button valid-dropdown-button" [disabled]="isTrafficLightEdit" ngbDropdownToggle>
                                         </button>
                                         <div ngbDropdownMenu aria-labelledby="dropdownBasic">
-                                            <button ngbDropdownItem (click)="trafficLight.enable(); editTrafficLightNumber=$index; isTrafficLightEdit=true">
+                                            <button ngbDropdownItem (click)="trafficLight.enable(); editTrafficLightNumber=(trafficLightsTabPage-1)*4+$index; isTrafficLightEdit=true">
                                               Редактировать 
                                             </button>
                                             <button ngbDropdownItem (click)="trafficLightDelete($index)">
@@ -878,23 +909,29 @@
                     </table>
     
                     <div class="d-flex justify-content-between p-2">
-                        <ngb-pagination [collectionSize]="trafficLightsTabPage" [(page)]="trafficLightsTabPage" [pageSize]="4">
+                        <ngb-pagination [collectionSize]="trafficLightsArrSize" [(page)]="trafficLightsTabPage" [pageSize]="4">
                         </ngb-pagination>
                     </div>
-                    @if (trafficLightEditForm.controls[editTrafficLightNumber].controls.time_red_signal.hasError('range') ||
-                         trafficLightEditForm.controls[editTrafficLightNumber].controls.time_green_signal.hasError('range')) {
-                        <div class="col mb-4">
-                            <span class="error-span">Длительность должна быть в диапозоне от 20 до 120</span>
-                        </div>
-                    }
-                    @if (isRequiredError(trafficLightEditForm.controls[editTrafficLightNumber])) {
-                        <div class="col mb-4">
-                            <span class="error-span">* - поля являются обязательными</span>
-                        </div>
-                    }
-                    @if (isTrafficLightEdit) {
+                    @if (isTrafficLightEdit) {  
+                        @if (trafficLightDuplicateValidation($any(trafficLightEditForm.controls[editTrafficLightNumber]), editTrafficLightNumber)) {
+                            <div class="col mb-4">
+                                <span class="error-span">Светофор с такими значениями уже добавлен</span>
+                            </div>
+                        }         
+                        @if (trafficLightEditForm.controls[editTrafficLightNumber].controls.time_red_signal.hasError('range') ||
+                             trafficLightEditForm.controls[editTrafficLightNumber].controls.time_green_signal.hasError('range')) {
+                            <div class="col mb-4">
+                                <span class="error-span">Длительность должна быть в диапозоне от 20 до 120</span>
+                            </div>
+                        }
+                        @if (isRequiredError(trafficLightEditForm.controls[editTrafficLightNumber])) {
+                            <div class="col mb-4">
+                                <span class="error-span">* - поля являются обязательными</span>
+                            </div>
+                        }
                         <button router class="btn btn-primary submit-button" type="button" (click)="editTrafficLights()" [disabled]="
-                                !trafficLightEditForm.controls[editTrafficLightNumber].valid
+                                !trafficLightEditForm.controls[editTrafficLightNumber].valid ||
+                                trafficLightDuplicateValidation($any(trafficLightEditForm.controls[editTrafficLightNumber]), editTrafficLightNumber)
                             ">
                             Сохранить
                         </button>
@@ -902,11 +939,12 @@
                             Отмена
                         </button>
                     }
+
                 }
             </ng-template>
         </li>
         <li ngbNavItem>
-            <button ngbNavLink (click)="activeRightElement=1">
+            <button ngbNavLink>
                 <img src="/assets/fine.png" alt="" />
                 <span>Штраф</span>
             </button>
@@ -933,14 +971,14 @@
                             <div class="col mb-4">
                                 <span>* - поля являются обязательными</span>
                             </div>
-                            } @if (fineTypeDuplicateValidation()) {
+                            } @if (fineTypeDuplicateValidation(fineTypeAddForm)) {
                             <div class="col mb-4">
-                                <span>Топливо с таким названием уже добавлено</span>
+                                <span>Штраф с таким названием уже добавлен</span>
                             </div>
                             }
                         </div>
-                        <button router class="btn btn-primary submit-button" type="button" (click)="addTypeFuel()" [disabled]="
-                                !fineTypeAddForm.valid || fineTypeDuplicateValidation()
+                        <button router class="btn btn-primary submit-button" type="button" (click)="addFineType()" [disabled]="
+                                !fineTypeAddForm.valid || fineTypeDuplicateValidation(fineTypeAddForm)
                             ">
                             Добавить
                         </button>
@@ -969,7 +1007,7 @@
                                         <button type="button" class="btn btn-outline-primary dropdown-button valid-dropdown-button" [disabled]="isFineTypeEdit" ngbDropdownToggle>
                                         </button>
                                         <div ngbDropdownMenu aria-labelledby="dropdownBasic">
-                                            <button ngbDropdownItem (click)="fineType.enable(); editFineTypeNumber=$index; isFineTypeEdit=true">
+                                            <button ngbDropdownItem (click)="fineType.enable(); editFineTypeNumber=(fineTypeTabPage-1)*4+$index; isFineTypeEdit=true">
                                               Редактировать 
                                             </button>
                                             <button ngbDropdownItem (click)="fineTypeDelete($index)">
@@ -987,24 +1025,30 @@
                         <ngb-pagination [collectionSize]="fineTypesArrSize" [(page)]="fineTypeTabPage" [pageSize]="4">
                         </ngb-pagination>
                     </div>
-                    @if (fineTypeEditForm.controls[editFineTypeNumber].controls.name.hasError('stringRange')) {
-                        <div class="col mb-4">
-                            <span>Название штрафа должно быть не больше 40 символов</span>
-                        </div>
-                    }
-                    @if (fineTypeEditForm.controls[editFineTypeNumber].controls.price.hasError('range')) {
-                        <div class="col mb-4">
-                            <span>Стоимость штрафа должна быть в диапозоне от 300 до 20000 руб/л</span>
-                        </div>
-                    }
-                    @if (isRequiredError(fineTypeEditForm.controls[editFineTypeNumber])) {
-                        <div class="col mb-4">
-                            <span class="error-span">* - поля являются обязательными</span>
-                        </div>
-                    }
-                    @if (isFineTypeEdit) {
+                    @if (isFineTypeEdit) { 
+                        @if (fineTypeDuplicateValidation(fineTypeEditForm.controls[editFineTypeNumber], editFineTypeNumber)) {
+                            <div class="col mb-4">
+                                <span class="error-span">Штраф с таким названием уже добавлен</span>
+                            </div>
+                        }             
+                        @if (fineTypeEditForm.controls[editFineTypeNumber].controls.name.hasError('stringRange')) {
+                            <div class="col mb-4">
+                                <span>Название штрафа должно быть не больше 40 символов</span>
+                            </div>
+                        }
+                        @if (fineTypeEditForm.controls[editFineTypeNumber].controls.price.hasError('range')) {
+                            <div class="col mb-4">
+                                <span>Стоимость штрафа должна быть в диапозоне от 300 до 20000 руб/л</span>
+                            </div>
+                        }
+                        @if (isRequiredError(fineTypeEditForm.controls[editFineTypeNumber])) {
+                            <div class="col mb-4">
+                                <span class="error-span">* - поля являются обязательными</span>
+                            </div>
+                        }
                         <button router class="btn btn-primary submit-button" type="button" (click)="editFineTypes()" [disabled]="
-                                !fineTypeEditForm.controls[editFineTypeNumber].valid
+                                !fineTypeEditForm.controls[editFineTypeNumber].valid ||
+                                fineTypeDuplicateValidation(fineTypeEditForm.controls[editFineTypeNumber], editFineTypeNumber)
                             ">
                             Сохранить
                         </button>
