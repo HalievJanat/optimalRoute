@@ -42,7 +42,57 @@
             <button (click)="replaceSizeGrid(false)">-</button>
             <button (click)="replaceSizeGrid(true)">+</button>
         </div>-->
+        @if (isVisualMenu) {
+            <ul ngbNav class="nav-tabs" orientation="vertical">
+                <li ngbNavItem>
+                    <button ngbNavLink autofocus (click)="isRoute=true; isAuto=false; isCriteria=false;">
+                        <img src="/assets/route-32.png" alt="" />
+                        <span>Выбор точки отправления и прибытия</span>
+                    </button>
+                </li>
+                <li ngbNavItem>
+                    <button ngbNavLink autofocus (click)="isRoute=false; isAuto=true; isCriteria=false;">
+                        <img src="/assets/auto.png" alt="" />
+                        <span>Выбор автомобиля</span>
+                    </button>
+                </li>
+                @if(isAuto) {
+                    <div class="panel-el">
+                        <div ngbDropdown [autoClose]="true" class="d-inline-block">
+                            <button type="button" class="btn btn-outline-primary dropdown-button" ngbDropdownToggle>
+                             {{ dropDownAuto || "Выберите водителя*"}} 
+                            </button>
+                            <div ngbDropdownMenu aria-labelledby="dropdownBasic">
+                                <button ngbDropdownItem (click)="setDropdownTrafficLight(0)">
+                                    {{ "Loh" }} 
+                                </button>
+                                @for(trafficLight of httpService.trafficLigths; track $index) {
+                                    <button ngbDropdownItem (click)="setDropdownTrafficLight($index)">
+                                        {{ trafficLight.time_red_signal }} 
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+                <li ngbNavItem>
+                    <button ngbNavLink autofocus (click)="isRoute=false; isAuto=false; isCriteria=true;">
+                        <img src="/assets/criteria.png" alt="" />
+                        <span>Выбор критерия</span>
+                    </button>
+                </li>
+                @if(isCriteria) {
+                    <input type="radio" name="criteria">Стоимость <br>
+                    <input type="radio" name="criteria">Время <br>
+                    <input type="radio" name="criteria">Расстояние <br>
+    
+                    <button (click)="isCriteria=false">Построить маршрут</button>
+                }
+            </ul>
+        }
     </div>
+        
+    
     <button
         type="button"
         class="btn btn-outline-secondary open-left-panel-btn"
@@ -65,12 +115,13 @@
         <span class="visually-hidden">Открыть панель</span>
     </button>
 
-        <div class="graph-editor">
-            <div
-                data-toggle="context"
-                id="container"
-            ></div>     
-        </div>
+    <div class="graph-editor">
+        <div
+            data-toggle="context"
+            id="container"
+            (click)="leftClickCanvas($event.layerX, $event.layerY)"
+        ></div>     
+    </div>
 
     <div class="right-panel" [hidden]="!isRightPanelOpen">
         <div class="right-panel-header">
@@ -117,5 +168,4 @@
         </svg>
         <span class="visually-hidden">Открыть панель</span>
     </button>
-    
 </div>

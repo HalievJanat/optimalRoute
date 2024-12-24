@@ -1,25 +1,44 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { HeaderComponent } from '../../header/header.component';
 import { UDS } from '../../models/UDS.model';
 import { Crossroad } from '../../models/UDS.model';
 import { Road } from '../../models/UDS.model';
+import { Route } from '../../models/UDS.model';
 import Konva from 'konva';
+import { HttpService } from '../../services/http-service.service';
+import { CommonModule } from '@angular/common';
+import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-user-page',
   standalone: true,
-  imports: [HeaderComponent],
+  imports: [HeaderComponent, CommonModule, NgbDropdownModule, ReactiveFormsModule],
   templateUrl: './user-page.component.html',
   styleUrl: './user-page.component.scss'
 })
 export class UserPageComponent {
+    httpService = inject(HttpService);
+
+    isVisualMenu = false;
+
+    isRoute = false;
+    isAuto = false;
+    isCriteria = false;
+
     isLeftPanelOpen = true;
     isRightPanelOpen = true;
 
+    indexSelectedElement = -1;
+    isFirstClick = true;
+
+    dropDownAuto = '';
 
     crossroadList: Crossroad[] = [];
     roadList: Road[] = [];
     crossroadOptimalRoute: number[] | undefined = [];
+
+    route!: Route;
     
     gridSize = 50; // Масштаб
     radius = (this.gridSize * 2) / 5;
@@ -30,37 +49,90 @@ export class UserPageComponent {
     //Метод для правой панели
     methodRightPanelOpen(): void {
       this.isRightPanelOpen = !this.isRightPanelOpen;
-      /*if (this.isAddUDS) {
+      if (this.isVisualMenu) {
         this.gridDrowSize();
 
         let tempGridSize = this.gridSize;
         this.drawScaleCanvas(tempGridSize);
-      }*/
-  }
+      }
+    }
 
   //Метод для левой панели
   methodLeftPanelOpen(): void {
       this.isLeftPanelOpen = !this.isLeftPanelOpen;
-      /*
-      if (this.isAddUDS) {
+      
+      if (this.isVisualMenu) {
         this.gridDrowSize();
 
         let tempGridSize = this.gridSize;
         this.drawScaleCanvas(tempGridSize);
-      }*/
+      }
   }
 
   addUDS(): void {
     let xhr = this.parseJSON('assets/UDS.json');
+    this.isVisualMenu = true;
 
     const UDSJSON: UDS = JSON.parse(xhr.responseText);
     this.crossroadList = UDSJSON.crossroads;
     this.roadList = UDSJSON.roads;
 
+    let route: Route = {
+        start_crossroad:0,
+        end_crossroad: 0,
+        driver: {
+            name: '',
+            surname: '',
+            family: '',
+            infringer: false,
+            vehicle: {
+                brand: '',
+                type_fuel: {
+                    name: '',
+                    price: 0
+                },
+                consumption_fuel: 0,
+                max_speed: 0
+            }
+        },
+        criteria_searche: "",
+        crossroads: [],
+        type_fines: []
+    };
+
+    this.route = route;
+
     this.gridDrowSize();
 
     this.drawScaleCanvas(this.gridSize);
   }
+
+  leftClickCanvas(X: number, Y: number): void {
+    if (!this.defineClickCrossroad(X, Y)) {
+        return;
+    }
+    if (this.isFirstClick === true) {
+        this.route.start_crossroad = this.indexSelectedElement;
+        this.isFirstClick = false;
+    } else {
+        this.route.end_crossroad = this.indexSelectedElement;
+        this.isFirstClick = true;
+    }
+    console.log(this.route);
+  }
+
+  private defineClickCrossroad(x: number, y: number): boolean {    
+    for (let i = 0; i < this.crossroadList.length; i++) {
+        let x0 = this.crossroadList[i].x;
+        let y0 = this.crossroadList[i].y;
+        let r = Math.pow((x - x0), 2) + Math.pow((y - y0), 2); 
+        if (r <= Math.pow(this.radius,2)) {
+            this.indexSelectedElement = i;
+            return true;
+        }
+    }
+    return false;
+}
 
   public showOptimalRoute() {
     let xhr = this.parseJSON('assets/UDSOptimal.json');
@@ -147,7 +219,6 @@ export class UserPageComponent {
                 stroke = 'black';
             }
         }
-        console.log(stroke);
         this.drawLine(
             x1,
             y1,
@@ -361,4 +432,8 @@ export class UserPageComponent {
   public calculateYCoordinate(k:number, b:number, x:number): number {
       return k*x + b;
   }
+
+  public setDropdownTrafficLight(trafficLightIndex: number) {
+    this.dropDownAuto = this.httpService.trafficLigths[trafficLightIndex].time_green_signal.toString();
+}
 }
