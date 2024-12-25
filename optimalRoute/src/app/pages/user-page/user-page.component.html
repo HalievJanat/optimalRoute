@@ -1,12 +1,27 @@
+<ng-template #content let-c="close" let-d="dismiss">
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Карты</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="d('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+        <div class="modal-header" (click)="addUDS();c('Save click')">
+            <p>{{UDS[0].name}}</p>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="c('Save click')">Закрыть</button>
+    </div>
+</ng-template>
 <app-header>
-    <a class="btn bg-transparent button" (click)="addUDS()">Загрузить карту</a>
+    <a class="btn bg-transparent button" (click)="open(content)">Загрузить карту</a>
     <a class="btn bg-transparent button">Справочная информация</a>
 </app-header>
 
 <div class="editor-container">
     <div class="left-panel" [hidden]="!isLeftPanelOpen">
-        <div class="left-panel-header">
-            <h5 class="offcanvas-title">Маршрут</h5>
+        <div class="left-panel-header" [class.border-left]="isVisualMenu">
+            @if(isVisualMenu) {<h5 class="offcanvas-title">Маршрут</h5>}
+            @else {<h5 class="offcanvas-title"></h5>}
             <button
                 type="button"
                 class="btn btn-outline-secondary"
@@ -45,30 +60,30 @@
         @if (isVisualMenu) {
             <ul ngbNav class="nav-tabs" orientation="vertical">
                 <li ngbNavItem>
-                    <button ngbNavLink autofocus (click)="isRoute=true; isAuto=false; isCriteria=false;">
+                    <button ngbNavLink autofocus (click)="isRoute=true; isDriver=false; isCriteria=false;">
                         <img src="/assets/route-32.png" alt="" />
                         <span>Выбор точки отправления и прибытия</span>
                     </button>
                 </li>
                 <li ngbNavItem>
-                    <button ngbNavLink autofocus (click)="isRoute=false; isAuto=true; isCriteria=false;">
+                    <button ngbNavLink autofocus (click)="isRoute=false; isDriver=true; isCriteria=false;">
                         <img src="/assets/auto.png" alt="" />
                         <span>Выбор автомобиля</span>
                     </button>
                 </li>
-                @if(isAuto) {
+                @if(isDriver) {
                     <div class="panel-el">
                         <div ngbDropdown [autoClose]="true" class="d-inline-block">
                             <button type="button" class="btn btn-outline-primary dropdown-button" ngbDropdownToggle>
-                                {{ dropDownDriver || "Выберите водителя*"}} 
+                                {{ full_name || "Выберите водителя*"}} 
                             </button>
                             <div ngbDropdownMenu aria-labelledby="dropdownBasic">
                                 <button ngbDropdownItem (click)="setDropdownDriver(0)">
-                                    {{ testDriver }} 
+                                    {{ testDriver }}
                                 </button>
                                 @for(driver of httpService.drivers; track $index) {
                                     <button ngbDropdownItem (click)="setDropdownDriver($index)">
-                                        {{ driver }} 
+                                        {{ driver }}
                                     </button>
                                 }
                             </div>
@@ -76,7 +91,7 @@
                     </div>
                 }
                 <li ngbNavItem>
-                    <button ngbNavLink autofocus (click)="isRoute=false; isAuto=false; isCriteria=true;">
+                    <button ngbNavLink autofocus (click)="isRoute=false; isDriver=false; isCriteria=true;">
                         <img src="/assets/criteria.png" alt="" />
                         <span>Выбор критерия</span>
                     </button>
@@ -134,7 +149,7 @@
     </div>
 
     <div class="right-panel" [hidden]="!isRightPanelOpen">
-        <div class="right-panel-header">
+        <div [class.border-right]="isDriver" class="right-panel-header">
             <button
                 type="button"
                 class="btn btn-outline-secondary"
@@ -155,10 +170,11 @@
                 </svg>
                 <span class="visually-hidden">Button</span>
             </button>
-            @if (isAuto) {<h5 class="offcanvas-title">Водитель</h5>}
+            @if (isDriver) {<h5 class="offcanvas-title">Водитель</h5>}
+            @else {<h5 class="offcanvas-title"></h5>}
         </div>
 
-        @if (dropDownDriver != undefined && isAuto) {
+        @if (dropDownDriver != undefined && isDriver) {
             <div class="right-panel-body">
                 <div class="panel-el">
                     <span>Фамилия: </span>

@@ -283,6 +283,8 @@ export class AdminPageComponent {
                 }
             }
 
+            //this.isLeftClickRoad = true;
+            
             let ky = this.calculateKLine(
                 this.crossroadList[this.indexCrossroad1].X,
                 this.crossroadList[this.indexCrossroad1].Y,

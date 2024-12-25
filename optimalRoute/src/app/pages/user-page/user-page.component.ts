@@ -7,7 +7,7 @@ import { Route } from '../../models/UDS.model';
 import Konva from 'konva';
 import { HttpService } from '../../services/http-service.service';
 import { CommonModule } from '@angular/common';
-import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDropdownModule, NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Driver } from '../../models/driver.model';
 
@@ -20,7 +20,22 @@ import { Driver } from '../../models/driver.model';
 })
 export class UserPageComponent {
 
+     constructor(
+            config: NgbModalConfig,
+            private modalService: NgbModal,
+        ) {
+            // customize default values of modals used by this component tree
+            config.backdrop = 'static';
+            config.keyboard = false;
+        }
+    
+        open(content: any) {
+            this.modalService.open(content);
+        }
+
     UDSJSON!: UDS;
+
+    UDS: UDS[] = [];
 
     testDriver: Driver = {
         name: 'Asd',
@@ -40,10 +55,12 @@ export class UserPageComponent {
 
     httpService = inject(HttpService);
 
+    full_name: string | null = null;
+
     isVisualMenu = false;
 
     isRoute = false;
-    isAuto = false;
+    isDriver = false;
     isCriteria = false;
 
     isLeftPanelOpen = true;
@@ -52,13 +69,13 @@ export class UserPageComponent {
     indexSelectedElement = -1;
     isFirstClick = true;
 
-    dropDownDriver!: Driver;
+    dropDownDriver!: Driver | undefined;
 
     crossroadList: Crossroad[] = [];
     roadList: Road[] = [];
     crossroadOptimalRoute: number[] | undefined = [];
 
-    route!: Route;
+    route!: Route | undefined;
 
     start_crossroad: number = -1;
     end_crossroad: number = -1;
@@ -70,7 +87,12 @@ export class UserPageComponent {
     private layer: Konva.Layer = {} as any;
 
     ngOnInit(): void {
-        
+        this.UDS[0] = {
+            name: '1 карта',
+            crossroads: [],
+            roads: [],
+            route: this.route!
+        }
     }
 
     //Метод для правой панели
@@ -97,6 +119,20 @@ export class UserPageComponent {
   }
 
   addUDS(): void {
+    this.dropDownDriver = undefined;
+
+    this.isDriver = false;
+    this.isCriteria = false;
+    this.isRoute = false;
+
+    this.full_name = null;
+
+    this.crossroadOptimalRoute = [];
+
+    this.route = undefined;
+
+    this.start_crossroad = -1;
+    this.end_crossroad = -1;
     let xhr = this.parseJSON('assets/UDS.json');
     this.isVisualMenu = true;
 
@@ -132,19 +168,21 @@ export class UserPageComponent {
     this.gridDrowSize();
 
     this.drawScaleCanvas(this.gridSize);
+
+    
   }
 
   leftClickCanvas(X: number, Y: number): void {
     if (!this.isRoute || !this.defineClickCrossroad(X, Y)) {
         return;
     }
-    if (this.isFirstClick === true) {
-        this.start_crossroad = this.indexSelectedElement;
-        this.isFirstClick = false;
-    } else if (this.start_crossroad === this.indexSelectedElement) {
+    if (this.start_crossroad === this.indexSelectedElement || this.end_crossroad === this.indexSelectedElement ) {
         alert("Нельзя выбрать один и тот же перекресток");
         return;
-    } else {
+    } else if (this.isFirstClick === true) {
+        this.start_crossroad = this.indexSelectedElement;
+        this.isFirstClick = false;
+    } else  {
         this.end_crossroad = this.indexSelectedElement;
         this.isFirstClick = true;
     }
@@ -477,6 +515,8 @@ export class UserPageComponent {
         this.dropDownDriver = this.testDriver;
         //this.dropDownAuto = this.httpService.drivers[driverIndex];
 
+        this.full_name = this.dropDownDriver.surname + ' ' + this.dropDownDriver.name + ' ' + this.dropDownDriver.family;
+
         console.log(this.dropDownDriver);
 
     }
@@ -500,19 +540,19 @@ export class UserPageComponent {
         }
 
         if (distance) {
-            this.route.criteria_searche = 'Расстояние';
+            this.route!.criteria_searche = 'Расстояние';
         } else if (time) {
-            this.route.criteria_searche = 'Время';
+            this.route!.criteria_searche = 'Время';
         } else if (cost) {
-            this.route.criteria_searche = 'Стоимость';
+            this.route!.criteria_searche = 'Стоимость';
         }
 
-        this.route.start_crossroad = this.start_crossroad;
-        this.route.end_crossroad = this.end_crossroad;
-        this.route.driver = this.dropDownDriver;
+        this.route!.start_crossroad = this.start_crossroad;
+        this.route!.end_crossroad = this.end_crossroad;
+        this.route!.driver = this.dropDownDriver;
         
 
-        this.UDSJSON.route = this.route;
+        this.UDSJSON.route = this.route!;
         this.isCriteria = false;
 
         console.log(this.UDSJSON);
