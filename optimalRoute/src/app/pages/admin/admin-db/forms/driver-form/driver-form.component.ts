@@ -146,7 +146,7 @@ export class DriverFormComponent implements OnInit, AfterViewInit {
             surname: this.drivers[this.editDriverNumber].surname,
             family: this.drivers[this.editDriverNumber].family,
             infringer: this.drivers[this.editDriverNumber].infringer,
-            vehicle: this.httpService.drivers[this.editDriverNumber].vehicle.brand,
+            vehicle: this.drivers[this.editDriverNumber].vehicle.brand,
         });
 
         this.isDriverEdit = false;

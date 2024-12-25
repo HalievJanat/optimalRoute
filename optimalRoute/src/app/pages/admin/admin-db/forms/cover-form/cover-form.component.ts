@@ -47,7 +47,7 @@ export class CoverFormComponent implements OnInit, AfterViewInit {
     constructor() {
         this.httpService.getTypeCovers().subscribe(coverTypes => {
             this.coverTypes = coverTypes;
-            this.coverTypesArrSize = this.httpService.coverTypes.length;
+            this.coverTypesArrSize = this.coverTypes.length;
             this.coverTypes.forEach(coverType => {
                 const addedCoverTypeGroup = this.fb.nonNullable.group({
                     name: [coverType.name, [Validators.required, stringRangeValidator(30)]],

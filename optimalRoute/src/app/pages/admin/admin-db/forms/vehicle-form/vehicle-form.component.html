@@ -24,7 +24,7 @@
                     {{ vehicleAddForm.controls.typeFuel.value || 'Вид топлива*' }}
                 </button>
                 <div ngbDropdownMenu aria-labelledby="dropdownBasic">
-                    @for (typeFuel of httpService.typeFuels; track typeFuel.name) {
+                    @for (typeFuel of typeFuels; track typeFuel.name) {
                     <button ngbDropdownItem (click)="vehicleAddForm.controls.typeFuel.setValue(typeFuel.name)">
                         {{ typeFuel.name }}
                     </button>
@@ -100,7 +100,7 @@
                         {{ vehicle.controls.typeFuel.value }}
                     </button>
                     <div ngbDropdownMenu aria-labelledby="dropdownBasic">
-                        @for (typeFuel of httpService.typeFuels; track typeFuel.name) {
+                        @for (typeFuel of typeFuels; track typeFuel.name) {
                         <button ngbDropdownItem (click)="vehicle.controls.typeFuel.setValue(typeFuel.name)">
                             {{ typeFuel.name }}
                         </button>

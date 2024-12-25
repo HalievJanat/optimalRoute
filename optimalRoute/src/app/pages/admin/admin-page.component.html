@@ -137,7 +137,7 @@
                             {{ dropdownGreenDuration }}
                         </button>
                         <div ngbDropdownMenu aria-labelledby="dropdownBasic">
-                            @for(trafficLight of httpService.trafficLigths; track $index) {
+                            @for(trafficLight of trafficLights; track $index) {
                                 <button ngbDropdownItem (click)="setDropdownTrafficLight($index)">
                                     {{ trafficLight.time_green_signal }} 
                                 </button>
@@ -152,7 +152,7 @@
                          {{ dropdownRedDuration }} 
                         </button>
                         <div ngbDropdownMenu aria-labelledby="dropdownBasic">
-                            @for(trafficLight of httpService.trafficLigths; track $index) {
+                            @for(trafficLight of trafficLights; track $index) {
                                 <button ngbDropdownItem (click)="setDropdownTrafficLight($index)">
                                     {{ trafficLight.time_red_signal }} 
                                 </button>
@@ -172,7 +172,7 @@
                             {{ dropdownGreenDuration || "Выберите длительность зелёной фазы*"}}
                         </button>
                         <div ngbDropdownMenu aria-labelledby="dropdownBasic">
-                            @for(trafficLight of httpService.trafficLigths; track $index) {
+                            @for(trafficLight of trafficLights; track $index) {
                                 <button ngbDropdownItem (click)="setDropdownTrafficLight($index)">
                                     {{ trafficLight.time_green_signal }} 
                                 </button>
@@ -186,7 +186,7 @@
                          {{ dropdownRedDuration || "Выберите длительность красной фазы*"}} 
                         </button>
                         <div ngbDropdownMenu aria-labelledby="dropdownBasic">
-                            @for(trafficLight of httpService.trafficLigths; track $index) {
+                            @for(trafficLight of trafficLights; track $index) {
                                 <button ngbDropdownItem (click)="setDropdownTrafficLight($index)">
                                     {{ trafficLight.time_red_signal }} 
                                 </button>
@@ -228,7 +228,7 @@
                             {{ dropdownStreet || 'Название улицы*' }} 
                         </button>
                         <div ngbDropdownMenu aria-labelledby="dropdownBasic">
-                            @for(street of httpService.streets; track $index) {
+                            @for(street of streets; track $index) {
                                 <button ngbDropdownItem (click)="setDropdownStreet($index)">
                                     {{ street.name }} 
                                 </button>
@@ -256,7 +256,7 @@
                             {{ dropdownCoverType || 'Название покрытия*' }} 
                         </button>
                         <div ngbDropdownMenu aria-labelledby="dropdownBasic">
-                            @for(coverType of httpService.coverTypes; track $index) {
+                            @for(coverType of coverTypes; track $index) {
                                 <button ngbDropdownItem (click)="setDropdownCoverType($index)">
                                     {{ coverType.name }} 
                                 </button>
@@ -293,7 +293,7 @@
                                 {{ dropdownCorruptionCoef }} 
                             </button>
                             <div ngbDropdownMenu aria-labelledby="dropdownBasic">
-                                @for(corruptionCoef of httpService.corruptionDegrees; track $index) {
+                                @for(corruptionCoef of corruptionDegrees; track $index) {
                                     <button ngbDropdownItem (click)="setDropdownCorruptionCoef($index)">
                                         {{ corruptionCoef.name }} 
                                     </button>
@@ -315,7 +315,7 @@
                             {{ dropdownCorruptionCoef || 'Название степени коррумпированности*' }} 
                         </button>
                         <div ngbDropdownMenu aria-labelledby="dropdownBasic">
-                            @for(corruptionCoef of httpService.corruptionDegrees; track $index) {
+                            @for(corruptionCoef of corruptionDegrees; track $index) {
                                 <button ngbDropdownItem (click)="setDropdownCorruptionCoef($index)">
                                     {{ corruptionCoef.name }} 
                                 </button>

@@ -31,7 +31,7 @@
                     {{ driverAddForm.controls.vehicle.value || 'Автомобиль*' }}
                 </button>
                 <div ngbDropdownMenu aria-labelledby="dropdownBasic">
-                    @for (vehicle of httpService.vehicles; track vehicle.brand) {
+                    @for (vehicle of vehicles; track vehicle.brand) {
                     <button ngbDropdownItem (click)="driverAddForm.controls.vehicle.setValue(vehicle.brand)">
                         {{ vehicle.brand }}
                     </button>
@@ -106,7 +106,7 @@
                         {{ driver.controls.vehicle.value }}
                     </button>
                     <div ngbDropdownMenu aria-labelledby="dropdownBasic">
-                        @for (vehicle of httpService.vehicles; track vehicle.brand) {
+                        @for (vehicle of vehicles; track vehicle.brand) {
                         <button ngbDropdownItem (click)="driver.controls.vehicle.setValue(vehicle.brand)">
                             {{ vehicle.brand }}
                         </button>
