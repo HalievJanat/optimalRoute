@@ -1,6 +1,6 @@
 <app-header>
     <a class="btn bg-transparent button" (click)="addUDS()">Загрузить карту</a>
-    <a class="btn bg-transparent button" (click)="showOptimalRoute()">Справочная информация</a>
+    <a class="btn bg-transparent button">Справочная информация</a>
 </app-header>
 
 <div class="editor-container">
@@ -83,15 +83,15 @@
                 </li>
                 @if(isCriteria) {
                     <div class="panel-el">
-                        <input type="radio" checked="{{route.criteria_searche === 'Расстояние'}}" name="criteria" id="distance"> 
+                        <input type="radio" name="criteria" id="distance"> 
                         <span>Расстояние </span>
                     </div>
                     <div class="panel-el">
-                        <input type="radio" checked="{{route.criteria_searche === 'Время'}}" name="criteria"> 
+                        <input type="radio" name="criteria" id="time"> 
                         <span>Время </span>
                     </div>
                     <div class="panel-el">
-                        <input type="radio" checked="{{route.criteria_searche === 'Стоимость'}}" name="criteria"> 
+                        <input type="radio"     name="criteria" id="cost"> 
                         <span>Стоимость </span>
                     </div>
                     <button class="buttonRoute" (click)="buildRoute()">Построить маршрут</button>

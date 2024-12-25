@@ -20,6 +20,8 @@ import { Driver } from '../../models/driver.model';
 })
 export class UserPageComponent {
 
+    UDSJSON!: UDS;
+
     testDriver: Driver = {
         name: 'Asd',
         surname: 'asd',
@@ -98,9 +100,9 @@ export class UserPageComponent {
     let xhr = this.parseJSON('assets/UDS.json');
     this.isVisualMenu = true;
 
-    const UDSJSON: UDS = JSON.parse(xhr.responseText);
-    this.crossroadList = UDSJSON.crossroads;
-    this.roadList = UDSJSON.roads;
+    this.UDSJSON = JSON.parse(xhr.responseText);
+    this.crossroadList = this.UDSJSON.crossroads;
+    this.roadList = this.UDSJSON.roads;
 
     let route: Route = {
         start_crossroad: -1,
@@ -489,10 +491,34 @@ export class UserPageComponent {
             return;
         }
 
-        let criteria;
-        console.log((<HTMLInputElement> document.querySelector("#distance")).checked);
+        let distance = (<HTMLInputElement> document.querySelector("#distance")).checked;
+        let time = (<HTMLInputElement> document.querySelector("#time")).checked;
+        let cost = (<HTMLInputElement> document.querySelector("#cost")).checked;
+        if (!distance && !time && !cost) {
+            alert("Критерий не выбраны");
+            return;
+        }
+
+        if (distance) {
+            this.route.criteria_searche = 'Расстояние';
+        } else if (time) {
+            this.route.criteria_searche = 'Время';
+        } else if (cost) {
+            this.route.criteria_searche = 'Стоимость';
+        }
+
+        this.route.start_crossroad = this.start_crossroad;
+        this.route.end_crossroad = this.end_crossroad;
+        this.route.driver = this.dropDownDriver;
         
 
+        this.UDSJSON.route = this.route;
         this.isCriteria = false;
+
+        console.log(this.UDSJSON);
+
+        this.showOptimalRoute();
+
+        this.crossroadOptimalRoute = [];
     }
 }
