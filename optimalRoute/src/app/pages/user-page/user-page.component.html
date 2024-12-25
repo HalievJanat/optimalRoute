@@ -60,15 +60,15 @@
                     <div class="panel-el">
                         <div ngbDropdown [autoClose]="true" class="d-inline-block">
                             <button type="button" class="btn btn-outline-primary dropdown-button" ngbDropdownToggle>
-                             {{ dropDownAuto || "Выберите водителя*"}} 
+                                {{ dropDownDriver || "Выберите водителя*"}} 
                             </button>
                             <div ngbDropdownMenu aria-labelledby="dropdownBasic">
-                                <button ngbDropdownItem (click)="setDropdownTrafficLight(0)">
-                                    {{ "Loh" }} 
+                                <button ngbDropdownItem (click)="setDropdownDriver(0)">
+                                    {{ testDriver }} 
                                 </button>
-                                @for(trafficLight of httpService.trafficLigths; track $index) {
-                                    <button ngbDropdownItem (click)="setDropdownTrafficLight($index)">
-                                        {{ trafficLight.time_red_signal }} 
+                                @for(driver of httpService.drivers; track $index) {
+                                    <button ngbDropdownItem (click)="setDropdownDriver($index)">
+                                        {{ driver }} 
                                     </button>
                                 }
                             </div>
@@ -82,13 +82,22 @@
                     </button>
                 </li>
                 @if(isCriteria) {
-                    <input type="radio" name="criteria">Стоимость <br>
-                    <input type="radio" name="criteria">Время <br>
-                    <input type="radio" name="criteria">Расстояние <br>
-    
-                    <button (click)="isCriteria=false">Построить маршрут</button>
+                    <div class="panel-el">
+                        <input type="radio" checked="{{route.criteria_searche === 'Расстояние'}}" name="criteria" id="distance"> 
+                        <span>Расстояние </span>
+                    </div>
+                    <div class="panel-el">
+                        <input type="radio" checked="{{route.criteria_searche === 'Время'}}" name="criteria"> 
+                        <span>Время </span>
+                    </div>
+                    <div class="panel-el">
+                        <input type="radio" checked="{{route.criteria_searche === 'Стоимость'}}" name="criteria"> 
+                        <span>Стоимость </span>
+                    </div>
+                    <button class="buttonRoute" (click)="buildRoute()">Построить маршрут</button>
                 }
             </ul>
+            
         }
     </div>
         
@@ -120,6 +129,7 @@
             data-toggle="context"
             id="container"
             (click)="leftClickCanvas($event.layerX, $event.layerY)"
+            (contextmenu)="openContextMenu($event)"
         ></div>     
     </div>
 
@@ -145,7 +155,55 @@
                 </svg>
                 <span class="visually-hidden">Button</span>
             </button>
+            @if (isAuto) {<h5 class="offcanvas-title">Водитель</h5>}
         </div>
+
+        @if (dropDownDriver != undefined && isAuto) {
+            <div class="right-panel-body">
+                <div class="panel-el">
+                    <span>Фамилия: </span>
+                    <input type="text" class="form-control" value="{{dropDownDriver.surname}}" disabled="false"> 
+                </div>
+                <div class="panel-el">
+                    <span>Имя: </span>
+                    <input type="text" class="form-control" value="{{dropDownDriver.name}}" disabled="false"> 
+                </div>
+                <div class="panel-el">
+                    <span>Отчество: </span>
+                    <input type="text" class="form-control" value="{{dropDownDriver.family}}" disabled="false"> 
+                </div>
+                <div class="panel-el">
+                    <span>Признак нарушителя: </span>
+                    <input type="radio" checked="{{dropDownDriver.infringer}}"> 
+                </div>
+                <div class="panel-el">
+                    <h4>Автомобиль</h4>
+                </div>
+                <div class="panel-el">
+                    <span>Марка: </span>
+                    <input type="text" class="form-control" value="{{dropDownDriver.vehicle.brand}}" disabled="false"> 
+                </div>
+                <div class="panel-el">
+                    <span>Расход топлива: </span>
+                    <input type="text" class="form-control" value="{{dropDownDriver.vehicle.consumption_fuel}}" disabled="false"> 
+                </div>
+                <div class="panel-el">
+                    <span>Скорость: </span>
+                    <input type="text" class="form-control" value="{{dropDownDriver.vehicle.max_speed}}" disabled="false"> 
+                </div>
+                <div class="panel-el">
+                    <h4>Топливо</h4>
+                </div>
+                <div class="panel-el">
+                    <span>Название: </span>
+                    <input type="text" class="form-control" value="{{dropDownDriver.vehicle.type_fuel.name}}" disabled="false"> 
+                </div>
+                <div class="panel-el">
+                    <span>Стоимость: </span>
+                    <input type="text" class="form-control" value="{{dropDownDriver.vehicle.type_fuel.price}}" disabled="false"> 
+                </div>
+            </div>
+        }
     </div>
     <button
         type="button"

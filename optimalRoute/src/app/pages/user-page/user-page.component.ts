@@ -9,6 +9,7 @@ import { HttpService } from '../../services/http-service.service';
 import { CommonModule } from '@angular/common';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { Driver } from '../../models/driver.model';
 
 @Component({
   selector: 'app-user-page',
@@ -18,6 +19,23 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
   styleUrl: './user-page.component.scss'
 })
 export class UserPageComponent {
+
+    testDriver: Driver = {
+        name: 'Asd',
+        surname: 'asd',
+        family: 'asd',
+        infringer: false,
+        vehicle: {
+            brand: 'fd',
+            type_fuel: {
+                name: 'sdf',
+                price: 0
+            },
+            consumption_fuel: 0,
+            max_speed: 0
+        }
+    }
+
     httpService = inject(HttpService);
 
     isVisualMenu = false;
@@ -32,19 +50,26 @@ export class UserPageComponent {
     indexSelectedElement = -1;
     isFirstClick = true;
 
-    dropDownAuto = '';
+    dropDownDriver!: Driver;
 
     crossroadList: Crossroad[] = [];
     roadList: Road[] = [];
     crossroadOptimalRoute: number[] | undefined = [];
 
     route!: Route;
+
+    start_crossroad: number = -1;
+    end_crossroad: number = -1;
     
     gridSize = 50; // Масштаб
     radius = (this.gridSize * 2) / 5;
 
     private stage: Konva.Stage = {} as any;
     private layer: Konva.Layer = {} as any;
+
+    ngOnInit(): void {
+        
+    }
 
     //Метод для правой панели
     methodRightPanelOpen(): void {
@@ -78,8 +103,8 @@ export class UserPageComponent {
     this.roadList = UDSJSON.roads;
 
     let route: Route = {
-        start_crossroad:0,
-        end_crossroad: 0,
+        start_crossroad: -1,
+        end_crossroad: -1,
         driver: {
             name: '',
             surname: '',
@@ -108,17 +133,25 @@ export class UserPageComponent {
   }
 
   leftClickCanvas(X: number, Y: number): void {
-    if (!this.defineClickCrossroad(X, Y)) {
+    if (!this.isRoute || !this.defineClickCrossroad(X, Y)) {
         return;
     }
     if (this.isFirstClick === true) {
-        this.route.start_crossroad = this.indexSelectedElement;
+        this.start_crossroad = this.indexSelectedElement;
         this.isFirstClick = false;
+    } else if (this.start_crossroad === this.indexSelectedElement) {
+        alert("Нельзя выбрать один и тот же перекресток");
+        return;
     } else {
-        this.route.end_crossroad = this.indexSelectedElement;
+        this.end_crossroad = this.indexSelectedElement;
         this.isFirstClick = true;
     }
-    console.log(this.route);
+    this.gridDrowSize();
+    this.visualOptimalRoute(this.gridSize);
+  }
+
+  openContextMenu(event: MouseEvent): void {
+    event.preventDefault(); 
   }
 
   private defineClickCrossroad(x: number, y: number): boolean {    
@@ -152,11 +185,16 @@ export class UserPageComponent {
         this.crossroadList[i].x = Math.round(this.crossroadList[i].x / tempGridSize) * this.gridSize;
         this.crossroadList[i].y = Math.round(this.crossroadList[i].y / tempGridSize) * this.gridSize;
 
+        let stroke: string = 'black';
+
+        if (i === this.start_crossroad) stroke = 'blue';
+        else if (i === this.end_crossroad) stroke = 'red';
+
         const circle = new Konva.Circle({
             x: this.crossroadList[i].x,
             y: this.crossroadList[i].y,
             radius: this.radius,
-            stroke: '#000',
+            stroke: stroke,
             full: '#fff',
             //draggable: true, // Включаем перетаскивание
         });
@@ -433,7 +471,28 @@ export class UserPageComponent {
       return k*x + b;
   }
 
-  public setDropdownTrafficLight(trafficLightIndex: number) {
-    this.dropDownAuto = this.httpService.trafficLigths[trafficLightIndex].time_green_signal.toString();
-}
+    public setDropdownDriver(driverIndex: number) {
+        this.dropDownDriver = this.testDriver;
+        //this.dropDownAuto = this.httpService.drivers[driverIndex];
+
+        console.log(this.dropDownDriver);
+
+    }
+
+    buildRoute(): void {
+        if (this.start_crossroad === -1 || this.end_crossroad === -1) {
+            alert("Точки прибытия и отправления не выбраны");
+            return;
+        }
+        if (this.dropDownDriver === undefined) {
+            alert("Водитель не выбраны");
+            return;
+        }
+
+        let criteria;
+        console.log((<HTMLInputElement> document.querySelector("#distance")).checked);
+        
+
+        this.isCriteria = false;
+    }
 }

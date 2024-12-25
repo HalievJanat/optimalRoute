@@ -35,6 +35,7 @@ a:hover {
     overflow: hidden;
     ul {
         padding-left: 0px;
+        border-bottom: #fff;
 
         button:hover {
             color: gray;
@@ -49,8 +50,7 @@ a:hover {
         .panel-el {
             display: flex;
             align-items: center;
-            justify-content: flex-start;
-            margin-left: 10px;
+            justify-content: flex-start;;
             width: 100%;
             border-bottom: solid gray;
             border-block-width: 1px;
@@ -58,13 +58,18 @@ a:hover {
             padding-bottom: 4%;
             box-shadow: 1px 1px 2px 0 rgba($color: #908d8d, $alpha: 1);
             border-right: none;
+            input {
+                margin-left: 10px;
+            }
             span {
                 flex: 0;
+                margin-left: 10px;
             }
             div button {
                 width: 100%;
                 font-size: 0.95rem;
             }
+
         }
         .dropdown-button {
             &:focus {
@@ -76,6 +81,14 @@ a:hover {
             border-color: #dee2e6;
             border-radius: 0.375rem;
             color: gray;
+        }
+
+        .buttonRoute {
+            width: 50%;
+            margin-left: 25%;
+            margin-right: 25%;
+            margin-top: 10px;
+            margin-bottom: 10px;
         }
 
         li {
@@ -131,6 +144,7 @@ a:hover {
 
 .left-panel-header {
     display: flex;
+    position: relative;
     justify-content: space-around;
     align-items: center;
     border-bottom: solid black;
@@ -143,9 +157,10 @@ a:hover {
         margin-bottom: 4%;
     }
     :last-child {
+        position: absolute;
+        right: 10px;
         margin-top: 0%;
         margin-bottom: 0%;
-        margin-right: 10px;
     }
 }
 
@@ -200,21 +215,100 @@ a:hover {
 
 .right-panel-header {
     display: flex;
-    justify-content: left;
     align-items: center;
     border-bottom: solid black;
     border-block-width: 2px;
     :first-child {
-        margin-top: 4%;
-        margin-bottom: 4%;
         margin-right: 10px;
         margin-left: 10px;
+        margin-top: 2%;
+        margin-bottom: 2%;
     }
-    .text {
+    :last-child {
         font-size: 1em;
-        margin-right: 10px;
-        margin-top: 4%;
-        margin-bottom: 4%;
+        margin-left: 10px;
+    }
+}
+
+.right-panel-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+
+    .submit-button {
+        width: 80%;
+        background: linear-gradient(
+            to right,
+            #9daaa7 0%,
+            #516662 76%,
+            #728380 100%
+        );
+        border-radius: 10px;
+        border: none;
+        color: white;
+        margin-top: 10px;
+    }
+
+    button:hover {
+        color: gray;
+        border-color: gray;
+    }
+
+    button:disabled,
+    button[disabled] {
+        background: rgb(224, 213, 213);
+        color: gray;
+    }
+
+    .dropdown-button {
+        &:focus {
+            border-color: white;
+            box-shadow: 2px 2px 2px 2px gray;
+        }
+        width: 100%;
+        background: white;
+        border-color: #dee2e6;
+        border-radius: 0.375rem;
+        color: gray;
+    }
+    .valid-dropdown-button {
+        color: black;
+    }
+    .panel-el {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        width: 100%;
+        border-bottom: solid gray;
+        border-block-width: 1px;
+        padding-top: 4%;
+        padding-bottom: 4%;
+        box-shadow: 1px 1px 2px 0 rgba($color: #908d8d, $alpha: 1);
+        border-right: none;
+        span {
+            flex: 0;
+            margin-left: 10px;
+            width: 30%;
+        }
+        h4 {
+            font-size: 1em;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 1%;
+            margin-bottom: 1%;
+        }
+        input {
+            position: absolute;
+            right: 10px;
+            width: 50%;
+        }
+        div button {
+            width: 100%;
+            font-size: 0.95rem;
+        }
     }
 }
 
