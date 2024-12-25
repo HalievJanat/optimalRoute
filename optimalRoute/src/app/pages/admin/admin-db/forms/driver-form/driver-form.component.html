@@ -1,0 +1,172 @@
+@if (activeRightElement === 1) {
+<form [formGroup]="driverAddForm">
+    <div class="col">
+        <div class="col mb-4">
+            <h4>Водитель</h4>
+        </div>
+        <div class="col mb-4">
+            <input type="text" class="form-control" formControlName="family" placeholder="Фамилия*" />
+        </div>
+        <div class="col mb-4">
+            <input type="text" class="form-control" formControlName="name" placeholder="Имя*" />
+        </div>
+        <div class="col mb-4">
+            <input type="text" class="form-control" formControlName="surname" placeholder="Отчество*" />
+        </div>
+        <div class="form-check col mb-4">
+            <label class="form-check-label" for="flexCheckDefault"> Признак нарушителя </label>
+            <input class="form-check-input" type="checkbox" formControlName="infringer" id="flexCheckDefault" />
+        </div>
+        <div class="col mb-4">
+            <div ngbDropdown class="d-inline-block">
+                <button
+                    type="button"
+                    [class.invalid-dropdown-button]="driverAddForm.controls.vehicle.dirty && driverAddForm.controls.vehicle.invalid"
+                    [class.valid-dropdown-button]="driverAddForm.controls.vehicle.valid"
+                    class="btn btn-outline-primary dropdown-button"
+                    id="dropdownBasic"
+                    (click)="driverAddForm.controls.vehicle.markAsDirty()"
+                    ngbDropdownToggle
+                >
+                    {{ driverAddForm.controls.vehicle.value || 'Автомобиль*' }}
+                </button>
+                <div ngbDropdownMenu aria-labelledby="dropdownBasic">
+                    @for (vehicle of httpService.vehicles; track vehicle.brand) {
+                    <button ngbDropdownItem (click)="driverAddForm.controls.vehicle.setValue(vehicle.brand)">
+                        {{ vehicle.brand }}
+                    </button>
+                    }
+                </div>
+            </div>
+        </div>
+        @if (isRequiredDriverError(driverAddForm)) {
+        <div class="col mb-4">
+            <span>* - поля являются обязательными</span>
+        </div>
+        } @if (driverDuplicateValidation(driverAddForm)) {
+        <div class="col mb-4">
+            <span>Водитель с таким ФИО уже добавлен</span>
+        </div>
+        } @if (driverAddForm.controls.name.hasError('stringRange') || driverAddForm.controls.surname.hasError('stringRange') ||
+        driverAddForm.controls.family.hasError('stringRange')) {
+        <div class="col mb-4">
+            <span>ФИО не должны привышать 50 символов</span>
+        </div>
+        }
+    </div>
+    <button
+        router
+        class="btn btn-primary submit-button"
+        type="button"
+        (click)="addDriver()"
+        [disabled]="!driverAddForm.valid || driverDuplicateValidation(driverAddForm)"
+    >
+        Добавить
+    </button>
+</form>
+} @else if (activeRightElement===2) {
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Фамилия водителя</th>
+            <th scope="col">Имя водителя</th>
+            <th scope="col">Отчество</th>
+            <th scope="col">Признак нарушителя</th>
+            <th scope="col">Автомобиль</th>
+            <th scope="col">Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (driver of driverEditForm.controls.slice((driverTabPage - 1) * 4, (driverTabPage - 1) * 4 + 4); track $index) {
+        <tr [formGroup]="driver">
+            <th scope="row">{{ $index + 1 }}</th>
+            <td>
+                <input type="text" class="form-control" placeholder="Фамилия*" formControlName="family" />
+            </td>
+            <td>
+                <input type="text" class="form-control" placeholder="Имя*" formControlName="name" />
+            </td>
+            <td>
+                <input type="text" class="form-control" placeholder="Отчество*" formControlName="surname" />
+            </td>
+            <td>
+                <label class="form-check-label" for="flexCheckDefault"> Признак нарушителя </label>
+                <input class="form-check-input" type="checkbox" formControlName="infringer" id="flexCheckDefault" />
+            </td>
+            <td>
+                <div ngbDropdown class="d-inline-block">
+                    <button
+                        type="button"
+                        class="btn btn-outline-primary dropdown-button"
+                        id="dropdownBasic"
+                        ngbDropdownToggle
+                        [disabled]="driver.disabled"
+                    >
+                        {{ driver.controls.vehicle.value }}
+                    </button>
+                    <div ngbDropdownMenu aria-labelledby="dropdownBasic">
+                        @for (vehicle of httpService.vehicles; track vehicle.brand) {
+                        <button ngbDropdownItem (click)="driver.controls.vehicle.setValue(vehicle.brand)">
+                            {{ vehicle.brand }}
+                        </button>
+                        }
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div ngbDropdown class="d-inline-block">
+                    <button
+                        type="button"
+                        class="btn btn-outline-primary dropdown-button valid-dropdown-button"
+                        [disabled]="isDriverEdit"
+                        ngbDropdownToggle
+                    ></button>
+                    <div ngbDropdownMenu aria-labelledby="dropdownBasic">
+                        <button
+                            ngbDropdownItem
+                            (click)="driver.enable(); editDriverNumber = (driverTabPage - 1) * 4 + $index; isDriverEdit = true"
+                        >
+                            Редактировать
+                        </button>
+                        <button ngbDropdownItem (click)="driverDelete($index)">Удалить</button>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+<div class="d-flex justify-content-between p-2">
+    <ngb-pagination [collectionSize]="driversArrSize" [(page)]="driverTabPage" [pageSize]="4"> </ngb-pagination>
+</div>
+@if (isDriverEdit) { @if (driverDuplicateValidation(driverEditForm.controls[editDriverNumber], editDriverNumber)) {
+<div class="col mb-4">
+    <span class="error-span">Водитель с таким ФИО уже добавлен</span>
+</div>
+} @if (isRequiredDriverError(driverEditForm.controls[editDriverNumber])) {
+<div class="col mb-4">
+    <span class="error-span">* - поля являются обязательными</span>
+</div>
+} @if (driverEditForm.controls[editDriverNumber].controls.name.hasError('stringRange') ||
+driverEditForm.controls[editDriverNumber].controls.surname.hasError('stringRange') ||
+driverEditForm.controls[editDriverNumber].controls.family.hasError('stringRange')) {
+<div class="col mb-4">
+    <span class="error-span">ФИО не должны привышать 50 символов</span>
+</div>
+}
+<button
+    router
+    class="btn btn-primary submit-button"
+    type="button"
+    (click)="editDriver()"
+    [disabled]="
+        !driverEditForm.controls[editDriverNumber].valid ||
+        driverDuplicateValidation(driverEditForm.controls[editDriverNumber], editDriverNumber)
+    "
+>
+    Сохранить
+</button>
+<button router class="btn btn-primary submit-button" type="button" (click)="cancelEditDriver()">Отмена</button>
+} }

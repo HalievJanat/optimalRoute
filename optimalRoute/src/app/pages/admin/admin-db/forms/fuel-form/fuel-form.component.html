@@ -1,0 +1,127 @@
+@if (activeRightElement===1) {
+<form [formGroup]="typeFuelAddForm">
+    <div class="col">
+        <div class="col mb-4">
+            <h4>Топливо</h4>
+        </div>
+        <div class="col mb-4">
+            <input type="text" class="form-control" formControlName="name" placeholder="Название топлива*" />
+            @if (typeFuelAddForm.controls.name.hasError('stringRange')) {
+            <span>Название топлива должно быть не больше 15 символов</span>
+            }
+        </div>
+        <div class="col mb-4">
+            <input
+                type="text"
+                class="form-control"
+                formControlName="price"
+                (keypress)="allowOnlyDigitsFuel($event)"
+                placeholder="Цена топлива (руб/л)*"
+            />
+            @if (typeFuelAddForm.controls.price.hasError('range')) {
+            <span>Цена топлива должна быть в диапозоне от 50 до 150 руб/л</span>
+            }
+        </div>
+        @if (isRequiredFuelError(typeFuelAddForm)) {
+        <div class="col mb-4">
+            <span>* - поля являются обязательными</span>
+        </div>
+        } @if (typeFuelDuplicateValidation(typeFuelAddForm)) {
+        <div class="col mb-4">
+            <span>Топливо с таким названием уже добавлено</span>
+        </div>
+        }
+    </div>
+    <button
+        router
+        class="btn btn-primary submit-button"
+        type="button"
+        (click)="addTypeFuel()"
+        [disabled]="!typeFuelAddForm.valid || typeFuelDuplicateValidation(typeFuelAddForm)"
+    >
+        Добавить
+    </button>
+</form>
+} @else if (activeRightElement===2) {
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Название топлива</th>
+            <th scope="col">Цена топлива</th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (typeFuel of typeFuelEditForm.controls.slice((typeFuelsTabPage - 1) * 4, (typeFuelsTabPage - 1) * 4 + 4); track $index) {
+        <tr [formGroup]="typeFuel">
+            <th scope="row">{{ $index + 1 }}</th>
+            <td>
+                <input type="text" class="form-control" formControlName="name" placeholder="Название топлива*" />
+            </td>
+            <td>
+                <input
+                    type="text"
+                    class="form-control"
+                    formControlName="price"
+                    (keypress)="allowOnlyDigitsFuel($event)"
+                    placeholder="Цена топлива (руб/л)*"
+                />
+            </td>
+            <td>
+                <div ngbDropdown class="d-inline-block">
+                    <button
+                        type="button"
+                        class="btn btn-outline-primary dropdown-button valid-dropdown-button"
+                        [disabled]="isTypeFuelEdit"
+                        ngbDropdownToggle
+                    ></button>
+                    <div ngbDropdownMenu aria-labelledby="dropdownBasic">
+                        <button
+                            ngbDropdownItem
+                            (click)="typeFuel.enable(); editTypeFuelNumber = (typeFuelsTabPage - 1) * 4 + $index; isTypeFuelEdit = true"
+                        >
+                            Редактировать
+                        </button>
+                        <button ngbDropdownItem (click)="typeFuelDelete($index)">Удалить</button>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+<div class="d-flex justify-content-between p-2">
+    <ngb-pagination [collectionSize]="typeFuelsArrSize" [(page)]="typeFuelsTabPage" [pageSize]="4"> </ngb-pagination>
+</div>
+@if (isTypeFuelEdit) { @if (typeFuelDuplicateValidation(typeFuelEditForm.controls[editTypeFuelNumber], editTypeFuelNumber)) {
+<div class="col mb-4">
+    <span class="error-span">Топливо с таким названием уже добавлено</span>
+</div>
+} @if (typeFuelEditForm.controls[editTypeFuelNumber].controls.name.hasError('stringRange')) {
+<div class="col mb-4">
+    <span class="error-span">Название топлива должно быть не больше 15 символов</span>
+</div>
+} @if (typeFuelEditForm.controls[editTypeFuelNumber].controls.price.hasError('range')) {
+<div class="col mb-4">
+    <span class="error-span">Цена топлива должна быть в диапозоне от 50 до 150 руб/л</span>
+</div>
+} @if (isRequiredFuelError(typeFuelEditForm.controls[editTypeFuelNumber])) {
+<div class="col mb-4">
+    <span class="error-span">* - поля являются обязательными</span>
+</div>
+}
+<button
+    router
+    class="btn btn-primary submit-button"
+    type="button"
+    (click)="editTypeFuel()"
+    [disabled]="
+        !typeFuelEditForm.controls[editTypeFuelNumber].valid ||
+        typeFuelDuplicateValidation(typeFuelEditForm.controls[editTypeFuelNumber], editTypeFuelNumber)
+    "
+>
+    Сохранить
+</button>
+<button router class="btn btn-primary submit-button" type="button" (click)="cancelEditTypeFuel()">Отмена</button>
+} }

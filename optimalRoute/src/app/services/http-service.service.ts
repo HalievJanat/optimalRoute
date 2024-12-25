@@ -6,6 +6,7 @@ import { DegreeCorruption } from '../models/police-post.model';
 import { Street } from '../models/street.model';
 import { TypeCover } from '../models/cover-type.model';
 import { TrafficLights } from '../models/traffic-light.model';
+import { Observable } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
@@ -22,7 +23,7 @@ export class HttpService {
 	coverTypes: TypeCover[] = [];
 	trafficLigths: TrafficLights[] = [];
 
-	constructor(private httpClient: HttpClient) {
+	constructor(private http: HttpClient) {
 		console.log('ya servis');
 		this.getMapDbValue<Driver>(this.drivers, 'driver');
 		this.getMapDbValue<Vehicle>(this.vehicles, 'car');
@@ -35,12 +36,44 @@ export class HttpService {
 	}
 
 	private getMapDbValue<T>(storage: T[], url: string) {
-		this.httpClient.get<T[]>(`${this.apiUrl}/admin/${url}`).subscribe((value) => {
+		this.http.get<T[]>(`${this.apiUrl}/admin/${url}`).subscribe((value) => {
 			storage = value;
 		});
 	}
 
+	getDrivers(): Observable<Driver[]> {
+        return this.http.get<Driver[]>(`${this.apiUrl}/admin/driver`);
+    }
+
+	getVehicles(): Observable<Vehicle[]> {
+        return this.http.get<Vehicle[]>(`${this.apiUrl}/admin/car`);
+    }
+
+	getTypeFuels(): Observable<TypeFuel[]> {
+        return this.http.get<TypeFuel[]>(`${this.apiUrl}/admin/fuel`);
+    }
+
+	getDegreeCorruptions(): Observable<DegreeCorruption[]> {
+        return this.http.get<DegreeCorruption[]>(`${this.apiUrl}/admin/corruption`);
+    }
+
+	getStreets(): Observable<Street[]> {
+        return this.http.get<Street[]>(`${this.apiUrl}/admin/street`);
+    }
+
+	getTypeCovers(): Observable<TypeCover[]> {
+        return this.http.get<TypeCover[]>(`${this.apiUrl}/admin/coverage`);
+    }
+
+	getTrafficLights(): Observable<TrafficLights[]> {
+        return this.http.get<TrafficLights[]>(`${this.apiUrl}/admin/traffic-light`);
+    }
+
+	getTypeFines(): Observable<TypeFine[]> {
+        return this.http.get<TypeFine[]>(`${this.apiUrl}/admin/fine`);
+    }
+
 	addMapDbValue<T>(value: T, url: string) {
-        this.httpClient.post(`${this.apiUrl}/admin/${url}`, value).subscribe();
+        this.http.post(`${this.apiUrl}/admin/${url}`, value).subscribe();
     }
 }

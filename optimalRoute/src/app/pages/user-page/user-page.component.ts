@@ -38,13 +38,16 @@ export class UserPageComponent {
     UDS: UDS[] = [];
 
     testDriver: Driver = {
+        id_driver: 0,
         name: 'Asd',
         surname: 'asd',
         family: 'asd',
         infringer: false,
         vehicle: {
+            id_vehicle: 0,
             brand: 'fd',
             type_fuel: {
+                id_type_fuel: 0,
                 name: 'sdf',
                 price: 0
             },
@@ -144,13 +147,16 @@ export class UserPageComponent {
         start_crossroad: -1,
         end_crossroad: -1,
         driver: {
+            id_driver: 0,
             name: '',
             surname: '',
             family: '',
             infringer: false,
             vehicle: {
+                id_vehicle: 0,
                 brand: '',
                 type_fuel: {
+                    id_type_fuel: 0,
                     name: '',
                     price: 0
                 },
