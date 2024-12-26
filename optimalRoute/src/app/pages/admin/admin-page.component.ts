@@ -1,7 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { HeaderComponent } from '../../header/header.component';
 import Konva from 'konva';
-import { ClassOptimalRoute } from '../../classJSON/ClassOptimalRoute';
 import { CommonModule } from '@angular/common';
 import { NgbDropdownModule, NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -10,6 +9,7 @@ import { TrafficLights } from '../../models/traffic-light.model';
 import { Street } from '../../models/street.model';
 import { TypeCover } from '../../models/cover-type.model';
 import { DegreeCorruption } from '../../models/police-post.model';
+import { Crossroad, Road, UDS } from '../../models/UDS.model';
 
 @Component({
     selector: 'app-admin-page',
@@ -80,8 +80,8 @@ export class AdminPageComponent {
     [x: string]: any;
     isLeftPanelOpen = true;
     isRightPanelOpen = true;
-    crossroadList: ClassOptimalRoute.Crossroad[] = [];
-    roadList: ClassOptimalRoute.Road[] = [];
+    crossroadList: Crossroad[] = [];
+    roadList: Road[] = [];
 
     gridSize = 50; // Масштаб
     radius = (this.gridSize * 2) / 5;
@@ -224,9 +224,10 @@ export class AdminPageComponent {
         if (this.isCrossroadAdd == true) {
             for (let i = 0; i < this.crossroadList.length; i++) {
                 if (
-                    this.crossroadList[i].X == X &&
-                    this.crossroadList[i].Y == Y
+                    this.crossroadList[i].x == X &&
+                    this.crossroadList[i].y == Y
                 ) {
+                    alert("Здесь нельзя установить перекресток");
                     return;
                 }
             }
@@ -252,9 +253,11 @@ export class AdminPageComponent {
 
             this.isCrossroadAdd = false;
 
-            let crossroad = new ClassOptimalRoute.Crossroad();
-            crossroad.X = X;
-            crossroad.Y = Y;
+            let crossroad = {
+                x: X,
+                y: Y,
+                trafficLights: null
+            };
             this.crossroadList.push(crossroad);
             const jsonCrossroad: string = JSON.stringify(this.crossroadList);
             console.log(jsonCrossroad);
@@ -262,8 +265,8 @@ export class AdminPageComponent {
             let i = 0;
             while (i < this.crossroadList.length) {
                 if (
-                    this.crossroadList[i].X == X &&
-                    this.crossroadList[i].Y == Y
+                    this.crossroadList[i].x == X &&
+                    this.crossroadList[i].y == Y
                 ) {
                     break;
                 }
@@ -281,8 +284,8 @@ export class AdminPageComponent {
             let countIndex = 1;
             while (j < this.roadList.length) {
                 if (
-                    this.roadList[j].Crossroad1 == i ||
-                    this.roadList[j].Crossroad2 == i
+                    this.roadList[j].crossroad_1 == i ||
+                    this.roadList[j].crossroad_2 == i
                 ) {
                     countIndex++;
                 }
@@ -295,10 +298,10 @@ export class AdminPageComponent {
 
             for (let y = 0; y < this.roadList.length; y++) {
                 if (
-                    (this.roadList[y].Crossroad1 == this.indexCrossroad1 &&
-                        this.roadList[y].Crossroad2 == i) ||
-                    (this.roadList[y].Crossroad2 == this.indexCrossroad1 &&
-                        this.roadList[y].Crossroad1 == i)
+                    (this.roadList[y].crossroad_1 == this.indexCrossroad1 &&
+                        this.roadList[y].crossroad_2 == i) ||
+                    (this.roadList[y].crossroad_2 == this.indexCrossroad1 &&
+                        this.roadList[y].crossroad_1 == i)
                 ) {
                     alert('Нельзя добавить прогон!!!');
                     this.isRoadAdd = false;
@@ -309,15 +312,15 @@ export class AdminPageComponent {
             //this.isLeftClickRoad = true;
             
             let ky = this.calculateKLine(
-                this.crossroadList[this.indexCrossroad1].X,
-                this.crossroadList[this.indexCrossroad1].Y,
+                this.crossroadList[this.indexCrossroad1].x,
+                this.crossroadList[this.indexCrossroad1].y,
                 X,
                 Y
             );
             let by = this.calculateBLine(
-                this.crossroadList[this.indexCrossroad1].Y,
+                this.crossroadList[this.indexCrossroad1].y,
                 ky,
-                this.crossroadList[this.indexCrossroad1].X
+                this.crossroadList[this.indexCrossroad1].x
             );
 
             if(!this.checkIntersectionCrossroad(ky, by, this.indexCrossroad1, i)) {
@@ -330,38 +333,43 @@ export class AdminPageComponent {
             let y2;
             
             if (ky != Infinity && ky != -Infinity) {
-                x1 = this.calculateXCoordinate(ky, by, this.crossroadList[this.indexCrossroad1].X,
-                    this.crossroadList[this.indexCrossroad1].Y, this.radius, this.crossroadList[this.indexCrossroad1].X > X);
-                x2 = this.calculateXCoordinate(ky, by, X, Y, this.radius, this.crossroadList[this.indexCrossroad1].X < X);
+                x1 = this.calculateXCoordinate(ky, by, this.crossroadList[this.indexCrossroad1].x,
+                    this.crossroadList[this.indexCrossroad1].y, this.radius, this.crossroadList[this.indexCrossroad1].x > X);
+                x2 = this.calculateXCoordinate(ky, by, X, Y, this.radius, this.crossroadList[this.indexCrossroad1].x < X);
                 y1 = this.calculateYCoordinate(ky, by, x1);
                 y2 = this.calculateYCoordinate(ky, by, x2);
-            } else if (this.crossroadList[this.indexCrossroad1].Y > Y){
-                x1 = this.crossroadList[this.indexCrossroad1].X; 
+            } else if (this.crossroadList[this.indexCrossroad1].y > Y){
+                x1 = this.crossroadList[this.indexCrossroad1].x; 
                 x2 = X;
-                y1 = this.crossroadList[this.indexCrossroad1].Y - this.radius;
+                y1 = this.crossroadList[this.indexCrossroad1].y - this.radius;
                 y2 = Y + this.radius;
             } else {
-                x1 = this.crossroadList[this.indexCrossroad1].X; 
+                x1 = this.crossroadList[this.indexCrossroad1].x; 
                 x2 = X;
-                y1 = this.crossroadList[this.indexCrossroad1].Y + this.radius;
+                y1 = this.crossroadList[this.indexCrossroad1].y + this.radius;
                 y2 = Y - this.radius;
             }
 
-            let road = new ClassOptimalRoute.Road();
-            road.Direction = 1;
+            let road: Road = {
+                crossroad_1: this.indexCrossroad1,
+                crossroad_2: i,
+                street: {id_street: 0, name: ''},
+                traffic_signs: null,
+                police_post: null,
+                typeCover: {id_type_cover: 0, name: '', coefficient_braking: 1},
+                direction: 1,
+                length: 1
+            };
             this.drawLine(
                 x1,
                 y1,
                 x2,
                 y2,
                 '#000',
-                road.Direction
+                road.direction
             );
 
             this.isRoadAdd = false;
-
-            road.Crossroad1 = this.indexCrossroad1;
-            road.Crossroad2 = i;
            
             this.roadList.push(road);
             const jsonRoad: string = JSON.stringify(this.roadList);
@@ -371,8 +379,8 @@ export class AdminPageComponent {
             let i = 0;
             while (i < this.crossroadList.length) {
                 if (
-                    this.crossroadList[i].X == X &&
-                    this.crossroadList[i].Y == Y
+                    this.crossroadList[i].x == X &&
+                    this.crossroadList[i].y == Y
                 ) {
                     break;
                 }
@@ -388,8 +396,8 @@ export class AdminPageComponent {
             let countIndex = 1;
             while (j < this.roadList.length) {
                 if (
-                    this.roadList[j].Crossroad1 == i ||
-                    this.roadList[j].Crossroad2 == i
+                    this.roadList[j].crossroad_1 == i ||
+                    this.roadList[j].crossroad_2 == i
                 ) {
                     countIndex++;
                 }
@@ -404,24 +412,24 @@ export class AdminPageComponent {
     }
 
     checkIntersectionCrossroad(ky: number, by:number, crossroad1:number, crossroad2:number): boolean { 
-        let x1 = this.crossroadList[crossroad1].X;
-        let y1 = this.crossroadList[crossroad1].Y;
-        let x2 = this.crossroadList[crossroad2].X;
-        let y2 = this.crossroadList[crossroad2].Y;
+        let x1 = this.crossroadList[crossroad1].x;
+        let y1 = this.crossroadList[crossroad1].y;
+        let x2 = this.crossroadList[crossroad2].x;
+        let y2 = this.crossroadList[crossroad2].y;
 
         if (x1 < x2) {
-            x1 = this.crossroadList[crossroad2].X;
-            x2 = this.crossroadList[crossroad1].X;
+            x1 = this.crossroadList[crossroad2].x;
+            x2 = this.crossroadList[crossroad1].x;
         }
         if (y1 < y2) {
-            y1 = this.crossroadList[crossroad2].Y;
-            y2 = this.crossroadList[crossroad1].Y;
+            y1 = this.crossroadList[crossroad2].y;
+            y2 = this.crossroadList[crossroad1].y;
         }
 
         for (let i = 0; i < this.crossroadList.length; i++) {
             if (i == crossroad1 || i == crossroad2) continue;
-            let x = this.crossroadList[i].X;
-            let y = this.crossroadList[i].Y;
+            let x = this.crossroadList[i].x;
+            let y = this.crossroadList[i].y;
             if (x > x1 || x < x2 || y > y1 || y < y2) continue;
             if (ky != Infinity && ky != -Infinity) {
                 if(this.calculateXCoordinate(ky, by, x, y, this.radius, true) != -1000) return false;
@@ -434,10 +442,10 @@ export class AdminPageComponent {
 
     checkIntersectionRoad(x: number, y:number): boolean {
         for(let i = 0; i <this.roadList.length; i++) {
-            let x1 = this.crossroadList[this.roadList[i].Crossroad1].X;
-            let x2 = this.crossroadList[this.roadList[i].Crossroad2].X;
-            let y1 = this.crossroadList[this.roadList[i].Crossroad1].Y;
-            let y2 = this.crossroadList[this.roadList[i].Crossroad2].Y;
+            let x1 = this.crossroadList[this.roadList[i].crossroad_1].x;
+            let x2 = this.crossroadList[this.roadList[i].crossroad_2].x;
+            let y1 = this.crossroadList[this.roadList[i].crossroad_1].y;
+            let y2 = this.crossroadList[this.roadList[i].crossroad_2].y;
 
             let ky = this.calculateKLine(
                 x1,
@@ -453,11 +461,11 @@ export class AdminPageComponent {
 
             if (x1 < x2) {
                 x1 = x2;
-                x2 = this.crossroadList[this.roadList[i].Crossroad1].X;
+                x2 = this.crossroadList[this.roadList[i].crossroad_1].x;
             }
             if (y1 < y2) {
                 y1 = y2;
-                y2 = this.crossroadList[this.roadList[i].Crossroad1].Y;
+                y2 = this.crossroadList[this.roadList[i].crossroad_1].y;
             }
 
             if (x > x1 || x < x2 || y > y1 || y < y2) continue;
@@ -486,32 +494,32 @@ export class AdminPageComponent {
         this.isAddTrafficSigns = false;
         if (this.defineClickCrossroad(X, Y)) {
             this.rightPanelHeaderText = 'Параметры перекрёстка';
-            const crossroad = this.crossroadList[this.indexSelectedElement].TrafficLights;
+            const crossroad = this.crossroadList[this.indexSelectedElement].trafficLights;
             if (crossroad) {
-                this.dropdownGreenDuration = crossroad.TimeGreenSignal.toString();
-                this.dropdownRedDuration = crossroad.TimeRedSignal.toString();
+                this.dropdownGreenDuration = crossroad.time_green_signal.toString();
+                this.dropdownRedDuration = crossroad.time_red_signal.toString();
             }
             this.isLeftClickCrossroad = true;
         } else if (this.defineClickRoad(X, Y)) {
             this.rightPanelHeaderText = 'Параметры прогона';
             const road = this.roadList[this.indexSelectedElement];
-            if (road.Length) {
-                this.roadLength.setValue(road.Length);
+            if (road.length) {
+                this.roadLength.setValue(road.length);
             }
-            if (road.Direction) {
-                this.dropdownMoveDirection = road.Direction.toString();
+            if (road.direction) {
+                this.dropdownMoveDirection = road.direction.toString();
             }
-            if (road.Street) {
-                this.dropdownStreet = road.Street.Name;
+            if (road.street) {
+                this.dropdownStreet = road.street.name;
             }
-            if (road.TypeCover) {
-                this.dropdownCoverType = road.TypeCover.Name;
+            if (road.typeCover) {
+                this.dropdownCoverType = road.typeCover.name;
             }
-            if (road.TrafficSigns) {
-                this.dropdownTrafficSign = road.TrafficSigns.Speed.toString();
+            if (road.traffic_signs) {
+                this.dropdownTrafficSign = road.traffic_signs.speed.toString();
             }
-            if (road.PolicePost) {
-                this.dropdownCorruptionCoef = road.PolicePost.Corruption.Name;
+            if (road.police_post) {
+                this.dropdownCorruptionCoef = road.police_post.corruption.name;
             }
             this.isLeftClickRoad = true;
         }
@@ -568,16 +576,16 @@ export class AdminPageComponent {
     private drawScaleCanvas(tempGridSize: number): void {
         for (let i = 0; i < this.crossroadList.length; i++) {
             this. radius = (this.gridSize * 2) / 5;
-            this.crossroadList[i].X =
-                Math.round(this.crossroadList[i].X / tempGridSize) *
+            this.crossroadList[i].x =
+                Math.round(this.crossroadList[i].x / tempGridSize) *
                 this.gridSize;
-            this.crossroadList[i].Y =
-                Math.round(this.crossroadList[i].Y / tempGridSize) *
+            this.crossroadList[i].y =
+                Math.round(this.crossroadList[i].y / tempGridSize) *
                 this.gridSize;
 
             const circle = new Konva.Circle({
-                x: this.crossroadList[i].X,
-                y: this.crossroadList[i].Y,
+                x: this.crossroadList[i].x,
+                y: this.crossroadList[i].y,
                 radius: this.radius,
                 stroke: '#000',
                 full: '#fff',
@@ -592,15 +600,15 @@ export class AdminPageComponent {
 
         for (let i = 0; i < this.roadList.length; i++) {
             let ky = this.calculateKLine(
-                this.crossroadList[this.roadList[i].Crossroad1].X,
-                this.crossroadList[this.roadList[i].Crossroad1].Y,
-                this.crossroadList[this.roadList[i].Crossroad2].X,
-                this.crossroadList[this.roadList[i].Crossroad2].Y
+                this.crossroadList[this.roadList[i].crossroad_1].x,
+                this.crossroadList[this.roadList[i].crossroad_1].y,
+                this.crossroadList[this.roadList[i].crossroad_2].x,
+                this.crossroadList[this.roadList[i].crossroad_2].y
             );
             let by = this.calculateBLine(
-                this.crossroadList[this.roadList[i].Crossroad1].Y,
+                this.crossroadList[this.roadList[i].crossroad_1].y,
                 ky,
-                this.crossroadList[this.roadList[i].Crossroad1].X
+                this.crossroadList[this.roadList[i].crossroad_1].x
             );
             let x1;
             let x2;
@@ -608,24 +616,24 @@ export class AdminPageComponent {
             let y2;
             
             if (ky != Infinity && ky != -Infinity) {
-                x1 = this.calculateXCoordinate(ky, by, this.crossroadList[this.roadList[i].Crossroad1].X,
-                    this.crossroadList[this.roadList[i].Crossroad1].Y, this.radius, 
-                    this.crossroadList[this.roadList[i].Crossroad1].X > this.crossroadList[this.roadList[i].Crossroad2].X);
-                x2 = this.calculateXCoordinate(ky, by,this.crossroadList[this.roadList[i].Crossroad2].X,
-                    this.crossroadList[this.roadList[i].Crossroad2].Y, this.radius,
-                    this.crossroadList[this.roadList[i].Crossroad1].X < this.crossroadList[this.roadList[i].Crossroad2].X);
+                x1 = this.calculateXCoordinate(ky, by, this.crossroadList[this.roadList[i].crossroad_1].x,
+                    this.crossroadList[this.roadList[i].crossroad_1].y, this.radius, 
+                    this.crossroadList[this.roadList[i].crossroad_1].x > this.crossroadList[this.roadList[i].crossroad_2].x);
+                x2 = this.calculateXCoordinate(ky, by,this.crossroadList[this.roadList[i].crossroad_2].x,
+                    this.crossroadList[this.roadList[i].crossroad_2].y, this.radius,
+                    this.crossroadList[this.roadList[i].crossroad_1].x < this.crossroadList[this.roadList[i].crossroad_2].x);
                 y1 = this.calculateYCoordinate(ky, by, x1);
                 y2 = this.calculateYCoordinate(ky, by, x2);
-            } else if (this.crossroadList[this.roadList[i].Crossroad1].Y > this.crossroadList[this.roadList[i].Crossroad2].Y){
-                x1 = this.crossroadList[this.roadList[i].Crossroad1].X; 
-                x2 = this.crossroadList[this.roadList[i].Crossroad2].X;
-                y1 = this.crossroadList[this.roadList[i].Crossroad1].Y - this.radius;
-                y2 = this.crossroadList[this.roadList[i].Crossroad2].Y + this.radius;
+            } else if (this.crossroadList[this.roadList[i].crossroad_1].y > this.crossroadList[this.roadList[i].crossroad_2].y){
+                x1 = this.crossroadList[this.roadList[i].crossroad_1].x; 
+                x2 = this.crossroadList[this.roadList[i].crossroad_2].x;
+                y1 = this.crossroadList[this.roadList[i].crossroad_1].y - this.radius;
+                y2 = this.crossroadList[this.roadList[i].crossroad_2].y + this.radius;
             } else {
-                x1 = this.crossroadList[this.roadList[i].Crossroad1].X; 
-                x2 = this.crossroadList[this.roadList[i].Crossroad2].X;
-                y1 = this.crossroadList[this.roadList[i].Crossroad1].Y + this.radius;
-                y2 = this.crossroadList[this.roadList[i].Crossroad2].Y - this.radius
+                x1 = this.crossroadList[this.roadList[i].crossroad_1].x; 
+                x2 = this.crossroadList[this.roadList[i].crossroad_2].x;
+                y1 = this.crossroadList[this.roadList[i].crossroad_1].y + this.radius;
+                y2 = this.crossroadList[this.roadList[i].crossroad_2].y - this.radius
             }
 
             this.drawLine(
@@ -634,7 +642,7 @@ export class AdminPageComponent {
                 x2,
                 y2,
                 '#000',
-                this.roadList[i].Direction
+                this.roadList[i].direction
             );
         }
     }
@@ -752,15 +760,15 @@ export class AdminPageComponent {
 
         let i = 0;
         while (i <this.roadList.length) {
-            if (this.roadList[i].Crossroad1 > this.indexSelectedElement) {
-                this.roadList[i].Crossroad1 -= 1;
-            } else if (this.roadList[i].Crossroad1 == this.indexSelectedElement) {
+            if (this.roadList[i].crossroad_1 > this.indexSelectedElement) {
+                this.roadList[i].crossroad_1 -= 1;
+            } else if (this.roadList[i].crossroad_1 == this.indexSelectedElement) {
                 this.roadList.splice(i, 1);
                 continue;
             }
-            if (this.roadList[i].Crossroad2 > this.indexSelectedElement) {
-                this.roadList[i].Crossroad2 -= 1;
-            } else if (this.roadList[i].Crossroad2 == this.indexSelectedElement) {
+            if (this.roadList[i].crossroad_2 > this.indexSelectedElement) {
+                this.roadList[i].crossroad_2 -= 1;
+            } else if (this.roadList[i].crossroad_2 == this.indexSelectedElement) {
                 this.roadList.splice(i, 1);
                 continue;
             }
@@ -807,7 +815,7 @@ export class AdminPageComponent {
         this.isAddPolicePost = false;
         this.isAddTrafficSigns = false;
 
-        this.crossroadList[this.indexSelectedElement].TrafficLights = null;
+        this.crossroadList[this.indexSelectedElement].trafficLights = null;
         this.closeContextMenu();
     }
 
@@ -832,7 +840,7 @@ export class AdminPageComponent {
         this.isAddPolicePost = false;
         this.isAddTrafficSigns = false;
 
-        this.roadList[this.indexSelectedElement].TrafficSigns = null;
+        this.roadList[this.indexSelectedElement].traffic_signs = null;
         this.closeContextMenu();
     }
 
@@ -857,14 +865,14 @@ export class AdminPageComponent {
         this.isAddPolicePost = false;
         this.isAddTrafficSigns = false;
 
-        this.roadList[this.indexSelectedElement].PolicePost = null;
+        this.roadList[this.indexSelectedElement].police_post = null;
         this.closeContextMenu();
     }
 
     private defineClickCrossroad(x: number, y: number): boolean {    
         for (let i = 0; i < this.crossroadList.length; i++) {
-            let x0 = this.crossroadList[i].X;
-            let y0 = this.crossroadList[i].Y;
+            let x0 = this.crossroadList[i].x;
+            let y0 = this.crossroadList[i].y;
             let r = Math.pow((x - x0), 2) + Math.pow((y - y0), 2); 
             if (r <= Math.pow(this.radius,2)) {
                 this.indexSelectedElement = i;
@@ -877,24 +885,24 @@ export class AdminPageComponent {
     private defineClickRoad(x: number, y: number): boolean {    
         for (let i = 0; i < this.roadList.length; i++) {
             let k = this.calculateKLine(
-                this.crossroadList[this.roadList[i].Crossroad1].X,
-                this.crossroadList[this.roadList[i].Crossroad1].Y,
-                this.crossroadList[this.roadList[i].Crossroad2].X,
-                this.crossroadList[this.roadList[i].Crossroad2].Y
+                this.crossroadList[this.roadList[i].crossroad_1].x,
+                this.crossroadList[this.roadList[i].crossroad_1].y,
+                this.crossroadList[this.roadList[i].crossroad_2].x,
+                this.crossroadList[this.roadList[i].crossroad_2].y
             );
             let b = this.calculateBLine(
-                this.crossroadList[this.roadList[i].Crossroad1].Y,
+                this.crossroadList[this.roadList[i].crossroad_1].y,
                 k,
-                this.crossroadList[this.roadList[i].Crossroad1].X
+                this.crossroadList[this.roadList[i].crossroad_1].x
             );
             
             if (k == Infinity || k == -Infinity) {
-                let x1 = this.crossroadList[this.roadList[i].Crossroad1].X;
-                let yMax = this.crossroadList[this.roadList[i].Crossroad1].Y;
-                let yMin = this.crossroadList[this.roadList[i].Crossroad2].Y;
+                let x1 = this.crossroadList[this.roadList[i].crossroad_1].x;
+                let yMax = this.crossroadList[this.roadList[i].crossroad_1].y;
+                let yMin = this.crossroadList[this.roadList[i].crossroad_2].y;
                 if (yMax < yMin) {
-                    yMax = this.crossroadList[this.roadList[i].Crossroad2].Y;
-                    yMin = this.crossroadList[this.roadList[i].Crossroad1].Y;
+                    yMax = this.crossroadList[this.roadList[i].crossroad_2].y;
+                    yMin = this.crossroadList[this.roadList[i].crossroad_1].y;
                 }
 
                 if (x > x1 - 6 && x < x1 + 6 && y > yMin && y < yMax) {
@@ -916,8 +924,8 @@ export class AdminPageComponent {
     }
 
     modifyCrossroadParamener():void {
-        this.crossroadList[this.indexSelectedElement].TrafficLights!.TimeGreenSignal = Number(this.dropdownGreenDuration);
-        this.crossroadList[this.indexSelectedElement].TrafficLights!.TimeRedSignal = Number(this.dropdownRedDuration);
+        this.crossroadList[this.indexSelectedElement].trafficLights!.time_green_signal = Number(this.dropdownGreenDuration);
+        this.crossroadList[this.indexSelectedElement].trafficLights!.time_red_signal = Number(this.dropdownRedDuration);
   
         const jsonCrossroad: string = JSON.stringify(this.crossroadList);
         console.log(jsonCrossroad);
@@ -931,17 +939,17 @@ export class AdminPageComponent {
     }
 
     modifyRoadParamener():void {
-        this.roadList[this.indexSelectedElement].Direction = Number(this.dropdownMoveDirection);
-        this.roadList[this.indexSelectedElement].Street.Name = this.dropdownStreet;
-        this.roadList[this.indexSelectedElement].Length = this.roadLength.value as number;  
-        this.roadList[this.indexSelectedElement].TypeCover.Name = this.dropdownCoverType;
+        this.roadList[this.indexSelectedElement].direction = Number(this.dropdownMoveDirection);
+        this.roadList[this.indexSelectedElement].street.name = this.dropdownStreet;
+        this.roadList[this.indexSelectedElement].length = this.roadLength.value as number;  
+        this.roadList[this.indexSelectedElement].typeCover.name = this.dropdownCoverType;
 
-        if (this.roadList[this.indexSelectedElement].TrafficSigns !== null) {
-            this.roadList[this.indexSelectedElement].TrafficSigns!.Speed =  Number(this.dropdownTrafficSign);
+        if (this.roadList[this.indexSelectedElement].traffic_signs !== null) {
+            this.roadList[this.indexSelectedElement].traffic_signs!.speed =  Number(this.dropdownTrafficSign);
         }
 
-        if (this.roadList[this.indexSelectedElement].PolicePost !== null) {
-            this.roadList[this.indexSelectedElement].PolicePost!.Corruption.Name =  this.dropdownCorruptionCoef;
+        if (this.roadList[this.indexSelectedElement].police_post !== null) {
+            this.roadList[this.indexSelectedElement].police_post!.corruption.name =  this.dropdownCorruptionCoef;
         }
 
         const jsonRoad: string = JSON.stringify(this.roadList);
@@ -1008,9 +1016,11 @@ export class AdminPageComponent {
     }
 
     addTrafficLights():void {
-        this.crossroadList[this.indexSelectedElement].TrafficLights = new ClassOptimalRoute.TrafficLights();
-        this.crossroadList[this.indexSelectedElement].TrafficLights!.TimeRedSignal = Number(this.dropdownRedDuration);
-        this.crossroadList[this.indexSelectedElement].TrafficLights!.TimeGreenSignal =  Number(this.dropdownGreenDuration);
+        this.crossroadList[this.indexSelectedElement].trafficLights = {
+            id_traffic_light: 0,
+            time_green_signal: Number(this.dropdownRedDuration),
+            time_red_signal: Number(this.dropdownGreenDuration)
+        };
 
         this.dropdownRedDuration = '';
         this.dropdownGreenDuration = '';
@@ -1023,8 +1033,13 @@ export class AdminPageComponent {
     }
 
     addPolicePost(): void {
-        this.roadList[this.indexSelectedElement].PolicePost = new ClassOptimalRoute.PolicePost();
-        this.roadList[this.indexSelectedElement].PolicePost!.Corruption.Name = this.dropdownCorruptionCoef;
+        this.roadList[this.indexSelectedElement].police_post = {
+            corruption: {
+                id_corruption: 0,
+                name: this.dropdownCorruptionCoef,
+                coefficient_corruption: 1
+            }
+        };
 
         const jsonRoad: string = JSON.stringify(this.roadList);
         console.log(jsonRoad);
@@ -1034,8 +1049,10 @@ export class AdminPageComponent {
     }
 
     addTrafficSigns():void {
-        this.roadList[this.indexSelectedElement].TrafficSigns = new ClassOptimalRoute.TrafficSigns();
-        this.roadList[this.indexSelectedElement].TrafficSigns!.Speed =  Number(this.dropdownTrafficSign);
+        this.roadList[this.indexSelectedElement].traffic_signs = {
+            id_traffic_sign: 0,
+            speed: Number(this.dropdownTrafficSign)
+        };
 
         const jsonRoad: string = JSON.stringify(this.roadList);
         console.log(jsonRoad);
@@ -1049,10 +1066,12 @@ export class AdminPageComponent {
             alert('Ошибка, нельзя сохранить карту');
             return;
         }
-        let uds = new ClassOptimalRoute.UDS();
-        uds.Name = 'Samara';
-        uds.Crossroads = this.crossroadList;
-        uds.Roads = this.roadList;
+        let uds: UDS = {
+            name: 'Samara',
+            crossroads: this.crossroadList,
+            roads:  this.roadList,
+            route: null
+        };
         const jsonUDS: string = JSON.stringify(uds);
         console.log(jsonUDS);
     }

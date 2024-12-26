@@ -127,7 +127,7 @@
         
 
         <!--Перекресток-->
-        @if (isLeftClickCrossroad && crossroadList[indexSelectedElement].TrafficLights != null) {
+        @if (isLeftClickCrossroad && crossroadList[indexSelectedElement].trafficLights != null) {
             <div class="right-panel-body">
                 <div class="panel-el">
                     <span>Длительность зелёной фазы</span>
@@ -263,7 +263,7 @@
                         </div>
                     </div>
                 </div>
-                @if (roadList[indexSelectedElement].TrafficSigns != null) {
+                @if (roadList[indexSelectedElement].traffic_signs != null) {
                     <div class="panel-el">
                         <span>Знак дорожного движения</span>
                         <div ngbDropdown [autoClose]="true" class="d-inline-block">
@@ -284,7 +284,7 @@
                         </div>
                     </div>
                 }
-                @if (roadList[indexSelectedElement].PolicePost != null) {
+                @if (roadList[indexSelectedElement].police_post != null) {
                     <div class="panel-el">
                         <span>Полицейский пост</span>
                         <div ngbDropdown [autoClose]="true" class="d-inline-block">
@@ -384,10 +384,10 @@
         class="dropdown-menu show"
         (click)="closeContextMenu()"
     >
-        @if (crossroadList[indexSelectedElement].TrafficLights == null) {
+        @if (crossroadList[indexSelectedElement].trafficLights == null) {
             <button class="dropdown-item" (click)="actionAddTrafficLights()">Добавить светофор</button>
         }
-        @if (crossroadList[indexSelectedElement].TrafficLights != null) {
+        @if (crossroadList[indexSelectedElement].trafficLights != null) {
             <button class="dropdown-item" (click)="actionDeleteTrafficLights()">Удалить светофор</button>
         }
         <button class="dropdown-item" (click)="actionDeleteCrossroad()">Удалить перекресток</button>
@@ -403,16 +403,16 @@
         class="dropdown-menu show"
         (click)="closeContextMenu()"
     >
-        @if (roadList[indexSelectedElement].TrafficSigns == null) {
+        @if (roadList[indexSelectedElement].traffic_signs == null) {
             <button class="dropdown-item" (click)="actionAddTrafficSigns()">Добавить знак дорожного движения</button>
         }
-        @if (roadList[indexSelectedElement].TrafficSigns != null) {
+        @if (roadList[indexSelectedElement].traffic_signs != null) {
             <button class="dropdown-item" (click)="actionDeleteTrafficSigns()">Удалить знак дорожного движения</button>
         }
-        @if (roadList[indexSelectedElement].PolicePost == null) {
+        @if (roadList[indexSelectedElement].police_post == null) {
             <button class="dropdown-item" (click)="actionAddPolicePost()">Добавить полицейский пост</button>
         }
-        @if (roadList[indexSelectedElement].PolicePost != null) {
+        @if (roadList[indexSelectedElement].police_post != null) {
             <button class="dropdown-item" (click)="actionDeletePolicePost()">Удалить полицейский пост</button>
         }
         <button class="dropdown-item" (click)="actionDeleteRoad()">Удалить прогон</button>
