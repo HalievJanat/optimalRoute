@@ -14,12 +14,18 @@ export function floatValidator(): ValidatorFn {
     };
 }
 
-export function stringRangeValidator(maxValue: number): ValidatorFn {
+export function stringRangeValidator(maxValue: number, minValue?: number): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
         const value = control.value as string;
 
-        if (value !== '' && !value) {
+        if (value === '') {
             return null;
+        }
+
+        if (minValue !== undefined) {
+            if (value.length < minValue || value.length > maxValue) {
+                return { stringRange: true };
+            }
         }
 
         if (value.length > maxValue) {
