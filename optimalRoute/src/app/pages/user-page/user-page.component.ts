@@ -225,7 +225,7 @@ export class UserPageComponent {
                 this.gridDrowSize();
                 this.visualOptimalRoute(this.gridSize);
 
-                if (this.crossroadOptimalRoute === null) {
+                if (this.crossroadOptimalRoute?.length) {
                     alert('Маршрут не найден!');
                 }
             },
