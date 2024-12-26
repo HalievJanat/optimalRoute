@@ -86,6 +86,8 @@ export class AdminPageComponent {
     isRoadAdd = false;
     indexCrossroad1 = -1;
 
+    road!: Road;
+
     private stage: Konva.Stage = {} as any;
     private layer: Konva.Layer = {} as any;
 
@@ -289,8 +291,9 @@ export class AdminPageComponent {
                     return;
                 }
             }
+            this.rightPanelHeaderText = 'Параметры прогона';
 
-            //this.isLeftClickRoad = true;
+            this.isLeftClickRoad = true;
 
             let ky = this.calculateKLine(this.crossroadList[this.indexCrossroad1].x, this.crossroadList[this.indexCrossroad1].y, X, Y);
             let by = this.calculateBLine(this.crossroadList[this.indexCrossroad1].y, ky, this.crossroadList[this.indexCrossroad1].x);
@@ -299,53 +302,17 @@ export class AdminPageComponent {
                 alert('Здесь нельзя установить прогон');
                 return;
             }
-            let x1;
-            let x2;
-            let y1;
-            let y2;
 
-            if (ky != Infinity && ky != -Infinity) {
-                x1 = this.calculateXCoordinate(
-                    ky,
-                    by,
-                    this.crossroadList[this.indexCrossroad1].x,
-                    this.crossroadList[this.indexCrossroad1].y,
-                    this.radius,
-                    this.crossroadList[this.indexCrossroad1].x > X
-                );
-                x2 = this.calculateXCoordinate(ky, by, X, Y, this.radius, this.crossroadList[this.indexCrossroad1].x < X);
-                y1 = this.calculateYCoordinate(ky, by, x1);
-                y2 = this.calculateYCoordinate(ky, by, x2);
-            } else if (this.crossroadList[this.indexCrossroad1].y > Y) {
-                x1 = this.crossroadList[this.indexCrossroad1].x;
-                x2 = X;
-                y1 = this.crossroadList[this.indexCrossroad1].y - this.radius;
-                y2 = Y + this.radius;
-            } else {
-                x1 = this.crossroadList[this.indexCrossroad1].x;
-                x2 = X;
-                y1 = this.crossroadList[this.indexCrossroad1].y + this.radius;
-                y2 = Y - this.radius;
-            }
-
-            let road: Road = {
+            this.road = {
                 crossroad_1: this.indexCrossroad1,
                 crossroad_2: i,
-                street: { id_street: 0, name: '' },
+                street: { id_street: 0, name: ''},
                 traffic_signs: null,
                 police_post: null,
                 typeCover: { id_type_cover: 0, name: '', coefficient_braking: 1 },
                 direction: 1,
                 length: 1,
             };
-            this.drawLine(x1, y1, x2, y2, '#000', road.direction);
-
-            this.isRoadAdd = false;
-
-            this.roadList.push(road);
-            const jsonRoad: string = JSON.stringify(this.roadList);
-            console.log(jsonRoad);
-            this.indexCrossroad1 = -1;
         } else if (this.isRoadAdd == true) {
             let i = 0;
             while (i < this.crossroadList.length) {
@@ -895,19 +862,70 @@ export class AdminPageComponent {
     }
 
     modifyRoadParamener(): void {
+        if (this.isRoadAdd) {
+            let x = this.crossroadList[this.road.crossroad_1].x;
+            let y = this.crossroadList[this.road.crossroad_1].y;
+            let X = this.crossroadList[this.road.crossroad_2].x;
+            let Y = this.crossroadList[this.road.crossroad_2].y;
+
+            let ky = this.calculateKLine(x, y, X, Y);
+            let by = this.calculateBLine(y, ky, x);
+
+            let x1;
+            let x2;
+            let y1;
+            let y2;
+
+            if (ky != Infinity && ky != -Infinity) {
+                x1 = this.calculateXCoordinate(
+                    ky,
+                    by,
+                    x,
+                    y,
+                    this.radius,
+                    x > X
+                );
+                x2 = this.calculateXCoordinate(ky, by, X, Y, this.radius, x < X);
+                y1 = this.calculateYCoordinate(ky, by, x1);
+                y2 = this.calculateYCoordinate(ky, by, x2);
+            } else if (y > Y) {
+                x1 = x;
+                x2 = X;
+                y1 = y - this.radius;
+                y2 = Y + this.radius;
+            } else {
+                x1 = x;
+                x2 = X;
+                y1 = y + this.radius;
+                y2 = Y - this.radius;
+            }
+            
+            this.drawLine( x1, y1, x2, y2, '#000', this.road.direction);
+
+            this.isRoadAdd = false;
+
+            this.roadList.push(this.road);
+            const jsonRoad: string = JSON.stringify(this.roadList);
+            console.log(jsonRoad);
+            this.indexCrossroad1 = -1;
+            this.indexSelectedElement = this.roadList.length - 1;
+        }
+
         this.roadList[this.indexSelectedElement].direction = Number(this.dropdownMoveDirection);
+
+        this.roadList[this.indexSelectedElement].street.name = this.dropdownStreet;
 
         this.roadList[this.indexSelectedElement].street.id_street = this.streets.find(
             street => street.name === this.dropdownStreet
         )!.id_street;
-        this.roadList[this.indexSelectedElement].street.name = this.dropdownStreet;
 
         this.roadList[this.indexSelectedElement].length = this.roadLength.value as number;
+
+        this.roadList[this.indexSelectedElement].typeCover.name = this.dropdownCoverType;
 
         this.roadList[this.indexSelectedElement].typeCover.id_type_cover = this.coverTypes.find(
             coverType => coverType.name === this.dropdownCoverType
         )!.id_type_cover;
-        this.roadList[this.indexSelectedElement].typeCover.name = this.dropdownCoverType;
 
         if (this.roadList[this.indexSelectedElement].traffic_signs !== null) {
             this.roadList[this.indexSelectedElement].traffic_signs!.speed = Number(this.dropdownTrafficSign);
@@ -936,6 +954,8 @@ export class AdminPageComponent {
         this.dropdownTrafficSign = '';
         this.dropdownCorruptionCoef = '';
     }
+
+    
 
     setDropdownTrafficLight(trafficLightIndex: number) {
         this.dropdownGreenDuration = this.trafficLights[trafficLightIndex].time_green_signal.toString();

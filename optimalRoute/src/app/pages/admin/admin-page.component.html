@@ -287,7 +287,7 @@
                         </div>
                     </div>
                 </div>
-                @if (roadList[indexSelectedElement].traffic_signs != null) {
+                @if (indexSelectedElement !== -1 && roadList[indexSelectedElement].traffic_signs != null) {
                     <div class="panel-el">
                         <span>Знак дорожного движения</span>
                         <div ngbDropdown [autoClose]="true" class="d-inline-block">
@@ -308,7 +308,7 @@
                         </div>
                     </div>
                 }
-                @if (roadList[indexSelectedElement].police_post != null) {
+                @if (indexSelectedElement !== -1 && roadList[indexSelectedElement].police_post != null) {
                     <div class="panel-el">
                         <span>Полицейский пост</span>
                         <div ngbDropdown [autoClose]="true" class="d-inline-block">
