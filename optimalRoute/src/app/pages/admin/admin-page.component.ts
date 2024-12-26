@@ -954,6 +954,7 @@ export class AdminPageComponent {
         )!.id_type_cover;
 
         if (this.roadList[this.indexSelectedElement].traffic_signs !== null) {
+            this.roadList[this.indexSelectedElement].traffic_signs!.id_traffic_sign = this.findTrafficSignIndex();
             this.roadList[this.indexSelectedElement].traffic_signs!.speed = Number(this.dropdownTrafficSign);
         }
 
@@ -1059,7 +1060,7 @@ export class AdminPageComponent {
 
     addTrafficSigns(): void {
         this.roadList[this.indexSelectedElement].traffic_signs = {
-            id_traffic_sign: 0,
+            id_traffic_sign: this.findTrafficSignIndex(),
             speed: Number(this.dropdownTrafficSign),
         };
 
@@ -1141,17 +1142,21 @@ export class AdminPageComponent {
     }
 
     //TODO хз есть ли в бд
-    // findTrafficSignIndex() {
-
-    //     switch(this.dropdownTrafficSign) {
-    //         case '30':
-    //             return 1;
-    //         case '40':
-    //             return 2;
-    //         case '50':
-    //             return 3;
-    //     }
-    // }
+    findTrafficSignIndex() {
+        let index = -1;
+        switch(this.dropdownTrafficSign) {
+            case '30':
+                index = 0;
+                break;
+            case '40':
+                index = 1;
+                break;
+            case '50':
+                index = 2;
+                break;
+        }
+        return index;
+    }
 
     findPolicePostIndex() {
         return this.corruptionDegrees.find(corruptionDegree => corruptionDegree.name === this.dropdownCorruptionCoef)!.id_corruption;
