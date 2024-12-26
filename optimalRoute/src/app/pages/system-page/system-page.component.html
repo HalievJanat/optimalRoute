@@ -1,7 +1,45 @@
+<ng-template #content let-c="close" let-d="dismiss">
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Информация о разработчиках</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="d('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+        <p>Лабораторный практикумпо дисциплине: "Технологии программирования"</p>
+        <p>Тема: "Автоматизированная система расчета оптимального маршрута движения автотранспорта по заданному критерию"</p>
+    </div>
+    <div class="modal-header top">
+        <h5 class="modal-title" id="modal-basic-title">Разработчики:</h5>
+    </div>
+    <div class="modal-body">
+        <div class="modal-header top">
+            <p>Петренко Мария Вадимовна, группа: 6401-090301D</p>
+        </div>
+        <div class="modal-header top">
+            <p>Уваров Глеб Алексеевич, группа: 6401-090301D</p>
+        </div>
+        <div class="modal-header top">
+            <p>Халиев Жанат Тлекешевич, группа: 6401-090301D</p>
+        </div>
+        <div class="modal-header top">
+            <p>Шатилов Никита Юрьевич, группа: 6401-090301D</p>
+        </div>
+    </div>
+    <div class="modal-header top">
+        <h5 class="modal-title" id="modal-basic-title">Руководитель:</h5>
+    </div>
+    <div class="modal-body">
+        <div class="modal-header top">
+            <p>Зеленко Лариса Сергеевна</p>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="c('Save click')">Закрыть</button>
+    </div>
+</ng-template>
 <app-header>
-    <a class="btn bg-transparent button menu">Вернуться к построению карты</a>
-    <a class="btn bg-transparent button menu">База данных</a>
-    <a class="btn bg-transparent button menu">О разработчиках</a>
+    <a href="admin-page" class="btn bg-transparent button menu">Вернуться к построению карты</a>
+    <a href="admin-page/db" class="btn bg-transparent button menu">База данных</a>
+    <a class="btn bg-transparent button menu"  (click)="open(content)">О разработчиках</a>
 </app-header>
 <form class="editor-container">
     <div class="left-panel">

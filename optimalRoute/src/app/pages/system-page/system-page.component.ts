@@ -11,4 +11,16 @@ import { NgbDropdownModule, NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bo
 })
 export class SystemPageComponent {
 
+  constructor(
+		config: NgbModalConfig,
+		private modalService: NgbModal,
+	) {
+		// customize default values of modals used by this component tree
+		config.backdrop = 'static';
+		config.keyboard = false;
+	}
+
+  open(content: any) {
+		this.modalService.open(content);
+	}
 }
