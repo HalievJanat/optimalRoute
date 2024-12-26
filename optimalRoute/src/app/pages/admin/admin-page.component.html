@@ -78,9 +78,6 @@
                 <img class="roadrun" src="/assets/roadrun.png" alt="" />
                 <span>Прогон</span>
             </div>
-            <p>Масштаб:</p>
-            <button (click)="replaceSizeGrid(false)">-</button>
-            <button (click)="replaceSizeGrid(true)">+</button>
         </div>
     </div>
     <button
@@ -105,6 +102,18 @@
         <span class="visually-hidden">Открыть панель</span>
     </button>
 
+    <div class="scale-button-left">
+        <div [class.index]="!isLeftClickCrossroad && !isLeftClickRoad">
+            <img src="assets/downsize.png" (click)="replaceSizeGrid(false)">
+        </div>
+    </div>
+
+    <div class="scale-button-right" >
+        <div [class.index]="!isLeftClickCrossroad && !isLeftClickRoad">
+            <img src="assets/upsize.png" (click)="replaceSizeGrid(true)">
+        </div> 
+    </div>
+    
     <div class="graph-editor">
         <div
             (click)="eventClickConvas($event.layerX, $event.layerY)"

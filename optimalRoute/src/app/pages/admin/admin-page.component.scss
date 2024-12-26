@@ -67,9 +67,10 @@ input::placeholder {
         margin-bottom: 4%;
     }
     :last-child {
+        border: #fff;
         margin-top: 0%;
         margin-bottom: 0%;
-        margin-right: 10px;
+        margin-right: 5px;
     }
 }
 
@@ -116,6 +117,30 @@ input::placeholder {
     flex-grow: 2;
 }
 
+.scale-button-left {
+    position: absolute;
+    right: 30%;
+    left: 68%;
+    top: 90%;
+    bottom: 5%;
+    z-index: 9999;
+    .index {
+        z-index: 9999;
+    }
+}
+
+.scale-button-right {
+    position: absolute;
+    right: 25%;
+    left: 73%;
+    top: 90%;
+    bottom: 5%;
+    z-index: 9999;
+    .index {
+        z-index: 9999;
+    }
+}
+
 .right-panel {
     background-color: #efefef;
     flex-grow: 0;
@@ -128,8 +153,9 @@ input::placeholder {
     border-bottom: solid black;
     border-block-width: 2px;
     :first-child {
-        margin-right: 10px;
-        margin-left: 10px;
+        border: #fff;
+        margin-right: 5px;
+        margin-left: 5px;
         margin-top: 2%;
         margin-bottom: 2%;
     }
