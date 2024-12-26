@@ -225,6 +225,8 @@ export class UserPageComponent {
                 this.gridDrowSize();
                 this.visualOptimalRoute(this.gridSize);
 
+                this.crossroadOptimalRoute = [];
+
                 if (!this.crossroadOptimalRoute?.length) {
                     alert('Маршрут не найден!');
                 }
@@ -560,8 +562,6 @@ export class UserPageComponent {
         this.httpService.sendOptimalRoute(this.uds).subscribe({
             next: () => {
                 this.showOptimalRoute();
-
-                this.crossroadOptimalRoute = [];
             },
             error: () => {
                 this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
