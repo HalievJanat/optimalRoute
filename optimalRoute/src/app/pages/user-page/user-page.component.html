@@ -79,7 +79,7 @@
                             </button>
                             <div ngbDropdownMenu aria-labelledby="dropdownBasic">
                                 <button ngbDropdownItem (click)="setDropdownDriver(0)">
-                                    {{ testDriver }}
+                                    {{ testDriver.surname + ' ' + testDriver.name + ' ' + testDriver.family }}
                                 </button>
                                 <!-- @for(driver of httpService.drivers; track $index) {
                                     <button ngbDropdownItem (click)="setDropdownDriver($index)">
