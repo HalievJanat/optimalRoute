@@ -1,0 +1,35 @@
+<div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Название карты</h4>
+    <button
+        type="button"
+        class="btn-close"
+        aria-label="Close button"
+        aria-describedby="modal-title"
+        (click)="activeModal.dismiss('Cross click')"
+    ></button>
+</div>
+<div class="modal-body">
+    <ng-container [formGroup]="nameForm">
+        <input type="text" class="form-control" placeholder="Название карты*" formControlName="name"/>
+        @if (mapNameDuplicateValidation()) {
+            <div class="col mb-4">
+                <span class="error-span">Карта с таким названием уже существует</span>
+            </div>
+        }
+        @if (isRequiredMapNameError()) {
+            <div class="col mb-4">
+                <span class="error-span">* - поля являются обязательными</span>
+            </div>
+        }
+        @if (nameForm.controls.name.hasError('stringRange')) {
+            <div class="col mb-4">
+                <span class="error-span">Название карты должно быть не больше 30 символов</span>
+            </div>
+        }
+    </ng-container>
+</div>
+<div class="modal-footer">
+    <button type="button" ngbAutofocus class="btn btn-outline-secondary" (click)="activeModal.close(nameForm.controls.name.value)"
+    [disabled]="mapNameDuplicateValidation() || nameForm.invalid">Сохранить</button>
+    <button type="button" ngbAutofocus class="btn btn-outline-secondary" (click)="activeModal.dismiss('cancel click')">Отмена</button>
+</div>

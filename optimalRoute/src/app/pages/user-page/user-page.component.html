@@ -1,19 +1,5 @@
-<ng-template #content let-c="close" let-d="dismiss">
-    <div class="modal-header">
-        <h4 class="modal-title" id="modal-basic-title">Карты</h4>
-        <button type="button" class="btn-close" aria-label="Close" (click)="d('Cross click')"></button>
-    </div>
-    <div class="modal-body">
-        <div class="modal-header" (click)="addUDS();c('Save click')">
-            <p>{{UDS[0].name}}</p>
-        </div>
-    </div>
-    <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" (click)="c('Save click')">Закрыть</button>
-    </div>
-</ng-template>
 <app-header>
-    <a class="btn bg-transparent button" (click)="open(content)">Загрузить карту</a>
+    <a class="btn bg-transparent button" (click)="loadMapList()">Загрузить карту</a>
     <a class="btn bg-transparent button">Справочная информация</a>
 </app-header>
 
@@ -78,14 +64,11 @@
                                 {{ full_name || "Выберите водителя*"}} 
                             </button>
                             <div ngbDropdownMenu aria-labelledby="dropdownBasic">
-                                <button ngbDropdownItem (click)="setDropdownDriver(0)">
-                                    {{ testDriver.surname + ' ' + testDriver.name + ' ' + testDriver.family }}
-                                </button>
-                                <!-- @for(driver of httpService.drivers; track $index) {
+                                @for(driver of drivers; track $index) {
                                     <button ngbDropdownItem (click)="setDropdownDriver($index)">
-                                        {{ driver }}
+                                        {{ driver.family + ' ' + driver.name + ' ' + driver.surname }}
                                     </button>
-                                } --> 
+                                } 
                             </div>
                         </div>
                     </div>

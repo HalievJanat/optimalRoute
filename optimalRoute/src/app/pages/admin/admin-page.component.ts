@@ -10,6 +10,8 @@ import { Street } from '../../models/street.model';
 import { TypeCover } from '../../models/cover-type.model';
 import { DegreeCorruption } from '../../models/police-post.model';
 import { Crossroad, Road, UDS } from '../../models/UDS.model';
+import { ModalInputComponent } from '../../modals/modal-input/modal-input/modal-input.component';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
     selector: 'app-admin-page',
@@ -21,27 +23,58 @@ import { Crossroad, Road, UDS } from '../../models/UDS.model';
 export class AdminPageComponent {
     httpService = inject(HttpService);
 
+    UDSList: UDS[] = [];
     trafficLights: TrafficLights[] = [];
     streets: Street[] = [];
     coverTypes: TypeCover[] = [];
     corruptionDegrees: DegreeCorruption[] = [];
 
-    constructor(config: NgbModalConfig, private modalService: NgbModal) {
+    currentUDS: UDS | null = null;
+
+    constructor(config: NgbModalConfig, private modalService: NgbModal, private toastr: ToastrService) {
         // customize default values of modals used by this component tree
         config.backdrop = 'static';
         config.keyboard = false;
 
-        this.httpService.getTrafficLights().subscribe(trafficLights => {
-            this.trafficLights = trafficLights;
+        this.httpService.getUDSList().subscribe({
+            next: udsList => {
+                this.UDSList = udsList;
+            },
+            error: () => {
+                //TODO СТРАНИЦА С ОШИБКОЙ
+            },
         });
-        this.httpService.getStreets().subscribe(streets => {
-            this.streets = streets;
+        this.httpService.getTrafficLights().subscribe({
+            next: trafficLights => {
+                this.trafficLights = trafficLights;
+            },
+            error: () => {
+                //TODO СТРАНИЦА С ОШИБКОЙ
+            },
         });
-        this.httpService.getTypeCovers().subscribe(coverTypes => {
-            this.coverTypes = coverTypes;
+        this.httpService.getStreets().subscribe({
+            next: streets => {
+                this.streets = streets;
+            },
+            error: () => {
+                //TODO СТРАНИЦА С ОШИБКОЙ
+            },
         });
-        this.httpService.getDegreeCorruptions().subscribe(corruptionDegrees => {
-            this.corruptionDegrees = corruptionDegrees;
+        this.httpService.getTypeCovers().subscribe({
+            next: coverTypes => {
+                this.coverTypes = coverTypes;
+            },
+            error: () => {
+                //TODO СТРАНИЦА С ОШИБКОЙ
+            },
+        });
+        this.httpService.getDegreeCorruptions().subscribe({
+            next: corruptionDegrees => {
+                this.corruptionDegrees = corruptionDegrees;
+            },
+            error: () => {
+                //TODO СТРАНИЦА С ОШИБКОЙ
+            },
         });
     }
 
@@ -306,7 +339,7 @@ export class AdminPageComponent {
             this.road = {
                 crossroad_1: this.indexCrossroad1,
                 crossroad_2: i,
-                street: { id_street: 0, name: ''},
+                street: { id_street: 0, name: '' },
                 traffic_signs: null,
                 police_post: null,
                 typeCover: { id_type_cover: 0, name: '', coefficient_braking: 1 },
@@ -877,14 +910,7 @@ export class AdminPageComponent {
             let y2;
 
             if (ky != Infinity && ky != -Infinity) {
-                x1 = this.calculateXCoordinate(
-                    ky,
-                    by,
-                    x,
-                    y,
-                    this.radius,
-                    x > X
-                );
+                x1 = this.calculateXCoordinate(ky, by, x, y, this.radius, x > X);
                 x2 = this.calculateXCoordinate(ky, by, X, Y, this.radius, x < X);
                 y1 = this.calculateYCoordinate(ky, by, x1);
                 y2 = this.calculateYCoordinate(ky, by, x2);
@@ -899,8 +925,8 @@ export class AdminPageComponent {
                 y1 = y + this.radius;
                 y2 = Y - this.radius;
             }
-            
-            this.drawLine( x1, y1, x2, y2, '#000', this.road.direction);
+
+            this.drawLine(x1, y1, x2, y2, '#000', this.road.direction);
 
             this.isRoadAdd = false;
 
@@ -928,6 +954,7 @@ export class AdminPageComponent {
         )!.id_type_cover;
 
         if (this.roadList[this.indexSelectedElement].traffic_signs !== null) {
+            this.roadList[this.indexSelectedElement].traffic_signs!.id_traffic_sign = this.findTrafficSignIndex();
             this.roadList[this.indexSelectedElement].traffic_signs!.speed = Number(this.dropdownTrafficSign);
         }
 
@@ -954,8 +981,6 @@ export class AdminPageComponent {
         this.dropdownTrafficSign = '';
         this.dropdownCorruptionCoef = '';
     }
-
-    
 
     setDropdownTrafficLight(trafficLightIndex: number) {
         this.dropdownGreenDuration = this.trafficLights[trafficLightIndex].time_green_signal.toString();
@@ -1035,7 +1060,7 @@ export class AdminPageComponent {
 
     addTrafficSigns(): void {
         this.roadList[this.indexSelectedElement].traffic_signs = {
-            id_traffic_sign: 0,
+            id_traffic_sign: this.findTrafficSignIndex(),
             speed: Number(this.dropdownTrafficSign),
         };
 
@@ -1051,15 +1076,61 @@ export class AdminPageComponent {
             alert('Ошибка, нельзя сохранить карту');
             return;
         }
-        let uds: UDS = {
-            id_uds: 0,
-            name: 'Samara',
-            crossroads: this.crossroadList,
-            roads: this.roadList,
-            route: null,
-        };
-        const jsonUDS: string = JSON.stringify(uds);
-        console.log(jsonUDS);
+
+        if (this.currentUDS) {
+            let uds: UDS = {
+                id_uds: this.currentUDS.id_uds,
+                name: this.currentUDS.name,
+                crossroads: this.crossroadList,
+                roads: this.roadList,
+                route: null,
+            };
+
+            this.httpService.deleteUDS(uds).subscribe({
+                next: () => {
+                    this.httpService.sendUDS(uds).subscribe({
+                        next: () => {
+                            const udsIndex = this.UDSList.findIndex(uds => uds.id_uds === this.currentUDS?.id_uds);
+                            this.UDSList[udsIndex] = this.currentUDS!;
+                        },
+                        error: () => {
+                            this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                        },
+                    });
+                },
+                error: () => {
+                    this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                },
+            });
+        }
+        const modalRef = this.modalService.open(ModalInputComponent, {
+            centered: true,
+        });
+        this.UDSList.forEach(uds => {
+            modalRef.componentInstance.existingNames.push(uds.name);
+        });
+
+        modalRef.result
+            .then(name => {
+                let uds: UDS = {
+                    id_uds: this.UDSList.length ? this.UDSList[this.UDSList.length - 1].id_uds : 0,
+                    name: name,
+                    crossroads: this.crossroadList,
+                    roads: this.roadList,
+                    route: null,
+                };
+                console.log(name);
+
+                this.httpService.sendUDS(uds).subscribe({
+                    next: () => {
+                        this.UDSList.push(uds);
+                    },
+                    error: () => {
+                        this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                    },
+                });
+            })
+            .catch(() => {});
     }
 
     findTrafficLightIndex() {
@@ -1070,25 +1141,23 @@ export class AdminPageComponent {
         )!.id_traffic_light;
     }
 
-
-    //TODO хз есть ли в бд
-    // findTrafficSignIndex() {
-
-
-    //     switch(this.dropdownTrafficSign) {
-    //         case '30':
-    //             return 1;
-    //         case '40':
-    //             return 2;
-    //         case '50':
-    //             return 3;
-    //     }
-    // }
+    findTrafficSignIndex() {
+        let index = -1;
+        switch(this.dropdownTrafficSign) {
+            case '30':
+                index = 0;
+                break;
+            case '40':
+                index = 1;
+                break;
+            case '50':
+                index = 2;
+                break;
+        }
+        return index;
+    }
 
     findPolicePostIndex() {
-        return this.corruptionDegrees.find(
-            corruptionDegree =>
-                corruptionDegree.name === this.dropdownCorruptionCoef
-        )!.id_corruption;
+        return this.corruptionDegrees.find(corruptionDegree => corruptionDegree.name === this.dropdownCorruptionCoef)!.id_corruption;
     }
 }

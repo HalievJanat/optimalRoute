@@ -49,26 +49,36 @@ export class HttpService {
         return this.http.get<TypeFine[]>(`${this.apiUrl}/admin/fine`);
     }
 
-     //TODO NE POMNU SSILKI
     getUDS(): Observable<UDS> {
-        return this.http.get<UDS>(`${this.apiUrl}/admin/.....`);
+        return this.http.get<UDS>(`${this.apiUrl}/optimal-route`);
     } 
 
-    //TODO NE POMNU SSILKI
     getUDSList(): Observable<UDS[]> {
-        return this.http.get<UDS[]>(`${this.apiUrl}/admin/.....`);
+        return this.http.get<UDS[]>(`${this.apiUrl}/maps`);
     } 
 
     addMapDbValue<T>(value: T, url: string) {
         return this.http.post(`${this.apiUrl}/admin/${url}`, value);
     }
 
+    sendUDS(value: UDS) {
+        return this.http.post(`${this.apiUrl}/map`, value);
+    }
+
+    sendOptimalRoute(value: UDS) {
+        return this.http.post(`${this.apiUrl}/optimal-route`, value);
+    }
+
     updateMapDbValue<T> (value: T, url: string) {
         return this.http.patch(`${this.apiUrl}/admin/${url}`, value);
     }
 
-    //TODO HUINYA KAKAYA-TO
     deleteMapDbValue<T> (value: T, url: string) {
         return this.http.put(`${this.apiUrl}/admin/${url}`, value);
     }
+
+    deleteUDS (value: UDS) {
+        return this.http.put(`${this.apiUrl}/map`, value)
+    }
+    
 }

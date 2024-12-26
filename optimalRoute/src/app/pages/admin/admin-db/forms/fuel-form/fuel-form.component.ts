@@ -93,7 +93,7 @@ export class FuelFormComponent implements OnInit, AfterViewInit {
         const control = this.typeFuelAddForm.controls;
 
         const addedTypeFuel = {
-            id_type_fuel: this.typeFuels.length ? 0 : this.typeFuels[this.typeFuels.length - 1].id_type_fuel + 1,
+            id_type_fuel: this.typeFuels.length ? this.typeFuels[this.typeFuels.length - 1].id_type_fuel + 1 : 0,
             name: control.name.value,
             price: control.price.value as number,
         };

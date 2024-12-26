@@ -115,7 +115,7 @@ export class VehicleFormComponent implements OnInit, AfterViewInit {
         const vehicleFuel = this.typeFuels.find(typeFuel => typeFuel.name === control.typeFuel.value) as TypeFuel;
 
         const addedVehicle = {
-            id_vehicle: this.vehicles.length ? 0 : this.vehicles[this.vehicles.length - 1].id_vehicle + 1,
+            id_vehicle: this.vehicles.length ? this.vehicles[this.vehicles.length - 1].id_vehicle + 1 : 0,
             brand: control.brand.value,
             type_fuel: vehicleFuel,
             consumption_fuel: control.consumption_fuel.value as unknown as number,

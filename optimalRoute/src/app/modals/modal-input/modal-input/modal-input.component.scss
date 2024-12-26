@@ -1,0 +1,20 @@
+input:focus {
+    border-color: white;
+    box-shadow: 2px 2px 2px 2px gray;
+}
+
+input::placeholder {
+    font-weight: lighter;
+}
+
+.ng-dirty.ng-invalid:not(form) {
+    border-color: #ff0000; /* red */
+    &::placeholder {
+        color: #ff0000;
+    }
+}
+
+.error-span {
+    color: #ff0000;
+    user-select: none;
+}
