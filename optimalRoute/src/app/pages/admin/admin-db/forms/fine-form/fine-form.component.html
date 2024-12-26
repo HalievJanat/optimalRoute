@@ -52,7 +52,7 @@
 @if (isFineTypeEdit) {
     @if (fineTypeEditForm.controls[editFineTypeNumber].controls.price.hasError('range')) {
     <div class="col mb-4">
-        <span class="error-span">Стоимость штрафа должна быть в диапозоне от 300 до 20000 руб/л</span>
+        <span class="error-span">Стоимость штрафа должна быть в диапозоне от 300 до 20000 руб</span>
     </div>
     } @if (isRequiredFineError(fineTypeEditForm.controls[editFineTypeNumber])) {
     <div class="col mb-4">

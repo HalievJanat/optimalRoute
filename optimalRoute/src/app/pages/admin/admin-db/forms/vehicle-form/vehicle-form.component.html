@@ -7,7 +7,7 @@
         <div class="col mb-4">
             <input type="text" class="form-control" formControlName="brand" placeholder="Марка*" />
             @if (vehicleAddForm.controls.brand.hasError('stringRange')) {
-            <span>Марка автомобиля должна быть не больше 15 символов</span>
+            <span>Марка автомобиля должна быть в диапозоне от 3 до 15 символов</span>
             }
         </div>
         <div class="col mb-4">
@@ -159,7 +159,7 @@
 </div>
 } @if (vehicleEditForm.controls[editVehicleNumber].controls.brand.hasError('stringRange')) {
 <div class="col mb-4">
-    <span class="error-span">Марка автомобиля должна быть не больше 15 символов</span>
+    <span class="error-span">Марка автомобиля должна быть в диапозоне от 3 до 15 символов</span>
 </div>
 } @if (vehicleEditForm.controls[editVehicleNumber].controls.consumption_fuel.hasError('range')) {
 <div class="col mb-4">

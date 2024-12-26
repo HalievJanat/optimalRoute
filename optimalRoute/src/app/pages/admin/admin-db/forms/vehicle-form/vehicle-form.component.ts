@@ -40,7 +40,7 @@ export class VehicleFormComponent implements OnInit, AfterViewInit {
     typeFuels: TypeFuel[] = [];
 
     vehicleAddForm = this.fb.nonNullable.group({
-        brand: ['', [Validators.required, stringRangeValidator(15)]],
+        brand: ['', [Validators.required, stringRangeValidator(15, 3)]],
         typeFuel: ['', Validators.required],
         consumption_fuel: [null as number | null, [Validators.required, rangeValidator(1, 20)]],
         max_speed: [null as number | null, [Validators.required, rangeValidator(1, 300)]],
