@@ -95,7 +95,7 @@ export class TrafficLightsFormComponent implements OnInit, AfterViewInit {
         const control = this.trafficLightAddForm.controls;
 
         const addedTrafficLight = {
-            id_traffic_light: 0,
+            id_traffic_light: this.trafficLights[this.trafficLights.length - 1].id_traffic_light,
             time_green_signal: control.time_green_signal.value as unknown as number,
             time_red_signal: control.time_red_signal.value as unknown as number,
         };
@@ -161,7 +161,7 @@ export class TrafficLightsFormComponent implements OnInit, AfterViewInit {
     }
 
     trafficLightDelete(index: number) {
-        this.httpService.deleteMapDbValue(this.trafficLights, 'traffic-light').subscribe({
+        this.httpService.deleteMapDbValue(this.trafficLights[index], 'traffic-light').subscribe({
             next: () => {
                 this.trafficLights.splice(index, 1);
                 this.trafficLightEditForm.controls.splice(index, 1);
