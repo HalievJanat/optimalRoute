@@ -7,6 +7,7 @@ import { Driver } from './driver.model';
 import { TypeFine } from './fine-type.model';
 
 export interface UDS {
+    id_uds: number;
     name: string;
     crossroads: Crossroad[];
     roads: Road[];
@@ -16,7 +17,7 @@ export interface UDS {
 export interface Crossroad {
     x: number;
     y: number;
-    trafficLights: TrafficLights | null;
+    trafficLights:TrafficLights | null;
 }
 
 export interface Road {

@@ -1,20 +1,35 @@
 <ng-template #content let-c="close" let-d="dismiss">
     <div class="modal-header">
-        <h4 class="modal-title" id="modal-basic-title">Разработчики</h4>
+        <h4 class="modal-title" id="modal-basic-title">Информация о разработчиках</h4>
         <button type="button" class="btn-close" aria-label="Close" (click)="d('Cross click')"></button>
     </div>
     <div class="modal-body">
-        <div class="modal-header">
-            <p>Группа: 6401-090301D, Петренко Мария Вадимовна</p>
+        <p>Лабораторный практикумпо дисциплине: "Технологии программирования"</p>
+        <p>Тема: "Автоматизированная система расчета оптимального маршрута движения автотранспорта по заданному критерию"</p>
+    </div>
+    <div class="modal-header top">
+        <h5 class="modal-title" id="modal-basic-title">Разработчики:</h5>
+    </div>
+    <div class="modal-body">
+        <div class="modal-header top">
+            <p>Петренко Мария Вадимовна, группа: 6401-090301D</p>
         </div>
-        <div class="modal-header">
-            <p>Группа: 6401-090301D, Уваров Глеб Алексеевич</p>
+        <div class="modal-header top">
+            <p>Уваров Глеб Алексеевич, группа: 6401-090301D</p>
         </div>
-        <div class="modal-header">
-            <p>Группа: 6401-090301D, Халиев Жанат Тлекешевич</p>
+        <div class="modal-header top">
+            <p>Халиев Жанат Тлекешевич, группа: 6401-090301D</p>
         </div>
-        <div class="modal-header">
-            <p>Группа: 6401-090301D, Шатилов Никита Юрьевич</p>
+        <div class="modal-header top">
+            <p>Шатилов Никита Юрьевич, группа: 6401-090301D</p>
+        </div>
+    </div>
+    <div class="modal-header top">
+        <h5 class="modal-title" id="modal-basic-title">Руководитель:</h5>
+    </div>
+    <div class="modal-body">
+        <div class="modal-header top">
+            <p>Зеленко Лариса Сергеевна</p>
         </div>
     </div>
     <div class="modal-footer">
@@ -26,7 +41,7 @@
     <a href="./" class="btn bg-transparent button">Открыть карту</a>
     <a href="admin-page/db" class="btn bg-transparent button">БД</a>
     <a class="btn bg-transparent button" (click)="saveUDS()">Сохранить</a>
-    <a href="./" class="btn bg-transparent button">О системе</a>
+    <a href="system-page" class="btn bg-transparent button">О системе</a>
     <a class="btn bg-transparent button" (click)="open(content)">О разработчиках</a>    
 </app-header>
 <div class="editor-container">
@@ -63,9 +78,6 @@
                 <img class="roadrun" src="/assets/roadrun.png" alt="" />
                 <span>Прогон</span>
             </div>
-            <p>Масштаб:</p>
-            <button (click)="replaceSizeGrid(false)">-</button>
-            <button (click)="replaceSizeGrid(true)">+</button>
         </div>
     </div>
     <button
@@ -90,6 +102,18 @@
         <span class="visually-hidden">Открыть панель</span>
     </button>
 
+    <div class="scale-button-left">
+        <div [class.index]="!isLeftClickCrossroad && !isLeftClickRoad">
+            <img src="assets/downsize.png" (click)="replaceSizeGrid(false)">
+        </div>
+    </div>
+
+    <div class="scale-button-right" >
+        <div [class.index]="!isLeftClickCrossroad && !isLeftClickRoad">
+            <img src="assets/upsize.png" (click)="replaceSizeGrid(true)">
+        </div> 
+    </div>
+    
     <div class="graph-editor">
         <div
             (click)="eventClickConvas($event.layerX, $event.layerY)"
