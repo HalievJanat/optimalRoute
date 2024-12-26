@@ -12,6 +12,7 @@ import { DegreeCorruption } from '../../models/police-post.model';
 import { Crossroad, Road, UDS } from '../../models/UDS.model';
 import { ModalInputComponent } from '../../modals/modal-input/modal-input/modal-input.component';
 import { ToastrService } from 'ngx-toastr';
+import { ModalSelectingComponent } from '../../modals/modal-selecting/modal-selecting/modal-selecting.component';
 
 @Component({
     selector: 'app-admin-page',
@@ -1088,6 +1089,7 @@ export class AdminPageComponent {
 
             this.httpService.deleteUDS(uds).subscribe({
                 next: () => {
+                    uds.id_uds = this.UDSList.length;
                     this.httpService.sendUDS(uds).subscribe({
                         next: () => {
                             const udsIndex = this.UDSList.findIndex(uds => uds.id_uds === this.currentUDS?.id_uds);
@@ -1103,32 +1105,51 @@ export class AdminPageComponent {
                 },
             });
         }
-        const modalRef = this.modalService.open(ModalInputComponent, {
+        else {
+            const modalRef = this.modalService.open(ModalInputComponent, {
+                centered: true,
+            });
+            this.UDSList.forEach(uds => {
+                modalRef.componentInstance.existingNames.push(uds.name);
+            });
+    
+            modalRef.result
+                .then(name => {
+                    let uds: UDS = {
+                        id_uds: this.UDSList.length ? this.UDSList[this.UDSList.length - 1].id_uds : 0,
+                        name: name,
+                        crossroads: this.crossroadList,
+                        roads: this.roadList,
+                        route: null,
+                    };
+                    console.log(name);
+    
+                    this.httpService.sendUDS(uds).subscribe({
+                        next: () => {
+                            this.UDSList.push(uds);
+                        },
+                        error: () => {
+                            this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                        },
+                    });
+                })
+                .catch(() => {});
+        }
+    }
+
+    openUDS(): void {
+        const modalRef = this.modalService.open(ModalSelectingComponent, {
             centered: true,
         });
         this.UDSList.forEach(uds => {
-            modalRef.componentInstance.existingNames.push(uds.name);
+            modalRef.componentInstance.mapList.push(uds.name);
         });
 
         modalRef.result
-            .then(name => {
-                let uds: UDS = {
-                    id_uds: this.UDSList.length ? this.UDSList[this.UDSList.length - 1].id_uds : 0,
-                    name: name,
-                    crossroads: this.crossroadList,
-                    roads: this.roadList,
-                    route: null,
-                };
-                console.log(name);
-
-                this.httpService.sendUDS(uds).subscribe({
-                    next: () => {
-                        this.UDSList.push(uds);
-                    },
-                    error: () => {
-                        this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
-                    },
-                });
+            .then(index => {
+                this.currentUDS = this.UDSList[index];
+                this.crossroadList = this.currentUDS.crossroads;
+                this.roadList = this.currentUDS.roads;
             })
             .catch(() => {});
     }

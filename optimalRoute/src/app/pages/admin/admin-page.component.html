@@ -38,7 +38,7 @@
 </ng-template>
 <app-header>
     <a href="admin-page" class="btn bg-transparent button">Cоздать новую карту</a>
-    <a href="./" class="btn bg-transparent button">Открыть карту</a>
+    <a class="btn bg-transparent button" (click)="openUDS()">Открыть карту</a>
     <a href="admin-page/db" class="btn bg-transparent button">БД</a>
     <a class="btn bg-transparent button" (click)="saveUDS()">Сохранить</a>
     <a href="system-page" class="btn bg-transparent button">О системе</a>
