@@ -1,0 +1,39 @@
+.modal-title {
+    width: 100%;
+    text-align: center;
+}
+
+.modal-body {
+    padding: 0% 0% 0% 0%;
+
+    button:hover {
+        background-color: rgb(233, 226, 226);
+    }
+
+    button:focus {
+        background-color: rgb(186, 186, 186);
+    }
+
+    button.active {
+        background-color: rgb(186, 186, 186);
+    }
+
+    button {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        padding-top: 4%;
+        padding-bottom: 4%;
+        color: black;
+        background-color: white;
+        border: none;
+        margin-bottom: 2px;
+
+        span {
+            padding-left: 5%;
+            user-select: none;
+            text-align: left;
+            flex: 2;
+        }
+    }
+}
