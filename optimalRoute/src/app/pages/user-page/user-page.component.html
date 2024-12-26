@@ -46,13 +46,17 @@
         @if (isVisualMenu) {
             <ul ngbNav class="nav-tabs" orientation="vertical">
                 <li ngbNavItem>
-                    <button ngbNavLink autofocus (click)="isRoute=true; isDriver=false; isCriteria=false;">
+                    <button ngbNavLink autofocus (click)="isRoute=true; isDriver=false; isCriteria=false; this.gridDrowSize();
+                    this.visualOptimalRoute(this.gridSize);
+    ">
                         <img src="/assets/route-32.png" alt="" />
                         <span>Выбор точки отправления и прибытия</span>
                     </button>
                 </li>
                 <li ngbNavItem>
-                    <button ngbNavLink autofocus (click)="isRoute=false; isDriver=true; isCriteria=false;">
+                    <button ngbNavLink autofocus (click)="isRoute=false; isDriver=true; isCriteria=false; this.gridDrowSize();
+                    this.visualOptimalRoute(this.gridSize);
+    ">
                         <img src="/assets/auto.png" alt="" />
                         <span>Выбор водителя</span>
                     </button>
@@ -74,7 +78,9 @@
                     </div>
                 }
                 <li ngbNavItem>
-                    <button ngbNavLink autofocus (click)="isRoute=false; isDriver=false; isCriteria=true;">
+                    <button ngbNavLink autofocus (click)="isRoute=false; isDriver=false; isCriteria=true; this.gridDrowSize();
+                    this.visualOptimalRoute(this.gridSize);
+    ">
                         <img src="/assets/criteria.png" alt="" />
                         <span>Выбор критерия</span>
                     </button>
