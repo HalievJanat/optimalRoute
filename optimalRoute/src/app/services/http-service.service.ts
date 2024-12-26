@@ -7,6 +7,7 @@ import { Street } from '../models/street.model';
 import { TypeCover } from '../models/cover-type.model';
 import { TrafficLights } from '../models/traffic-light.model';
 import { Observable } from 'rxjs';
+import { UDS } from '../models/UDS.model';
 
 @Injectable({
     providedIn: 'root',
@@ -48,7 +49,26 @@ export class HttpService {
         return this.http.get<TypeFine[]>(`${this.apiUrl}/admin/fine`);
     }
 
+     //TODO NE POMNU SSILKI
+    getUDS(): Observable<UDS> {
+        return this.http.get<UDS>(`${this.apiUrl}/admin/.....`);
+    } 
+
+    //TODO NE POMNU SSILKI
+    getUDSList(): Observable<UDS[]> {
+        return this.http.get<UDS[]>(`${this.apiUrl}/admin/.....`);
+    } 
+
     addMapDbValue<T>(value: T, url: string) {
-        this.http.post(`${this.apiUrl}/admin/${url}`, value).subscribe();
+        return this.http.post(`${this.apiUrl}/admin/${url}`, value);
+    }
+
+    updateMapDbValue<T> (value: T, url: string) {
+        return this.http.patch(`${this.apiUrl}/admin/${url}`, value);
+    }
+
+    //TODO HUINYA KAKAYA-TO
+    deleteMapDbValue<T> (value: T, url: string) {
+        return this.http.put(`${this.apiUrl}/admin/${url}`, value);
     }
 }
