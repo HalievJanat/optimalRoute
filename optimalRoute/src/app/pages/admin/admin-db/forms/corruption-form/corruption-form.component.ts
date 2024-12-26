@@ -95,7 +95,8 @@ export class CorruptionFormComponent implements OnInit, AfterViewInit {
         const control = this.corruptionDegreeAddForm.controls;
 
         const addedCorruptionDegree = {
-            id_corruption: this.corruptionDegrees[this.corruptionDegrees.length - 1].id_corruption + 1,
+            id_corruption:
+                this.corruptionDegrees.length === 0 ? 0 : this.corruptionDegrees[this.corruptionDegrees.length - 1].id_corruption + 1,
             name: control.name.value,
             coefficient_corruption: control.coefficient_corruption.value as number,
         };
