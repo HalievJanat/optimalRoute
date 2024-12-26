@@ -47,7 +47,7 @@
             <ul ngbNav class="nav-tabs" orientation="vertical">
                 <li ngbNavItem>
                     <button ngbNavLink autofocus (click)="isRoute=true; isDriver=false; isCriteria=false; this.gridDrowSize();
-                    this.visualOptimalRoute(this.gridSize);
+                    this.visualOptimalRoute(this.gridSize);">
     ">
                         <img src="/assets/route-32.png" alt="" />
                         <span>Выбор точки отправления и прибытия</span>
@@ -55,7 +55,7 @@
                 </li>
                 <li ngbNavItem>
                     <button ngbNavLink autofocus (click)="isRoute=false; isDriver=true; isCriteria=false; this.gridDrowSize();
-                    this.visualOptimalRoute(this.gridSize);
+                    this.visualOptimalRoute(this.gridSize);">
     ">
                         <img src="/assets/auto.png" alt="" />
                         <span>Выбор водителя</span>
@@ -78,8 +78,9 @@
                     </div>
                 }
                 <li ngbNavItem>
-                    <button ngbNavLink autofocus (click)="isRoute=false; isDriver=false; isCriteria=true; this.gridDrowSize();
-                    this.visualOptimalRoute(this.gridSize);
+                    <button ngbNavLink autofocus (click)="isRoute=false; isDriver=false; isCriteria=true; 
+                    this.gridDrowSize();
+                    this.visualOptimalRoute(this.gridSize);">
     ">
                         <img src="/assets/criteria.png" alt="" />
                         <span>Выбор критерия</span>
