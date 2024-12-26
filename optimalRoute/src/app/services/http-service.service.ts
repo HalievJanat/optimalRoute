@@ -7,6 +7,8 @@ import { Street } from '../models/street.model';
 import { TypeCover } from '../models/cover-type.model';
 import { TrafficLights } from '../models/traffic-light.model';
 import { Observable } from 'rxjs';
+import { UDS } from '../models/UDS.model';
+import { ToastrService } from 'ngx-toastr';
 
 @Injectable({
     providedIn: 'root',
@@ -14,7 +16,7 @@ import { Observable } from 'rxjs';
 export class HttpService {
     private apiUrl = 'https://localhost:7249/api/v1/HttpOptimalRoute';
 
-    constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient, private toastr: ToastrService) {}
 
     getDrivers(): Observable<Driver[]> {
         return this.http.get<Driver[]>(`${this.apiUrl}/admin/driver`);
@@ -48,7 +50,33 @@ export class HttpService {
         return this.http.get<TypeFine[]>(`${this.apiUrl}/admin/fine`);
     }
 
+     //TODO NE POMNU SSILKI
+    getUDS(): Observable<UDS> {
+        return this.http.get<UDS>(`${this.apiUrl}/admin/.....`);
+    } 
+
+    //TODO NE POMNU SSILKI
+    getUDSList(): Observable<UDS[]> {
+        return this.http.get<UDS[]>(`${this.apiUrl}/admin/.....`);
+    } 
+
     addMapDbValue<T>(value: T, url: string) {
-        this.http.post(`${this.apiUrl}/admin/${url}`, value).subscribe();
+        let successful = true;
+        this.http.post(`${this.apiUrl}/admin/${url}`, value).subscribe({
+            error: (_) => {
+                successful = false;
+                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+            }
+        });
+        return successful;
     }
+
+    updateMapDbValue<T> (value: T, url: string) {
+        this.http.patch(`${this.apiUrl}/admin/${url}`, value).subscribe();
+    }
+
+    //TODO HUINYA KAKAYA-TO
+    // deleteMapDbValue<T> (value: T, url: string) {
+    //     this.http.delete(url, value);
+    // }
 }

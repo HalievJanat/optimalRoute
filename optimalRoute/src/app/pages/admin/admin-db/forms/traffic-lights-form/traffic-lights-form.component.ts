@@ -4,6 +4,7 @@ import { HttpService } from '../../../../../services/http-service.service';
 import { allowOnlyDigits, floatValidator, isRequiredError, rangeValidator, stringRangeValidator } from '../validators';
 import { NgbDropdownModule, NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 import { TrafficLights } from '../../../../../models/traffic-light.model';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
     selector: 'app-traffic-lights-form',
@@ -16,9 +17,13 @@ export class TrafficLightsFormComponent implements OnInit, AfterViewInit {
     @Input() activeRightElement = 1;
     @Output() activeRightElementChange = new EventEmitter<number>();
 
+    isgetErr = false;
+
     private fb = inject(FormBuilder);
 
     httpService = inject(HttpService);
+
+    toastr = inject(ToastrService);
 
     isTrafficLightEdit = false;
 
@@ -45,19 +50,28 @@ export class TrafficLightsFormComponent implements OnInit, AfterViewInit {
     >([]);
 
     constructor() {
-        this.httpService.getTrafficLights().subscribe(trafficLights => {
-            this.trafficLights = trafficLights;
-            this.trafficLightsArrSize = this.trafficLights.length;
-            this.trafficLights.forEach(trafficLight => {
-                const addedTrafficLightGroup = this.fb.nonNullable.group({
-                    time_green_signal: [trafficLight.time_green_signal as number | null, [Validators.required, rangeValidator(20, 120)]],
-                    time_red_signal: [trafficLight.time_red_signal as number | null, [Validators.required, rangeValidator(20, 120)]],
-                });
-                addedTrafficLightGroup.disable();
+        this.httpService.getTrafficLights().subscribe({
+            next: (trafficLights) => {
+                this.trafficLights = trafficLights;
+                this.trafficLightsArrSize = this.trafficLights.length;
+                this.trafficLights.forEach(trafficLight => {
+                    const addedTrafficLightGroup = this.fb.nonNullable.group({
+                        time_green_signal: [
+                            trafficLight.time_green_signal as number | null,
+                            [Validators.required, rangeValidator(20, 120)],
+                        ],
+                        time_red_signal: [trafficLight.time_red_signal as number | null, [Validators.required, rangeValidator(20, 120)]],
+                    });
+                    addedTrafficLightGroup.disable();
 
-                this.trafficLightEditForm.push(addedTrafficLightGroup);
-            });
-        });
+                    this.trafficLightEditForm.push(addedTrafficLightGroup);
+                });
+            },
+            error: (_) => {
+                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.isgetErr = true;
+            }
+        })
     }
 
     //При инициализации компонент отображает именно форму добавления
@@ -72,6 +86,12 @@ export class TrafficLightsFormComponent implements OnInit, AfterViewInit {
     }
 
     addTrafficLight() {
+        if (this.isgetErr) {
+            this.trafficLightAddForm.reset();
+            this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+            return;
+        }
+
         const control = this.trafficLightAddForm.controls;
 
         const addedTrafficLight = {
@@ -80,9 +100,13 @@ export class TrafficLightsFormComponent implements OnInit, AfterViewInit {
             time_red_signal: control.time_red_signal.value as unknown as number,
         };
 
-        this.trafficLights.push(addedTrafficLight);
+        if (!this.httpService.addMapDbValue<TrafficLights>(addedTrafficLight, 'traffic-light')){
+            this.trafficLightAddForm.reset();
+            this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+            return;
+        }
 
-        this.httpService.addMapDbValue<TrafficLights>(addedTrafficLight, 'traffic-light');
+        this.trafficLights.push(addedTrafficLight);
 
         const addedTrafficLightGroup = this.fb.nonNullable.group({
             time_green_signal: [control.time_green_signal.value as number | null, [Validators.required, rangeValidator(20, 120)]],
@@ -101,7 +125,7 @@ export class TrafficLightsFormComponent implements OnInit, AfterViewInit {
     editTrafficLights() {
         const control = this.trafficLightEditForm.controls[this.editTrafficLightNumber].controls;
 
-        const id = this.trafficLights[this.editTrafficLightNumber].id_traffic_light
+        const id = this.trafficLights[this.editTrafficLightNumber].id_traffic_light;
 
         this.trafficLights[this.editTrafficLightNumber] = {
             id_traffic_light: id,
