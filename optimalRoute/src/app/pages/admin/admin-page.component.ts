@@ -53,7 +53,7 @@ export class AdminPageComponent {
     open(content: any) {
 		this.modalService.open(content);
 	}
-
+    
     dropdownGreenDuration = '';
     dropdownRedDuration = '';
     dropdownMoveDirection = '';

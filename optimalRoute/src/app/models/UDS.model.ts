@@ -16,7 +16,7 @@ export interface UDS {
 export interface Crossroad {
     x: number;
     y: number;
-    trafficLights: TrafficLights | null;
+    trafficLights:TrafficLights | null;
 }
 
 export interface Road {
