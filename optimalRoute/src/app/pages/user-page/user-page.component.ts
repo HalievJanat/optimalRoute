@@ -225,11 +225,11 @@ export class UserPageComponent {
                 this.gridDrowSize();
                 this.visualOptimalRoute(this.gridSize);
 
-                this.crossroadOptimalRoute = [];
-
                 if (!this.crossroadOptimalRoute?.length) {
                     alert('Маршрут не найден!');
                 }
+
+                this.crossroadOptimalRoute = [];
             },
             error: () => {
                 this.toastr.error('Не удалось получить карту с маршрутом', 'Ошибка сервера');
