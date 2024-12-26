@@ -207,6 +207,21 @@ a:hover {
     flex-grow: 2;
 }
 
+.submit-button {
+    width: 80%;
+    height: 50%;
+    background: linear-gradient(
+        to right,
+        #9daaa7 0%,
+        #516662 76%,
+        #728380 100%
+    );
+    border-radius: 10px;
+    border: none;
+    color: white;
+    margin-top: 10px;
+}
+
 .right-panel {
     background-color: #efefef;
     flex-grow: 0;
