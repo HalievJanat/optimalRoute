@@ -91,6 +91,7 @@ export class UserPageComponent {
 
     ngOnInit(): void {
         this.UDS[0] = {
+            id_uds: 0,
             name: '1 карта',
             crossroads: [],
             roads: [],

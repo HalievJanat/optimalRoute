@@ -1032,6 +1032,7 @@ export class AdminPageComponent {
             return;
         }
         let uds: UDS = {
+            id_uds: 0,
             name: 'Samara',
             crossroads: this.crossroadList,
             roads: this.roadList,
