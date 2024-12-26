@@ -1,0 +1,146 @@
+@if (activeRightElement===1) {
+<form [formGroup]="trafficLightAddForm">
+    <div class="col">
+        <div class="col mb-4">
+            <h4>Светофор</h4>
+        </div>
+        <div class="col mb-4">
+            <input
+                type="text"
+                class="form-control"
+                formControlName="time_green_signal"
+                (keypress)="allowOnlyDigitsTrafficLight($event)"
+                placeholder="Длительность зелёной фазы*"
+            />
+            @if (trafficLightAddForm.controls.time_green_signal.hasError('range')) {
+            <div class="col mb-4">
+                <span class="error-span">Длительность должна быть в диапозоне от 20 до 120</span>
+            </div>
+            }
+        </div>
+        <div class="col mb-4">
+            <input
+                type="text"
+                class="form-control"
+                formControlName="time_red_signal"
+                (keypress)="allowOnlyDigitsTrafficLight($event)"
+                placeholder="Длительность красной фазы*"
+            />
+            @if (trafficLightAddForm.controls.time_red_signal.hasError('range')) {
+            <div class="col mb-4">
+                <span class="error-span">Длительность должна быть в диапозоне от 20 до 120</span>
+            </div>
+            }
+        </div>
+        @if (isRequiredTrafficLightError(trafficLightAddForm)) {
+        <div class="col mb-4">
+            <span>* - поля являются обязательными</span>
+        </div>
+        } @if (trafficLightDuplicateValidation($any(trafficLightAddForm))) {
+        <div class="col mb-4">
+            <span>Светофор с такими значениями уже добавлен</span>
+        </div>
+        }
+    </div>
+    <button
+        router
+        class="btn btn-primary submit-button"
+        type="button"
+        (click)="addTrafficLight()"
+        [disabled]="!trafficLightAddForm.valid || trafficLightDuplicateValidation($any(trafficLightAddForm))"
+    >
+        Добавить
+    </button>
+</form>
+} @else if (activeRightElement===2) {
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Длительность зелёной фазы</th>
+            <th scope="col">Длительность красной фазы</th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (trafficLight of trafficLightEditForm.controls.slice((trafficLightsTabPage - 1) * 4, (trafficLightsTabPage - 1) * 4 + 4); track
+        $index) {
+        <tr [formGroup]="trafficLight">
+            <th scope="row">{{ $index + 1 }}</th>
+            <td>
+                <input
+                    type="text"
+                    class="form-control"
+                    formControlName="time_green_signal"
+                    (keypress)="allowOnlyDigitsTrafficLight($event)"
+                    placeholder="Длительность зелёной фазы*"
+                />
+            </td>
+            <td>
+                <input
+                    type="text"
+                    class="form-control"
+                    formControlName="time_red_signal"
+                    (keypress)="allowOnlyDigitsTrafficLight($event)"
+                    placeholder="Длительность красной фазы*"
+                />
+            </td>
+            <td>
+                <div ngbDropdown class="d-inline-block">
+                    <button
+                        type="button"
+                        class="btn btn-outline-primary dropdown-button valid-dropdown-button"
+                        [disabled]="isTrafficLightEdit"
+                        ngbDropdownToggle
+                    ></button>
+                    <div ngbDropdownMenu aria-labelledby="dropdownBasic">
+                        <button
+                            ngbDropdownItem
+                            (click)="
+                                trafficLight.enable();
+                                editTrafficLightNumber = (trafficLightsTabPage - 1) * 4 + $index;
+                                isTrafficLightEdit = true
+                            "
+                        >
+                            Редактировать
+                        </button>
+                        <button ngbDropdownItem (click)="trafficLightDelete($index)">Удалить</button>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+<div class="d-flex justify-content-between p-2">
+    <ngb-pagination [collectionSize]="trafficLightsArrSize" [(page)]="trafficLightsTabPage" [pageSize]="4"> </ngb-pagination>
+</div>
+@if (isTrafficLightEdit) { @if (trafficLightDuplicateValidation($any(trafficLightEditForm.controls[editTrafficLightNumber]),
+editTrafficLightNumber)) {
+<div class="col mb-4">
+    <span class="error-span">Светофор с такими значениями уже добавлен</span>
+</div>
+} @if (trafficLightEditForm.controls[editTrafficLightNumber].controls.time_red_signal.hasError('range') ||
+trafficLightEditForm.controls[editTrafficLightNumber].controls.time_green_signal.hasError('range')) {
+<div class="col mb-4">
+    <span class="error-span">Длительность должна быть в диапозоне от 20 до 120</span>
+</div>
+} @if (isRequiredTrafficLightError(trafficLightEditForm.controls[editTrafficLightNumber])) {
+<div class="col mb-4">
+    <span class="error-span">* - поля являются обязательными</span>
+</div>
+}
+<button
+    router
+    class="btn btn-primary submit-button"
+    type="button"
+    (click)="editTrafficLights()"
+    [disabled]="
+        !trafficLightEditForm.controls[editTrafficLightNumber].valid ||
+        trafficLightDuplicateValidation($any(trafficLightEditForm.controls[editTrafficLightNumber]), editTrafficLightNumber)
+    "
+>
+    Сохранить
+</button>
+<button router class="btn btn-primary submit-button" type="button" (click)="cancelEditTrafficLights()">Отмена</button>
+} }

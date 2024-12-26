@@ -6,6 +6,10 @@ import { CommonModule } from '@angular/common';
 import { NgbDropdownModule, NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { HttpService } from '../../services/http-service.service';
+import { TrafficLights } from '../../models/traffic-light.model';
+import { Street } from '../../models/street.model';
+import { TypeCover } from '../../models/cover-type.model';
+import { DegreeCorruption } from '../../models/police-post.model';
 
 @Component({
     selector: 'app-admin-page',
@@ -18,6 +22,11 @@ import { HttpService } from '../../services/http-service.service';
 export class AdminPageComponent {
     httpService = inject(HttpService);
 
+    trafficLights: TrafficLights[] = [];
+    streets: Street[] = [];
+    coverTypes: TypeCover[] = [];
+    corruptionDegrees: DegreeCorruption[] = [];
+
     constructor(
 		config: NgbModalConfig,
 		private modalService: NgbModal,
@@ -25,6 +34,20 @@ export class AdminPageComponent {
 		// customize default values of modals used by this component tree
 		config.backdrop = 'static';
 		config.keyboard = false;
+
+        this.httpService.getTrafficLights().subscribe((trafficLights) => {
+            this.trafficLights = trafficLights;
+        });
+        this.httpService.getStreets().subscribe((streets) => {
+            this.streets = streets;
+        });
+        this.httpService.getTypeCovers().subscribe((coverTypes) => {
+            this.coverTypes = coverTypes
+        });
+        this.httpService.getDegreeCorruptions().subscribe((corruptionDegrees) => {
+            this.corruptionDegrees = corruptionDegrees;
+        });
+        
 	}
 
     open(content: any) {
@@ -941,20 +964,20 @@ export class AdminPageComponent {
     }
 
     setDropdownTrafficLight(trafficLightIndex: number) {
-        this.dropdownGreenDuration = this.httpService.trafficLigths[trafficLightIndex].time_green_signal.toString();
-        this.dropdownRedDuration = this.httpService.trafficLigths[trafficLightIndex].time_red_signal.toString();
+        this.dropdownGreenDuration = this.trafficLights[trafficLightIndex].time_green_signal.toString();
+        this.dropdownRedDuration = this.trafficLights[trafficLightIndex].time_red_signal.toString();
     }
 
     setDropdownStreet(streetIndex: number) {
-        this.dropdownStreet = this.httpService.streets[streetIndex].name;
+        this.dropdownStreet = this.streets[streetIndex].name;
     }
 
     setDropdownCoverType(coverTypeIndex: number) {
-        this.dropdownCoverType = this.httpService.coverTypes[coverTypeIndex].name;
+        this.dropdownCoverType = this.coverTypes[coverTypeIndex].name;
     }
 
     setDropdownCorruptionCoef(corruptionCoef: number) {
-        this.dropdownCorruptionCoef = this.httpService.corruptionDegrees[corruptionCoef].name;
+        this.dropdownCorruptionCoef = this.corruptionDegrees[corruptionCoef].name;
     }
 
     setDropdownMoveDirectionValue(value: string) {

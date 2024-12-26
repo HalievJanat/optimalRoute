@@ -1,0 +1,25 @@
+<div class="modal-header">
+    <h4 class="modal-title" id="modal-title">Удаление используемого объекта</h4>
+    <button
+        type="button"
+        class="btn-close"
+        aria-label="Close button"
+        aria-describedby="modal-title"
+        (click)="activeModal.dismiss('Cross click')"
+    ></button>
+</div>
+<div class="modal-body">
+    <p>
+        <strong>Вы уверены, что хотите удалить <span class="text-primary">{{ deletedObj }}</span></strong>
+    </p>
+    <p>
+        Удаление этого элемента приведёт к удалению следующих объектов:
+    </p>
+        <span class="text-danger">Ауди</span> <br>
+        <span class="text-danger">Поликарп Поликарпыч</span> <br>
+        <span class="text-danger">Сын Поликарпа Поликарпыча</span>  <br>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss('cancel click')">Отмена</button>
+    <button type="button" ngbAutofocus class="btn btn-danger" (click)="activeModal.close('Ok click')">Удалить</button>
+</div>

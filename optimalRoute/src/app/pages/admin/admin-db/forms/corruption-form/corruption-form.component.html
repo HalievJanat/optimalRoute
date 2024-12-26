@@ -1,0 +1,123 @@
+@if (activeRightElement===1) {
+<form [formGroup]="corruptionDegreeAddForm">
+    <div class="col">
+        <div class="col mb-4">
+            <h4>Степень коррумпированности</h4>
+        </div>
+        <div class="col mb-4">
+            <input type="text" class="form-control" formControlName="name" placeholder="Название степени коррумпированности*" />
+            @if (corruptionDegreeAddForm.controls.name.hasError('stringRange')) {
+            <span>Название степени коррумпированности не должно превышать 30 символов</span>
+            }
+        </div>
+        <div class="col mb-4">
+            <input type="text" class="form-control" formControlName="coefficient_corruption" placeholder="Коэффициент*" />
+            @if (corruptionDegreeAddForm.controls.coefficient_corruption.hasError('range') ||
+            corruptionDegreeAddForm.controls.coefficient_corruption.hasError('floatOnly')) {
+            <span>Коэффициент должен быть положительным числом в диапозоне от 1 до 2</span>
+            }
+        </div>
+        @if (isRequiredCorruptionError(corruptionDegreeAddForm)) {
+        <div class="col mb-4">
+            <span>* - поля являются обязательными</span>
+        </div>
+        } @if (corruptionDegreeDuplicateValidation(corruptionDegreeAddForm)) {
+        <div class="col mb-4">
+            <span>Степень коррумпированности с таким названием уже добавлена</span>
+        </div>
+        }
+    </div>
+    <button
+        router
+        class="btn btn-primary submit-button"
+        type="button"
+        (click)="addCorruptionDegree()"
+        [disabled]="!corruptionDegreeAddForm.valid || corruptionDegreeDuplicateValidation(corruptionDegreeAddForm)"
+    >
+        Добавить
+    </button>
+</form>
+} @else if (activeRightElement===2) {
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Название степени коррумпированности</th>
+            <th scope="col">Коэффициент</th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (corruptionDegree of corruptionDegreeEditForm.controls.slice((corruptionDegreesTabPage - 1) * 4, (corruptionDegreesTabPage - 1)
+        * 4 + 4); track $index) {
+        <tr [formGroup]="corruptionDegree">
+            <th scope="row">{{ $index + 1 }}</th>
+            <td>
+                <input type="text" class="form-control" formControlName="name" placeholder="Название степени коррумпированности*" />
+            </td>
+            <td>
+                <input type="text" class="form-control" formControlName="coefficient_corruption" placeholder="Коэффициент*" />
+            </td>
+            <td>
+                <div ngbDropdown class="d-inline-block">
+                    <button
+                        type="button"
+                        class="btn btn-outline-primary dropdown-button valid-dropdown-button"
+                        [disabled]="isCorruptionDegreeEdit"
+                        ngbDropdownToggle
+                    ></button>
+                    <div ngbDropdownMenu aria-labelledby="dropdownBasic">
+                        <button
+                            ngbDropdownItem
+                            (click)="
+                                corruptionDegree.enable();
+                                editCorruptionDegreeNumber = (corruptionDegreesTabPage - 1) * 4 + $index;
+                                isCorruptionDegreeEdit = true
+                            "
+                        >
+                            Редактировать
+                        </button>
+                        <button ngbDropdownItem (click)="corruptionDegreeDelete($index)">Удалить</button>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+<div class="d-flex justify-content-between p-2">
+    <ngb-pagination [collectionSize]="corruptionDegreeArrSize" [(page)]="corruptionDegreesTabPage" [pageSize]="4"> </ngb-pagination>
+</div>
+@if (isCorruptionDegreeEdit) { @if (corruptionDegreeDuplicateValidation(corruptionDegreeEditForm.controls[editCorruptionDegreeNumber],
+editCorruptionDegreeNumber)) {
+<div class="col mb-4">
+    <span class="error-span">Степень коррумпированности с таким названием уже добавлена</span>
+</div>
+} @if (corruptionDegreeEditForm.controls[editCorruptionDegreeNumber].controls.name.hasError('stringRange')) {
+<div class="col mb-4">
+    <span class="error-span">Название степени коррумпированности не должно превышать 30 символов</span>
+</div>
+} @if (corruptionDegreeEditForm.controls[editCorruptionDegreeNumber].controls.coefficient_corruption.hasError('range') ||
+corruptionDegreeEditForm.controls[editCorruptionDegreeNumber].controls.coefficient_corruption.hasError('floatOnly')) {
+<div class="col mb-4">
+    <span class="error-span">Коэффициент должен быть положительным числом в диапозоне от 1 до 2</span>
+</div>
+} @if (isRequiredCorruptionError(corruptionDegreeEditForm.controls[editCorruptionDegreeNumber])) {
+<div class="col mb-4">
+    <span class="error-span">* - поля являются обязательными</span>
+</div>
+}
+<button
+    router
+    class="btn btn-primary submit-button"
+    type="button"
+    (click)="editCorruptionDegree()"
+    [disabled]="
+        !corruptionDegreeEditForm.controls[editCorruptionDegreeNumber].valid ||
+        corruptionDegreeDuplicateValidation(corruptionDegreeEditForm.controls[editCorruptionDegreeNumber], editCorruptionDegreeNumber)
+    "
+>
+    Сохранить
+</button>
+<button router class="btn btn-primary submit-button" type="button" (click)="cancelEditCorruptionDegree()">Отмена</button>
+} }

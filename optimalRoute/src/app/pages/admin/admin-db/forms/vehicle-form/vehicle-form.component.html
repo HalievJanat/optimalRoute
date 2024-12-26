@@ -1,0 +1,190 @@
+@if (activeRightElement===1) {
+<form [formGroup]="vehicleAddForm">
+    <div class="col">
+        <div class="col mb-4">
+            <h4>Автомобиль</h4>
+        </div>
+        <div class="col mb-4">
+            <input type="text" class="form-control" formControlName="brand" placeholder="Марка*" />
+            @if (vehicleAddForm.controls.brand.hasError('stringRange')) {
+            <span>Марка автомобиля должна быть не больше 15 символов</span>
+            }
+        </div>
+        <div class="col mb-4">
+            <div ngbDropdown class="d-inline-block">
+                <button
+                    type="button"
+                    [class.invalid-dropdown-button]="vehicleAddForm.controls.typeFuel.dirty && vehicleAddForm.controls.typeFuel.invalid"
+                    [class.valid-dropdown-button]="vehicleAddForm.controls.typeFuel.valid"
+                    class="btn btn-outline-primary dropdown-button"
+                    id="dropdownBasic"
+                    (click)="vehicleAddForm.controls.typeFuel.markAsDirty()"
+                    ngbDropdownToggle
+                >
+                    {{ vehicleAddForm.controls.typeFuel.value || 'Вид топлива*' }}
+                </button>
+                <div ngbDropdownMenu aria-labelledby="dropdownBasic">
+                    @for (typeFuel of typeFuels; track typeFuel.name) {
+                    <button ngbDropdownItem (click)="vehicleAddForm.controls.typeFuel.setValue(typeFuel.name)">
+                        {{ typeFuel.name }}
+                    </button>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col mb-4">
+            <input
+                type="text"
+                class="form-control"
+                formControlName="consumption_fuel"
+                (keypress)="allowOnlyDigitsVehicle($event)"
+                placeholder="Расход топлива(л/100 км)*"
+            />
+            @if (vehicleAddForm.controls.consumption_fuel.hasError('range')) {
+            <span>Расход топлива должен быть больше 0 и меньше 20 л/100км</span>
+            }
+        </div>
+        <div class="col mb-4">
+            <input
+                type="text"
+                class="form-control"
+                formControlName="max_speed"
+                (keypress)="allowOnlyDigitsVehicle($event)"
+                placeholder="Максимальная скорость*"
+            />
+            @if (vehicleAddForm.controls.max_speed.hasError('range')) {
+            <span>Скорость должна быть в диапозоне от 1 до 300 км/ч</span>
+            }
+        </div>
+        @if (isRequiredVehicleError(vehicleAddForm)) {
+        <div class="col mb-4">
+            <span>* - поля являются обязательными</span>
+        </div>
+        } @if (vehicleDuplicateValidation(vehicleAddForm)) {
+        <div class="col mb-4">
+            <span>Данный автомобиль уже добавлен</span>
+        </div>
+        }
+    </div>
+    <button
+        router
+        class="btn btn-primary submit-button"
+        type="button"
+        (click)="addVehicle()"
+        [disabled]="!vehicleAddForm.valid || vehicleDuplicateValidation(vehicleAddForm)"
+    >
+        Добавить
+    </button>
+</form>
+} @else if (activeRightElement===2) {
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Марка автомобиля</th>
+            <th scope="col">Вид топлива</th>
+            <th scope="col">Расход топлива (л/100км)</th>
+            <th scope="col">Максимальная скорость</th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (vehicle of vehicleEditForm.controls.slice((vehiclesTabPage - 1) * 4, (vehiclesTabPage - 1) * 4 + 4); track $index) {
+        <tr [formGroup]="vehicle">
+            <th scope="row">{{ $index + 1 }}</th>
+            <td>
+                <input type="text" class="form-control" formControlName="brand" placeholder="Марка*" />
+            </td>
+            <td>
+                <div ngbDropdown class="d-inline-block">
+                    <button type="button" class="btn btn-outline-primary dropdown-button" ngbDropdownToggle [disabled]="vehicle.disabled">
+                        {{ vehicle.controls.typeFuel.value }}
+                    </button>
+                    <div ngbDropdownMenu aria-labelledby="dropdownBasic">
+                        @for (typeFuel of typeFuels; track typeFuel.name) {
+                        <button ngbDropdownItem (click)="vehicle.controls.typeFuel.setValue(typeFuel.name)">
+                            {{ typeFuel.name }}
+                        </button>
+                        }
+                    </div>
+                </div>
+            </td>
+            <td>
+                <input
+                    type="text"
+                    class="form-control"
+                    formControlName="consumption_fuel"
+                    (keypress)="allowOnlyDigitsVehicle($event)"
+                    placeholder="Расход топлива(л/100 км)*"
+                />
+            </td>
+            <td>
+                <input
+                    type="text"
+                    class="form-control"
+                    formControlName="max_speed"
+                    (keypress)="allowOnlyDigitsVehicle($event)"
+                    placeholder="Максимальная скорость*"
+                />
+            </td>
+            <td>
+                <div ngbDropdown class="d-inline-block">
+                    <button
+                        type="button"
+                        class="btn btn-outline-primary dropdown-button valid-dropdown-button"
+                        [disabled]="isVehicleEdit"
+                        ngbDropdownToggle
+                    ></button>
+                    <div ngbDropdownMenu aria-labelledby="dropdownBasic">
+                        <button
+                            ngbDropdownItem
+                            (click)="vehicle.enable(); editVehicleNumber = (vehiclesTabPage - 1) * 4 + $index; isVehicleEdit = true"
+                        >
+                            Редактировать
+                        </button>
+                        <button ngbDropdownItem (click)="vehicleDelete($index)">Удалить</button>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+<div class="d-flex justify-content-between p-2">
+    <ngb-pagination [collectionSize]="vehiclesArrSize" [(page)]="vehiclesTabPage" [pageSize]="4"> </ngb-pagination>
+</div>
+@if (isVehicleEdit) { @if (vehicleDuplicateValidation(vehicleEditForm.controls[editVehicleNumber], editVehicleNumber)) {
+<div class="col mb-4">
+    <span class="error-span">Данный автомобиль уже добавлен</span>
+</div>
+} @if (vehicleEditForm.controls[editVehicleNumber].controls.brand.hasError('stringRange')) {
+<div class="col mb-4">
+    <span class="error-span">Марка автомобиля должна быть не больше 15 символов</span>
+</div>
+} @if (vehicleEditForm.controls[editVehicleNumber].controls.consumption_fuel.hasError('range')) {
+<div class="col mb-4">
+    <span class="error-span">Расход топлива должен быть больше 0 и меньше 20 л/100км</span>
+</div>
+} @if (vehicleEditForm.controls[editVehicleNumber].controls.max_speed.hasError('range')) {
+<div class="col mb-4">
+    <span class="error-span">Скорость должна быть в диапозоне от 1 до 300 км/ч</span>
+</div>
+} @if (isRequiredVehicleError(vehicleEditForm.controls[editVehicleNumber])) {
+<div class="col mb-4">
+    <span class="error-span">* - поля являются обязательными</span>
+</div>
+}
+<button
+    router
+    class="btn btn-primary submit-button"
+    type="button"
+    (click)="editVehicle()"
+    [disabled]="
+        !vehicleEditForm.controls[editVehicleNumber].valid ||
+        vehicleDuplicateValidation(vehicleEditForm.controls[editVehicleNumber], editVehicleNumber)
+    "
+>
+    Сохранить
+</button>
+<button router class="btn btn-primary submit-button" type="button" (click)="cancelEditVehicle()">Отмена</button>
+} }

@@ -1,0 +1,127 @@
+@if (activeRightElement===1) {
+<form [formGroup]="fineTypeAddForm">
+    <div class="col">
+        <div class="col mb-4">
+            <h4>Штраф</h4>
+        </div>
+        <div class="col mb-4">
+            <input type="text" class="form-control" formControlName="name" placeholder="Название штрафа*" />
+            @if (fineTypeAddForm.controls.name.hasError('stringRange')) {
+            <span>Название штрафа должно быть не больше 40 символов</span>
+            }
+        </div>
+        <div class="col mb-4">
+            <input
+                type="text"
+                class="form-control"
+                formControlName="price"
+                (keypress)="allowOnlyDigitsFine($event)"
+                placeholder="Стоимость штрафа*"
+            />
+            @if (fineTypeAddForm.controls.price.hasError('range')) {
+            <span>Стоимость штрафа должна быть в диапозоне от 300 до 20000 руб/л</span>
+            }
+        </div>
+        @if (isRequiredFineError(fineTypeAddForm)) {
+        <div class="col mb-4">
+            <span>* - поля являются обязательными</span>
+        </div>
+        } @if (fineTypeDuplicateValidation(fineTypeAddForm)) {
+        <div class="col mb-4">
+            <span>Штраф с таким названием уже добавлен</span>
+        </div>
+        }
+    </div>
+    <button
+        router
+        class="btn btn-primary submit-button"
+        type="button"
+        (click)="addFineType()"
+        [disabled]="!fineTypeAddForm.valid || fineTypeDuplicateValidation(fineTypeAddForm)"
+    >
+        Добавить
+    </button>
+</form>
+} @else if (activeRightElement===2) {
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Название штрафа</th>
+            <th scope="col">Стоимость штрафа</th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (fineType of fineTypeEditForm.controls.slice((fineTypeTabPage - 1) * 4, (fineTypeTabPage - 1) * 4 + 4); track $index) {
+        <tr [formGroup]="fineType">
+            <th scope="row">{{ $index + 1 }}</th>
+            <td>
+                <input type="text" class="form-control" formControlName="name" placeholder="Название штрафа*" />
+            </td>
+            <td>
+                <input
+                    type="text"
+                    class="form-control"
+                    formControlName="price"
+                    (keypress)="allowOnlyDigitsFine($event)"
+                    placeholder="Стоимость штрафа*"
+                />
+            </td>
+            <td>
+                <div ngbDropdown class="d-inline-block">
+                    <button
+                        type="button"
+                        class="btn btn-outline-primary dropdown-button valid-dropdown-button"
+                        [disabled]="isFineTypeEdit"
+                        ngbDropdownToggle
+                    ></button>
+                    <div ngbDropdownMenu aria-labelledby="dropdownBasic">
+                        <button
+                            ngbDropdownItem
+                            (click)="fineType.enable(); editFineTypeNumber = (fineTypeTabPage - 1) * 4 + $index; isFineTypeEdit = true"
+                        >
+                            Редактировать
+                        </button>
+                        <button ngbDropdownItem (click)="fineTypeDelete($index)">Удалить</button>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+<div class="d-flex justify-content-between p-2">
+    <ngb-pagination [collectionSize]="fineTypesArrSize" [(page)]="fineTypeTabPage" [pageSize]="4"> </ngb-pagination>
+</div>
+@if (isFineTypeEdit) { @if (fineTypeDuplicateValidation(fineTypeEditForm.controls[editFineTypeNumber], editFineTypeNumber)) {
+<div class="col mb-4">
+    <span class="error-span">Штраф с таким названием уже добавлен</span>
+</div>
+} @if (fineTypeEditForm.controls[editFineTypeNumber].controls.name.hasError('stringRange')) {
+<div class="col mb-4">
+    <span>Название штрафа должно быть не больше 40 символов</span>
+</div>
+} @if (fineTypeEditForm.controls[editFineTypeNumber].controls.price.hasError('range')) {
+<div class="col mb-4">
+    <span class="error-span">Стоимость штрафа должна быть в диапозоне от 300 до 20000 руб/л</span>
+</div>
+} @if (isRequiredFineError(fineTypeEditForm.controls[editFineTypeNumber])) {
+<div class="col mb-4">
+    <span class="error-span">* - поля являются обязательными</span>
+</div>
+}
+<button
+    router
+    class="btn btn-primary submit-button"
+    type="button"
+    (click)="editFineTypes()"
+    [disabled]="
+        !fineTypeEditForm.controls[editFineTypeNumber].valid ||
+        fineTypeDuplicateValidation(fineTypeEditForm.controls[editFineTypeNumber], editFineTypeNumber)
+    "
+>
+    Сохранить
+</button>
+<button router class="btn btn-primary submit-button" type="button" (click)="cancelEditFineTypes()">Отмена</button>
+} }
