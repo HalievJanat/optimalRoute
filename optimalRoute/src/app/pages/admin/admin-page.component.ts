@@ -1150,6 +1150,9 @@ export class AdminPageComponent {
                 this.currentUDS = this.UDSList[index];
                 this.crossroadList = this.currentUDS.crossroads;
                 this.roadList = this.currentUDS.roads;
+
+                this.gridDrowSize();
+                this.drawScaleCanvas(this.gridSize);
             })
             .catch(() => {});
     }
