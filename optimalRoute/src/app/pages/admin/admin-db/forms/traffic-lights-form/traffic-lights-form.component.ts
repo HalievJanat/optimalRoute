@@ -100,40 +100,54 @@ export class TrafficLightsFormComponent implements OnInit, AfterViewInit {
             time_red_signal: control.time_red_signal.value as unknown as number,
         };
 
-        if (this.httpService.addMapDbValue<TrafficLights>(addedTrafficLight, 'traffic-light')) {
-            this.trafficLights.push(addedTrafficLight);
+        this.httpService.addMapDbValue<TrafficLights>(addedTrafficLight, 'traffic-light').subscribe({
+            next: () => {
+                this.trafficLights.push(addedTrafficLight);
 
-            const addedTrafficLightGroup = this.fb.nonNullable.group({
-                time_green_signal: [control.time_green_signal.value as number | null, [Validators.required, rangeValidator(20, 120)]],
-                time_red_signal: [control.time_red_signal.value as number | null, [Validators.required, rangeValidator(20, 120)]],
-            });
-            addedTrafficLightGroup.disable();
+                const addedTrafficLightGroup = this.fb.nonNullable.group({
+                    time_green_signal: [control.time_green_signal.value as number | null, [Validators.required, rangeValidator(20, 120)]],
+                    time_red_signal: [control.time_red_signal.value as number | null, [Validators.required, rangeValidator(20, 120)]],
+                });
+                addedTrafficLightGroup.disable();
 
-            this.trafficLightEditForm.push(addedTrafficLightGroup);
+                this.trafficLightEditForm.push(addedTrafficLightGroup);
 
-            this.trafficLightAddForm.reset();
+                this.trafficLightAddForm.reset();
 
-            this.trafficLightsArrSize++;
-        } else {
-            this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
-            this.trafficLightAddForm.reset();
-        }
+                this.trafficLightsArrSize++;
+            },
+            error: () => {
+                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.trafficLightAddForm.reset();
+            },
+        });
     }
 
-    //TODO
     editTrafficLights() {
         const control = this.trafficLightEditForm.controls[this.editTrafficLightNumber].controls;
 
         const id = this.trafficLights[this.editTrafficLightNumber].id_traffic_light;
 
-        this.trafficLights[this.editTrafficLightNumber] = {
+        const editTrafficLight = {
             id_traffic_light: id,
             time_green_signal: control.time_green_signal.value as number,
             time_red_signal: control.time_red_signal.value as number,
         };
 
-        this.isTrafficLightEdit = false;
-        this.trafficLightEditForm.controls[this.editTrafficLightNumber].disable();
+        this.httpService.updateMapDbValue<TrafficLights>(editTrafficLight, 'traffic-light').subscribe({
+            next: () => {
+                this.trafficLights[this.editTrafficLightNumber] = editTrafficLight;
+
+                this.isTrafficLightEdit = false;
+                this.trafficLightEditForm.controls[this.editTrafficLightNumber].disable();
+            },
+            error: () => {
+                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.cancelEditTrafficLights();
+                this.isTrafficLightEdit = false;
+                this.trafficLightEditForm.controls[this.editTrafficLightNumber].disable();
+            },
+        });
     }
 
     cancelEditTrafficLights() {
@@ -146,11 +160,17 @@ export class TrafficLightsFormComponent implements OnInit, AfterViewInit {
         this.trafficLightEditForm.controls[this.editTrafficLightNumber].disable();
     }
 
-    //TODO
     trafficLightDelete(index: number) {
-        this.trafficLights.splice(index, 1);
-        this.trafficLightEditForm.controls.splice(index, 1);
-        this.trafficLightsArrSize--;
+        this.httpService.deleteMapDbValue(this.trafficLights, 'traffic-light').subscribe({
+            next: () => {
+                this.trafficLights.splice(index, 1);
+                this.trafficLightEditForm.controls.splice(index, 1);
+                this.trafficLightsArrSize--;
+            },
+            error: () => {
+                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+            },
+        });
     }
 
     trafficLightDuplicateValidation(
