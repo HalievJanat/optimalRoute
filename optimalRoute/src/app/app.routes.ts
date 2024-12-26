@@ -5,6 +5,7 @@ import { LoginComponent } from './pages/auth/login/login.component';
 import { AdminDbComponent } from './pages/admin/admin-db/admin-db.component';
 import { AdminPageComponent } from './pages/admin/admin-page.component';
 import { UserPageComponent } from './pages/user-page/user-page.component';
+import { SystemPageComponent } from './pages/system-page/system-page.component';
 
 export const routes: Routes = [
     {
@@ -30,5 +31,9 @@ export const routes: Routes = [
     {
         path: 'user-page',
         component: UserPageComponent,
+    },
+    {
+        path: 'system-page',
+        component: SystemPageComponent,
     }
 ];

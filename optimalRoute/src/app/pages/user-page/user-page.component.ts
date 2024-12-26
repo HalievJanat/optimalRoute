@@ -69,13 +69,13 @@ export class UserPageComponent {
     indexSelectedElement = -1;
     isFirstClick = true;
 
-    dropDownDriver!: Driver | undefined;
+    dropDownDriver?: Driver;
 
     crossroadList: Crossroad[] = [];
     roadList: Road[] = [];
-    crossroadOptimalRoute: number[] | undefined = [];
+    crossroadOptimalRoute?: number[] = [];
 
-    route!: Route | undefined;
+    route?: Route;
 
     start_crossroad: number = -1;
     end_crossroad: number = -1;

@@ -1,0 +1,40 @@
+:host {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+a {
+    color: white;
+}
+
+a:hover {
+    color: gray;
+}
+
+.editor-container {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    width: 100%;
+
+    .left-panel {
+        background-color: #efefef;
+        flex-grow: 0;
+        width: 22%;
+    }
+
+    .graph-editor {
+        flex-grow: 2;
+        width: 56%;
+    }
+    
+    .right-panel {
+        background-color: #efefef;
+        flex-grow: 0;
+        width: 22%;
+    }
+}
+
+
+
