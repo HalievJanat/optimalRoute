@@ -18,7 +18,6 @@ import { Crossroad, Road, UDS } from '../../models/UDS.model';
     templateUrl: './admin-page.component.html',
     styleUrl: './admin-page.component.scss',
 })
-
 export class AdminPageComponent {
     httpService = inject(HttpService);
 
@@ -27,32 +26,28 @@ export class AdminPageComponent {
     coverTypes: TypeCover[] = [];
     corruptionDegrees: DegreeCorruption[] = [];
 
-    constructor(
-		config: NgbModalConfig,
-		private modalService: NgbModal,
-	) {
-		// customize default values of modals used by this component tree
-		config.backdrop = 'static';
-		config.keyboard = false;
+    constructor(config: NgbModalConfig, private modalService: NgbModal) {
+        // customize default values of modals used by this component tree
+        config.backdrop = 'static';
+        config.keyboard = false;
 
-        this.httpService.getTrafficLights().subscribe((trafficLights) => {
+        this.httpService.getTrafficLights().subscribe(trafficLights => {
             this.trafficLights = trafficLights;
         });
-        this.httpService.getStreets().subscribe((streets) => {
+        this.httpService.getStreets().subscribe(streets => {
             this.streets = streets;
         });
-        this.httpService.getTypeCovers().subscribe((coverTypes) => {
-            this.coverTypes = coverTypes
+        this.httpService.getTypeCovers().subscribe(coverTypes => {
+            this.coverTypes = coverTypes;
         });
-        this.httpService.getDegreeCorruptions().subscribe((corruptionDegrees) => {
+        this.httpService.getDegreeCorruptions().subscribe(corruptionDegrees => {
             this.corruptionDegrees = corruptionDegrees;
         });
-        
-	}
+    }
 
     open(content: any) {
-		this.modalService.open(content);
-	}
+        this.modalService.open(content);
+    }
 
     dropdownGreenDuration = '';
     dropdownRedDuration = '';
@@ -136,10 +131,7 @@ export class AdminPageComponent {
     private gridDrowSize(): void {
         if (this.isRightPanelOpen == true && this.isLeftPanelOpen == true) {
             this.createStage((window.innerWidth / 100) * 56);
-        } else if (
-            this.isRightPanelOpen == true ||
-            this.isLeftPanelOpen == true
-        ) {
+        } else if (this.isRightPanelOpen == true || this.isLeftPanelOpen == true) {
             this.createStage((window.innerWidth / 100) * 75);
         } else this.createStage((window.innerWidth / 100) * 94);
     }
@@ -207,7 +199,7 @@ export class AdminPageComponent {
         this.dropdownTrafficSign = '';
         this.dropdownCorruptionCoef = '';
         this.isContextMenuVisibleCrossroad = false; // Показывать ли меню
-        this.isContextMenuVisibleRoad = false;      // Показывать ли 
+        this.isContextMenuVisibleRoad = false; // Показывать ли
         this.isLeftClickCrossroad = false;
         this.isLeftClickRoad = false;
         this.isAddTrafficLights = false;
@@ -223,17 +215,14 @@ export class AdminPageComponent {
 
         if (this.isCrossroadAdd == true) {
             for (let i = 0; i < this.crossroadList.length; i++) {
-                if (
-                    this.crossroadList[i].x == X &&
-                    this.crossroadList[i].y == Y
-                ) {
-                    alert("Здесь нельзя установить перекресток");
+                if (this.crossroadList[i].x == X && this.crossroadList[i].y == Y) {
+                    alert('Здесь нельзя установить перекресток');
                     return;
                 }
             }
 
-            if(!this.checkIntersectionRoad(X, Y)) {
-                alert("Здесь нельзя установить перекресток");
+            if (!this.checkIntersectionRoad(X, Y)) {
+                alert('Здесь нельзя установить перекресток');
                 return;
             }
 
@@ -256,7 +245,7 @@ export class AdminPageComponent {
             let crossroad = {
                 x: X,
                 y: Y,
-                trafficLights: null
+                trafficLights: null,
             };
             this.crossroadList.push(crossroad);
             const jsonCrossroad: string = JSON.stringify(this.crossroadList);
@@ -264,10 +253,7 @@ export class AdminPageComponent {
         } else if (this.isRoadAdd == true && this.indexCrossroad1 >= 0) {
             let i = 0;
             while (i < this.crossroadList.length) {
-                if (
-                    this.crossroadList[i].x == X &&
-                    this.crossroadList[i].y == Y
-                ) {
+                if (this.crossroadList[i].x == X && this.crossroadList[i].y == Y) {
                     break;
                 }
                 i++;
@@ -283,10 +269,7 @@ export class AdminPageComponent {
             let j = 0;
             let countIndex = 1;
             while (j < this.roadList.length) {
-                if (
-                    this.roadList[j].crossroad_1 == i ||
-                    this.roadList[j].crossroad_2 == i
-                ) {
+                if (this.roadList[j].crossroad_1 == i || this.roadList[j].crossroad_2 == i) {
                     countIndex++;
                 }
                 if (countIndex > 4) {
@@ -298,10 +281,8 @@ export class AdminPageComponent {
 
             for (let y = 0; y < this.roadList.length; y++) {
                 if (
-                    (this.roadList[y].crossroad_1 == this.indexCrossroad1 &&
-                        this.roadList[y].crossroad_2 == i) ||
-                    (this.roadList[y].crossroad_2 == this.indexCrossroad1 &&
-                        this.roadList[y].crossroad_1 == i)
+                    (this.roadList[y].crossroad_1 == this.indexCrossroad1 && this.roadList[y].crossroad_2 == i) ||
+                    (this.roadList[y].crossroad_2 == this.indexCrossroad1 && this.roadList[y].crossroad_1 == i)
                 ) {
                     alert('Нельзя добавить прогон!!!');
                     this.isRoadAdd = false;
@@ -310,41 +291,38 @@ export class AdminPageComponent {
             }
 
             //this.isLeftClickRoad = true;
-            
-            let ky = this.calculateKLine(
-                this.crossroadList[this.indexCrossroad1].x,
-                this.crossroadList[this.indexCrossroad1].y,
-                X,
-                Y
-            );
-            let by = this.calculateBLine(
-                this.crossroadList[this.indexCrossroad1].y,
-                ky,
-                this.crossroadList[this.indexCrossroad1].x
-            );
 
-            if(!this.checkIntersectionCrossroad(ky, by, this.indexCrossroad1, i)) {
-                alert("Здесь нельзя установить прогон");
+            let ky = this.calculateKLine(this.crossroadList[this.indexCrossroad1].x, this.crossroadList[this.indexCrossroad1].y, X, Y);
+            let by = this.calculateBLine(this.crossroadList[this.indexCrossroad1].y, ky, this.crossroadList[this.indexCrossroad1].x);
+
+            if (!this.checkIntersectionCrossroad(ky, by, this.indexCrossroad1, i)) {
+                alert('Здесь нельзя установить прогон');
                 return;
             }
             let x1;
             let x2;
             let y1;
             let y2;
-            
+
             if (ky != Infinity && ky != -Infinity) {
-                x1 = this.calculateXCoordinate(ky, by, this.crossroadList[this.indexCrossroad1].x,
-                    this.crossroadList[this.indexCrossroad1].y, this.radius, this.crossroadList[this.indexCrossroad1].x > X);
+                x1 = this.calculateXCoordinate(
+                    ky,
+                    by,
+                    this.crossroadList[this.indexCrossroad1].x,
+                    this.crossroadList[this.indexCrossroad1].y,
+                    this.radius,
+                    this.crossroadList[this.indexCrossroad1].x > X
+                );
                 x2 = this.calculateXCoordinate(ky, by, X, Y, this.radius, this.crossroadList[this.indexCrossroad1].x < X);
                 y1 = this.calculateYCoordinate(ky, by, x1);
                 y2 = this.calculateYCoordinate(ky, by, x2);
-            } else if (this.crossroadList[this.indexCrossroad1].y > Y){
-                x1 = this.crossroadList[this.indexCrossroad1].x; 
+            } else if (this.crossroadList[this.indexCrossroad1].y > Y) {
+                x1 = this.crossroadList[this.indexCrossroad1].x;
                 x2 = X;
                 y1 = this.crossroadList[this.indexCrossroad1].y - this.radius;
                 y2 = Y + this.radius;
             } else {
-                x1 = this.crossroadList[this.indexCrossroad1].x; 
+                x1 = this.crossroadList[this.indexCrossroad1].x;
                 x2 = X;
                 y1 = this.crossroadList[this.indexCrossroad1].y + this.radius;
                 y2 = Y - this.radius;
@@ -353,24 +331,17 @@ export class AdminPageComponent {
             let road: Road = {
                 crossroad_1: this.indexCrossroad1,
                 crossroad_2: i,
-                street: {id_street: 0, name: ''},
+                street: { id_street: 0, name: '' },
                 traffic_signs: null,
                 police_post: null,
-                typeCover: {id_type_cover: 0, name: '', coefficient_braking: 1},
+                typeCover: { id_type_cover: 0, name: '', coefficient_braking: 1 },
                 direction: 1,
-                length: 1
+                length: 1,
             };
-            this.drawLine(
-                x1,
-                y1,
-                x2,
-                y2,
-                '#000',
-                road.direction
-            );
+            this.drawLine(x1, y1, x2, y2, '#000', road.direction);
 
             this.isRoadAdd = false;
-           
+
             this.roadList.push(road);
             const jsonRoad: string = JSON.stringify(this.roadList);
             console.log(jsonRoad);
@@ -378,10 +349,7 @@ export class AdminPageComponent {
         } else if (this.isRoadAdd == true) {
             let i = 0;
             while (i < this.crossroadList.length) {
-                if (
-                    this.crossroadList[i].x == X &&
-                    this.crossroadList[i].y == Y
-                ) {
+                if (this.crossroadList[i].x == X && this.crossroadList[i].y == Y) {
                     break;
                 }
                 i++;
@@ -395,10 +363,7 @@ export class AdminPageComponent {
             let j = 0;
             let countIndex = 1;
             while (j < this.roadList.length) {
-                if (
-                    this.roadList[j].crossroad_1 == i ||
-                    this.roadList[j].crossroad_2 == i
-                ) {
+                if (this.roadList[j].crossroad_1 == i || this.roadList[j].crossroad_2 == i) {
                     countIndex++;
                 }
                 if (countIndex > 4) {
@@ -411,7 +376,7 @@ export class AdminPageComponent {
         }
     }
 
-    checkIntersectionCrossroad(ky: number, by:number, crossroad1:number, crossroad2:number): boolean { 
+    checkIntersectionCrossroad(ky: number, by: number, crossroad1: number, crossroad2: number): boolean {
         let x1 = this.crossroadList[crossroad1].x;
         let y1 = this.crossroadList[crossroad1].y;
         let x2 = this.crossroadList[crossroad2].x;
@@ -432,7 +397,7 @@ export class AdminPageComponent {
             let y = this.crossroadList[i].y;
             if (x > x1 || x < x2 || y > y1 || y < y2) continue;
             if (ky != Infinity && ky != -Infinity) {
-                if(this.calculateXCoordinate(ky, by, x, y, this.radius, true) != -1000) return false;
+                if (this.calculateXCoordinate(ky, by, x, y, this.radius, true) != -1000) return false;
             } else if (x == x1) {
                 return false;
             }
@@ -440,24 +405,15 @@ export class AdminPageComponent {
         return true;
     }
 
-    checkIntersectionRoad(x: number, y:number): boolean {
-        for(let i = 0; i <this.roadList.length; i++) {
+    checkIntersectionRoad(x: number, y: number): boolean {
+        for (let i = 0; i < this.roadList.length; i++) {
             let x1 = this.crossroadList[this.roadList[i].crossroad_1].x;
             let x2 = this.crossroadList[this.roadList[i].crossroad_2].x;
             let y1 = this.crossroadList[this.roadList[i].crossroad_1].y;
             let y2 = this.crossroadList[this.roadList[i].crossroad_2].y;
 
-            let ky = this.calculateKLine(
-                x1,
-                y1,
-                x2,
-                y2,
-            );
-            let by = this.calculateBLine(
-                y1,
-                ky,
-                x1
-            );
+            let ky = this.calculateKLine(x1, y1, x2, y2);
+            let by = this.calculateBLine(y1, ky, x1);
 
             if (x1 < x2) {
                 x1 = x2;
@@ -469,9 +425,9 @@ export class AdminPageComponent {
             }
 
             if (x > x1 || x < x2 || y > y1 || y < y2) continue;
-            
+
             if (ky != Infinity && ky != -Infinity) {
-                if(this.calculateXCoordinate(ky, by, x, y, this.radius, true) != -1000) return false;
+                if (this.calculateXCoordinate(ky, by, x, y, this.radius, true) != -1000) return false;
             } else if (x == x1) {
                 return false;
             }
@@ -575,13 +531,9 @@ export class AdminPageComponent {
 
     private drawScaleCanvas(tempGridSize: number): void {
         for (let i = 0; i < this.crossroadList.length; i++) {
-            this. radius = (this.gridSize * 2) / 5;
-            this.crossroadList[i].x =
-                Math.round(this.crossroadList[i].x / tempGridSize) *
-                this.gridSize;
-            this.crossroadList[i].y =
-                Math.round(this.crossroadList[i].y / tempGridSize) *
-                this.gridSize;
+            this.radius = (this.gridSize * 2) / 5;
+            this.crossroadList[i].x = Math.round(this.crossroadList[i].x / tempGridSize) * this.gridSize;
+            this.crossroadList[i].y = Math.round(this.crossroadList[i].y / tempGridSize) * this.gridSize;
 
             const circle = new Konva.Circle({
                 x: this.crossroadList[i].x,
@@ -614,36 +566,39 @@ export class AdminPageComponent {
             let x2;
             let y1;
             let y2;
-            
+
             if (ky != Infinity && ky != -Infinity) {
-                x1 = this.calculateXCoordinate(ky, by, this.crossroadList[this.roadList[i].crossroad_1].x,
-                    this.crossroadList[this.roadList[i].crossroad_1].y, this.radius, 
-                    this.crossroadList[this.roadList[i].crossroad_1].x > this.crossroadList[this.roadList[i].crossroad_2].x);
-                x2 = this.calculateXCoordinate(ky, by,this.crossroadList[this.roadList[i].crossroad_2].x,
-                    this.crossroadList[this.roadList[i].crossroad_2].y, this.radius,
-                    this.crossroadList[this.roadList[i].crossroad_1].x < this.crossroadList[this.roadList[i].crossroad_2].x);
+                x1 = this.calculateXCoordinate(
+                    ky,
+                    by,
+                    this.crossroadList[this.roadList[i].crossroad_1].x,
+                    this.crossroadList[this.roadList[i].crossroad_1].y,
+                    this.radius,
+                    this.crossroadList[this.roadList[i].crossroad_1].x > this.crossroadList[this.roadList[i].crossroad_2].x
+                );
+                x2 = this.calculateXCoordinate(
+                    ky,
+                    by,
+                    this.crossroadList[this.roadList[i].crossroad_2].x,
+                    this.crossroadList[this.roadList[i].crossroad_2].y,
+                    this.radius,
+                    this.crossroadList[this.roadList[i].crossroad_1].x < this.crossroadList[this.roadList[i].crossroad_2].x
+                );
                 y1 = this.calculateYCoordinate(ky, by, x1);
                 y2 = this.calculateYCoordinate(ky, by, x2);
-            } else if (this.crossroadList[this.roadList[i].crossroad_1].y > this.crossroadList[this.roadList[i].crossroad_2].y){
-                x1 = this.crossroadList[this.roadList[i].crossroad_1].x; 
+            } else if (this.crossroadList[this.roadList[i].crossroad_1].y > this.crossroadList[this.roadList[i].crossroad_2].y) {
+                x1 = this.crossroadList[this.roadList[i].crossroad_1].x;
                 x2 = this.crossroadList[this.roadList[i].crossroad_2].x;
                 y1 = this.crossroadList[this.roadList[i].crossroad_1].y - this.radius;
                 y2 = this.crossroadList[this.roadList[i].crossroad_2].y + this.radius;
             } else {
-                x1 = this.crossroadList[this.roadList[i].crossroad_1].x; 
+                x1 = this.crossroadList[this.roadList[i].crossroad_1].x;
                 x2 = this.crossroadList[this.roadList[i].crossroad_2].x;
                 y1 = this.crossroadList[this.roadList[i].crossroad_1].y + this.radius;
-                y2 = this.crossroadList[this.roadList[i].crossroad_2].y - this.radius
+                y2 = this.crossroadList[this.roadList[i].crossroad_2].y - this.radius;
             }
 
-            this.drawLine(
-                x1,
-                y1,
-                x2,
-                y2,
-                '#000',
-                this.roadList[i].direction
-            );
+            this.drawLine(x1, y1, x2, y2, '#000', this.roadList[i].direction);
         }
     }
 
@@ -663,11 +618,10 @@ export class AdminPageComponent {
                     stroke: stroke,
                     strokeWidth: 1,
                     fill: 'black',
-                    pointerAtBeginning: true
+                    pointerAtBeginning: true,
                 })
             );
-        }
-            else if (direction == 1) {
+        } else if (direction == 1) {
             this.layer.add(
                 new Konva.Arrow({
                     points: [x1, y1, x2, y2],
@@ -682,37 +636,37 @@ export class AdminPageComponent {
                     points: [x2, y2, x1, y1],
                     stroke: stroke,
                     strokeWidth: 1,
-                    fill: 'black'
+                    fill: 'black',
                 })
             );
-        }      
+        }
     }
 
     private calculateKLine(x1: number, y1: number, x2: number, y2: number): number {
-        return (y1 - y2)/  (x1 -  x2);
+        return (y1 - y2) / (x1 - x2);
     }
 
     private calculateBLine(y: number, k: number, x: number): number {
         return y - k * x;
     }
 
-    private calculateXCoordinate(ky:number, by:number, xc:number, yc:number, r:number, flag:boolean): number {
-        let a = 1 + Math.pow(ky,2);
-        let b = 2*ky*by - 2*ky*yc - 2*xc;
-        let c = Math.pow(xc,2) +  Math.pow(yc,2) - Math.pow(r,2) + Math.pow(by,2) - 2*by*yc;
+    private calculateXCoordinate(ky: number, by: number, xc: number, yc: number, r: number, flag: boolean): number {
+        let a = 1 + Math.pow(ky, 2);
+        let b = 2 * ky * by - 2 * ky * yc - 2 * xc;
+        let c = Math.pow(xc, 2) + Math.pow(yc, 2) - Math.pow(r, 2) + Math.pow(by, 2) - 2 * by * yc;
 
-        let d = Math.pow(b,2) - 4*a*c;
-        if (d < 0 ) return -1000;
+        let d = Math.pow(b, 2) - 4 * a * c;
+        if (d < 0) return -1000;
         let x;
 
-        if (flag) x = (-b - Math.sqrt(d))/(2*a);
-        else x = (-b + Math.sqrt(d))/(2*a);
+        if (flag) x = (-b - Math.sqrt(d)) / (2 * a);
+        else x = (-b + Math.sqrt(d)) / (2 * a);
 
         return x;
     }
 
-    private calculateYCoordinate(k:number, b:number, x:number): number {
-        return k*x + b;
+    private calculateYCoordinate(k: number, b: number, x: number): number {
+        return k * x + b;
     }
 
     openContextMenu(event: MouseEvent): void {
@@ -731,14 +685,14 @@ export class AdminPageComponent {
         this.isAddPolicePost = false;
         this.isAddTrafficSigns = false;
         event.preventDefault(); // Отключаем стандартное меню браузера
-        if (this.defineClickCrossroad(event.layerX, event.layerY)) {    
+        if (this.defineClickCrossroad(event.layerX, event.layerY)) {
             this.isContextMenuVisibleCrossroad = true;
             this.isContextMenuVisibleRoad = false;
             this.contextMenuPosition = {
                 x: event.clientX, // Горизонтальная позиция мыши
                 y: event.clientY, // Вертикальная позиция мыши
             };
-        } else if (this.defineClickRoad(event.layerX, event.layerY)) {    
+        } else if (this.defineClickRoad(event.layerX, event.layerY)) {
             this.isContextMenuVisibleRoad = true;
             this.isContextMenuVisibleCrossroad = false;
             this.contextMenuPosition = {
@@ -759,7 +713,7 @@ export class AdminPageComponent {
         this.crossroadList.splice(this.indexSelectedElement, 1);
 
         let i = 0;
-        while (i <this.roadList.length) {
+        while (i < this.roadList.length) {
             if (this.roadList[i].crossroad_1 > this.indexSelectedElement) {
                 this.roadList[i].crossroad_1 -= 1;
             } else if (this.roadList[i].crossroad_1 == this.indexSelectedElement) {
@@ -797,7 +751,7 @@ export class AdminPageComponent {
         this.dropdownCorruptionCoef = '';
         this.isAddTrafficLights = true;
         this.rightPanelHeaderText = 'Добавить светофор';
-    
+
         this.closeContextMenu();
     }
 
@@ -869,12 +823,12 @@ export class AdminPageComponent {
         this.closeContextMenu();
     }
 
-    private defineClickCrossroad(x: number, y: number): boolean {    
+    private defineClickCrossroad(x: number, y: number): boolean {
         for (let i = 0; i < this.crossroadList.length; i++) {
             let x0 = this.crossroadList[i].x;
             let y0 = this.crossroadList[i].y;
-            let r = Math.pow((x - x0), 2) + Math.pow((y - y0), 2); 
-            if (r <= Math.pow(this.radius,2)) {
+            let r = Math.pow(x - x0, 2) + Math.pow(y - y0, 2);
+            if (r <= Math.pow(this.radius, 2)) {
                 this.indexSelectedElement = i;
                 return true;
             }
@@ -882,7 +836,7 @@ export class AdminPageComponent {
         return false;
     }
 
-    private defineClickRoad(x: number, y: number): boolean {    
+    private defineClickRoad(x: number, y: number): boolean {
         for (let i = 0; i < this.roadList.length; i++) {
             let k = this.calculateKLine(
                 this.crossroadList[this.roadList[i].crossroad_1].x,
@@ -895,7 +849,7 @@ export class AdminPageComponent {
                 k,
                 this.crossroadList[this.roadList[i].crossroad_1].x
             );
-            
+
             if (k == Infinity || k == -Infinity) {
                 let x1 = this.crossroadList[this.roadList[i].crossroad_1].x;
                 let yMax = this.crossroadList[this.roadList[i].crossroad_1].y;
@@ -911,8 +865,8 @@ export class AdminPageComponent {
                 }
             } else {
                 for (let j = 0; j < 6; j++) {
-                    let y1 = Math.round(k*x + b + j);
-                    let y2 = Math.round(k*x + b - j);
+                    let y1 = Math.round(k * x + b + j);
+                    let y2 = Math.round(k * x + b - j);
                     if (y === y1 || y === y2) {
                         this.indexSelectedElement = i;
                         return true;
@@ -923,13 +877,15 @@ export class AdminPageComponent {
         return false;
     }
 
-    modifyCrossroadParamener():void {
+    modifyCrossroadParamener(): void {
         this.crossroadList[this.indexSelectedElement].trafficLights!.time_green_signal = Number(this.dropdownGreenDuration);
         this.crossroadList[this.indexSelectedElement].trafficLights!.time_red_signal = Number(this.dropdownRedDuration);
-  
+
+        this.crossroadList[this.indexSelectedElement].trafficLights!.id_traffic_light = this.findTrafficLightIndex();
+
         const jsonCrossroad: string = JSON.stringify(this.crossroadList);
         console.log(jsonCrossroad);
-        
+
         this.rightPanelHeaderText = 'Параметры элементов УДС';
         this.dropdownGreenDuration = '';
         this.dropdownRedDuration = '';
@@ -938,18 +894,28 @@ export class AdminPageComponent {
         this.isLeftClickRoad = false;
     }
 
-    modifyRoadParamener():void {
+    modifyRoadParamener(): void {
         this.roadList[this.indexSelectedElement].direction = Number(this.dropdownMoveDirection);
+
+        this.roadList[this.indexSelectedElement].street.id_street = this.streets.find(
+            street => street.name === this.dropdownStreet
+        )!.id_street;
         this.roadList[this.indexSelectedElement].street.name = this.dropdownStreet;
-        this.roadList[this.indexSelectedElement].length = this.roadLength.value as number;  
+
+        this.roadList[this.indexSelectedElement].length = this.roadLength.value as number;
+
+        this.roadList[this.indexSelectedElement].typeCover.id_type_cover = this.coverTypes.find(
+            coverType => coverType.name === this.dropdownCoverType
+        )!.id_type_cover;
         this.roadList[this.indexSelectedElement].typeCover.name = this.dropdownCoverType;
 
         if (this.roadList[this.indexSelectedElement].traffic_signs !== null) {
-            this.roadList[this.indexSelectedElement].traffic_signs!.speed =  Number(this.dropdownTrafficSign);
+            this.roadList[this.indexSelectedElement].traffic_signs!.speed = Number(this.dropdownTrafficSign);
         }
 
         if (this.roadList[this.indexSelectedElement].police_post !== null) {
-            this.roadList[this.indexSelectedElement].police_post!.corruption.name =  this.dropdownCorruptionCoef;
+            this.roadList[this.indexSelectedElement].police_post!.corruption.id_corruption = this.findPolicePostIndex();
+            this.roadList[this.indexSelectedElement].police_post!.corruption.name = this.dropdownCorruptionCoef;
         }
 
         const jsonRoad: string = JSON.stringify(this.roadList);
@@ -996,7 +962,6 @@ export class AdminPageComponent {
         this.dropdownTrafficSign = value;
     }
 
-
     cancelAdding() {
         this.isAddPolicePost = false;
         this.isAddTrafficSigns = false;
@@ -1015,19 +980,19 @@ export class AdminPageComponent {
         this.dropdownCorruptionCoef = '';
     }
 
-    addTrafficLights():void {
+    addTrafficLights(): void {
         this.crossroadList[this.indexSelectedElement].trafficLights = {
-            id_traffic_light: 0,
+            id_traffic_light: this.findTrafficLightIndex(),
             time_green_signal: Number(this.dropdownRedDuration),
-            time_red_signal: Number(this.dropdownGreenDuration)
+            time_red_signal: Number(this.dropdownGreenDuration),
         };
 
         this.dropdownRedDuration = '';
         this.dropdownGreenDuration = '';
-  
+
         const jsonCrossroad: string = JSON.stringify(this.crossroadList);
         console.log(jsonCrossroad);
-        
+
         this.rightPanelHeaderText = 'Параметры элементов УДС';
         this.isAddTrafficLights = false;
     }
@@ -1035,10 +1000,10 @@ export class AdminPageComponent {
     addPolicePost(): void {
         this.roadList[this.indexSelectedElement].police_post = {
             corruption: {
-                id_corruption: 0,
+                id_corruption: this.findPolicePostIndex(),
                 name: this.dropdownCorruptionCoef,
-                coefficient_corruption: 1
-            }
+                coefficient_corruption: 1,
+            },
         };
 
         const jsonRoad: string = JSON.stringify(this.roadList);
@@ -1048,10 +1013,10 @@ export class AdminPageComponent {
         this.dropdownCorruptionCoef = '';
     }
 
-    addTrafficSigns():void {
+    addTrafficSigns(): void {
         this.roadList[this.indexSelectedElement].traffic_signs = {
             id_traffic_sign: 0,
-            speed: Number(this.dropdownTrafficSign)
+            speed: Number(this.dropdownTrafficSign),
         };
 
         const jsonRoad: string = JSON.stringify(this.roadList);
@@ -1069,10 +1034,40 @@ export class AdminPageComponent {
         let uds: UDS = {
             name: 'Samara',
             crossroads: this.crossroadList,
-            roads:  this.roadList,
-            route: null
+            roads: this.roadList,
+            route: null,
         };
         const jsonUDS: string = JSON.stringify(uds);
         console.log(jsonUDS);
+    }
+
+    findTrafficLightIndex() {
+        return this.trafficLights.find(
+            trafficLight =>
+                trafficLight.time_green_signal === Number(this.dropdownGreenDuration) &&
+                trafficLight.time_red_signal === Number(this.dropdownRedDuration)
+        )!.id_traffic_light;
+    }
+
+
+    //TODO хз есть ли в бд
+    // findTrafficSignIndex() {
+
+
+    //     switch(this.dropdownTrafficSign) {
+    //         case '30':
+    //             return 1;
+    //         case '40':
+    //             return 2;
+    //         case '50':
+    //             return 3;
+    //     }
+    // }
+
+    findPolicePostIndex() {
+        return this.corruptionDegrees.find(
+            corruptionDegree =>
+                corruptionDegree.name === this.dropdownCorruptionCoef
+        )!.id_corruption;
     }
 }
