@@ -90,7 +90,7 @@ export class StreetFormComponent implements OnInit, AfterViewInit {
         const control = this.streetAddForm.controls;
 
         const addedStreet = {
-            id_street: this.streets[this.streets.length - 1].id_street + 1,
+            id_street: this.streets.length ? 0 : this.streets[this.streets.length - 1].id_street + 1,
             name: control.name.value,
         };
 

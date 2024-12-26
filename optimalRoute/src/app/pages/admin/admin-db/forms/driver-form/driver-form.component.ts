@@ -117,7 +117,7 @@ export class DriverFormComponent implements OnInit, AfterViewInit {
         const driverAuto = this.vehicles.find(vehicle => vehicle.brand === control.vehicle.value) as Vehicle;
 
         const addedDriver = {
-            id_driver: this.drivers[this.drivers.length - 1].id_driver,
+            id_driver: this.drivers.length ? 0 : this.drivers[this.drivers.length - 1].id_driver,
             name: control.name.value,
             surname: control.surname.value,
             family: control.family.value,

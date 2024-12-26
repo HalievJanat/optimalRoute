@@ -95,7 +95,7 @@ export class CoverFormComponent implements OnInit, AfterViewInit {
         const control = this.coverTypeAddForm.controls;
 
         const addedCoverType = {
-            id_type_cover: this.coverTypes[this.coverTypes.length - 1].id_type_cover + 1,
+            id_type_cover: this.coverTypes.length ? 0 : this.coverTypes[this.coverTypes.length - 1].id_type_cover + 1,
             name: control.name.value,
             coefficient_braking: control.coefficient_braking.value as number,
         };
