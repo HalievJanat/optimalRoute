@@ -553,7 +553,7 @@ export class UserPageComponent {
         this.uds.route = this.route!;
         this.isCriteria = false;
 
-        this.httpService.sendUDS(this.uds).subscribe({
+        this.httpService.sendOptimalRoute(this.uds).subscribe({
             next: () => {
                 this.showOptimalRoute();
 

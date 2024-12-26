@@ -1141,7 +1141,6 @@ export class AdminPageComponent {
         )!.id_traffic_light;
     }
 
-    //TODO хз есть ли в бд
     findTrafficSignIndex() {
         let index = -1;
         switch(this.dropdownTrafficSign) {

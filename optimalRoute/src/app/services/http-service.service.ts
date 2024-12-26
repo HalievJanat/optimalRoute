@@ -62,6 +62,10 @@ export class HttpService {
     }
 
     sendUDS(value: UDS) {
+        return this.http.post(`${this.apiUrl}/map`, value);
+    }
+
+    sendOptimalRoute(value: UDS) {
         return this.http.post(`${this.apiUrl}/optimal-route`, value);
     }
 
