@@ -51,7 +51,7 @@ export class TrafficLightsFormComponent implements OnInit, AfterViewInit {
 
     constructor() {
         this.httpService.getTrafficLights().subscribe({
-            next: (trafficLights) => {
+            next: trafficLights => {
                 this.trafficLights = trafficLights;
                 this.trafficLightsArrSize = this.trafficLights.length;
                 this.trafficLights.forEach(trafficLight => {
@@ -67,11 +67,11 @@ export class TrafficLightsFormComponent implements OnInit, AfterViewInit {
                     this.trafficLightEditForm.push(addedTrafficLightGroup);
                 });
             },
-            error: (_) => {
+            error: _ => {
                 this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
                 this.isgetErr = true;
-            }
-        })
+            },
+        });
     }
 
     //При инициализации компонент отображает именно форму добавления
@@ -100,25 +100,24 @@ export class TrafficLightsFormComponent implements OnInit, AfterViewInit {
             time_red_signal: control.time_red_signal.value as unknown as number,
         };
 
-        if (!this.httpService.addMapDbValue<TrafficLights>(addedTrafficLight, 'traffic-light')){
+        if (this.httpService.addMapDbValue<TrafficLights>(addedTrafficLight, 'traffic-light')) {
+            this.trafficLights.push(addedTrafficLight);
+
+            const addedTrafficLightGroup = this.fb.nonNullable.group({
+                time_green_signal: [control.time_green_signal.value as number | null, [Validators.required, rangeValidator(20, 120)]],
+                time_red_signal: [control.time_red_signal.value as number | null, [Validators.required, rangeValidator(20, 120)]],
+            });
+            addedTrafficLightGroup.disable();
+
+            this.trafficLightEditForm.push(addedTrafficLightGroup);
+
             this.trafficLightAddForm.reset();
+
+            this.trafficLightsArrSize++;
+        } else {
             this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
-            return;
+            this.trafficLightAddForm.reset();
         }
-
-        this.trafficLights.push(addedTrafficLight);
-
-        const addedTrafficLightGroup = this.fb.nonNullable.group({
-            time_green_signal: [control.time_green_signal.value as number | null, [Validators.required, rangeValidator(20, 120)]],
-            time_red_signal: [control.time_red_signal.value as number | null, [Validators.required, rangeValidator(20, 120)]],
-        });
-        addedTrafficLightGroup.disable();
-
-        this.trafficLightEditForm.push(addedTrafficLightGroup);
-
-        this.trafficLightAddForm.reset();
-
-        this.trafficLightsArrSize++;
     }
 
     //TODO
