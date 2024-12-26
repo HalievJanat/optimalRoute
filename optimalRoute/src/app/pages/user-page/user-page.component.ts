@@ -224,6 +224,10 @@ export class UserPageComponent {
 
                 this.gridDrowSize();
                 this.visualOptimalRoute(this.gridSize);
+
+                if (this.crossroadOptimalRoute === null) {
+                    alert('Маршрут не найден!');
+                }
             },
             error: () => {
                 this.toastr.error('Не удалось получить карту с маршрутом', 'Ошибка сервера');
