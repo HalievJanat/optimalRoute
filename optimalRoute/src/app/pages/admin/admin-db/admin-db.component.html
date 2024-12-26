@@ -6,7 +6,7 @@
 <div class="editor-container">
     <ul ngbNav #leftnav="ngbNav" class="nav-tabs left-panel" orientation="vertical">
         <li ngbNavItem>
-            <button ngbNavLink autofocus>
+            <button ngbNavLink autofocus (click)="isFineTypeEdit=false">
                 <img src="/assets/driver.png" alt="" />
                 <span>Водитель</span>
             </button>
@@ -15,7 +15,7 @@
             </ng-template>
         </li>
         <li ngbNavItem>
-            <button ngbNavLink>
+            <button ngbNavLink (click)="isFineTypeEdit=false">
                 <img src="/assets/auto.png" alt="" />
                 <span>Автомобиль</span>
             </button>
@@ -24,7 +24,7 @@
             </ng-template>
         </li>
         <li ngbNavItem>
-            <button ngbNavLink>
+            <button ngbNavLink (click)="isFineTypeEdit=false">
                 <img src="/assets/police.png" alt="" />
                 <span>Степень коррумпированности</span>
             </button>
@@ -33,7 +33,7 @@
             </ng-template>
         </li>
         <li ngbNavItem>
-            <button ngbNavLink>
+            <button ngbNavLink (click)="isFineTypeEdit=false">
                 <img src="/assets/benzine.png" alt="" />
                 <span>Топливо</span>
             </button>
@@ -42,7 +42,7 @@
             </ng-template>
         </li>
         <li ngbNavItem>
-            <button ngbNavLink>
+            <button ngbNavLink (click)="isFineTypeEdit=false">
                 <img src="/assets/street.png" alt="" />
                 <span>Улица</span>
             </button>
@@ -51,7 +51,7 @@
             </ng-template>
         </li>
         <li ngbNavItem>
-            <button ngbNavLink>
+            <button ngbNavLink (click)="isFineTypeEdit=false">
                 <img src="/assets/road-surface.png" alt="" />
                 <span>Дорожное покрытие</span>
             </button>
@@ -60,7 +60,7 @@
             </ng-template>
         </li>
         <li ngbNavItem>
-            <button ngbNavLink>
+            <button ngbNavLink (click)="isFineTypeEdit=false">
                 <img src="/assets/traffic-light.png" alt="" />
                 <span>Светофор</span>
             </button>
@@ -69,7 +69,7 @@
             </ng-template>
         </li>
         <li ngbNavItem>
-            <button ngbNavLink>
+            <button ngbNavLink (click)="isFineTypeEdit=true">
                 <img src="/assets/fine.png" alt="" />
                 <span>Штраф</span>
             </button>
@@ -80,7 +80,7 @@
     </ul>
     <div class="form-container" [ngbNavOutlet]="leftnav"></div>
     <ul ngbNav #rightnav="ngbNav" [(activeId)]="activeRightElement" class="nav-tabs right-panel" orientation="vertical">
-        <li [ngbNavItem]="1" [class.active]="activeRightElement === 1">
+        <li [ngbNavItem]="1" [class.active]="activeRightElement === 1" [hidden]="isFineTypeEdit">
             <button ngbNavLink autofocus>
                 <span>Добавить</span>
             </button>

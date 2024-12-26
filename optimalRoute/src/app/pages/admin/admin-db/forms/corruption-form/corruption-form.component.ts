@@ -4,6 +4,7 @@ import { HttpService } from '../../../../../services/http-service.service';
 import { floatValidator, isRequiredError, rangeValidator, stringRangeValidator } from '../validators';
 import { NgbDropdownModule, NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 import { DegreeCorruption } from '../../../../../models/police-post.model';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
     selector: 'app-corruption-form',
@@ -19,6 +20,10 @@ export class CorruptionFormComponent implements OnInit, AfterViewInit {
     private fb = inject(FormBuilder);
 
     httpService = inject(HttpService);
+
+    isgetErr = false;
+
+    toastr = inject(ToastrService);
 
     isCorruptionDegreeEdit = false;
 
@@ -45,21 +50,27 @@ export class CorruptionFormComponent implements OnInit, AfterViewInit {
     >([]);
 
     constructor() {
-        this.httpService.getDegreeCorruptions().subscribe(corruptionDegrees => {
-            this.corruptionDegrees = corruptionDegrees;
-            this.corruptionDegreeArrSize = this.corruptionDegrees.length;
-            this.corruptionDegrees.forEach(corruptionDegree => {
-                const addedCorruptionDegreeGroup = this.fb.nonNullable.group({
-                    name: [corruptionDegree.name, [Validators.required, stringRangeValidator(30)]],
-                    coefficient_corruption: [
-                        corruptionDegree.coefficient_corruption as number | null,
-                        [Validators.required, rangeValidator(1, 2), floatValidator()],
-                    ],
-                });
-                addedCorruptionDegreeGroup.disable();
+        this.httpService.getDegreeCorruptions().subscribe({
+            next: corruptionDegrees => {
+                this.corruptionDegrees = corruptionDegrees;
+                this.corruptionDegreeArrSize = this.corruptionDegrees.length;
+                this.corruptionDegrees.forEach(corruptionDegree => {
+                    const addedCorruptionDegreeGroup = this.fb.nonNullable.group({
+                        name: [corruptionDegree.name, [Validators.required, stringRangeValidator(30)]],
+                        coefficient_corruption: [
+                            corruptionDegree.coefficient_corruption as number | null,
+                            [Validators.required, rangeValidator(1, 2), floatValidator()],
+                        ],
+                    });
+                    addedCorruptionDegreeGroup.disable();
 
-                this.corruptionDegreeEditForm.push(addedCorruptionDegreeGroup);
-            });
+                    this.corruptionDegreeEditForm.push(addedCorruptionDegreeGroup);
+                });
+            },
+            error: _ => {
+                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.isgetErr = true;
+            },
         });
     }
 
@@ -75,45 +86,71 @@ export class CorruptionFormComponent implements OnInit, AfterViewInit {
     }
 
     addCorruptionDegree() {
+        if (this.isgetErr) {
+            this.corruptionDegreeAddForm.reset();
+            this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+            return;
+        }
+
         const control = this.corruptionDegreeAddForm.controls;
 
         const addedCorruptionDegree = {
-            id_corruption: 0,
+            id_corruption: this.corruptionDegrees[this.corruptionDegrees.length - 1].id_corruption + 1,
             name: control.name.value,
             coefficient_corruption: control.coefficient_corruption.value as number,
         };
 
-        this.corruptionDegrees.push(addedCorruptionDegree);
+        this.httpService.addMapDbValue<DegreeCorruption>(addedCorruptionDegree, 'corruption').subscribe({
+            next: () => {
+                this.corruptionDegrees.push(addedCorruptionDegree);
 
-        this.httpService.addMapDbValue<DegreeCorruption>(addedCorruptionDegree, 'corruption');
+                const addedCorruptionDegreeGroup = this.fb.nonNullable.group({
+                    name: [control.name.value, [Validators.required, stringRangeValidator(30)]],
+                    coefficient_corruption: [
+                        control.coefficient_corruption.value,
+                        [Validators.required, rangeValidator(1, 2), floatValidator()],
+                    ],
+                });
+                addedCorruptionDegreeGroup.disable();
 
-        const addedCorruptionDegreeGroup = this.fb.nonNullable.group({
-            name: [control.name.value, [Validators.required, stringRangeValidator(30)]],
-            coefficient_corruption: [control.coefficient_corruption.value, [Validators.required, rangeValidator(1, 2), floatValidator()]],
+                this.corruptionDegreeEditForm.push(addedCorruptionDegreeGroup);
+
+                this.corruptionDegreeAddForm.reset();
+
+                this.corruptionDegreeArrSize++;
+            },
+            error: () => {
+                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.corruptionDegreeAddForm.reset();
+            },
         });
-        addedCorruptionDegreeGroup.disable();
-
-        this.corruptionDegreeEditForm.push(addedCorruptionDegreeGroup);
-
-        this.corruptionDegreeAddForm.reset();
-
-        this.corruptionDegreeArrSize++;
     }
 
-    //TODO v bd net
     editCorruptionDegree() {
         const control = this.corruptionDegreeEditForm.controls[this.editCorruptionDegreeNumber].controls;
 
         const id = this.corruptionDegrees[this.editCorruptionDegreeNumber].id_corruption;
 
-        this.corruptionDegrees[this.editCorruptionDegreeNumber] = {
+        const editCourruption = {
             id_corruption: id,
             name: control.name.value,
             coefficient_corruption: control.coefficient_corruption.value as number,
         };
 
-        this.isCorruptionDegreeEdit = false;
-        this.corruptionDegreeEditForm.controls[this.editCorruptionDegreeNumber].disable();
+        this.httpService.updateMapDbValue<DegreeCorruption>(editCourruption, 'corruption').subscribe({
+            next: () => {
+                this.corruptionDegrees[this.editCorruptionDegreeNumber] = editCourruption;
+
+                this.isCorruptionDegreeEdit = false;
+                this.corruptionDegreeEditForm.controls[this.editCorruptionDegreeNumber].disable();
+            },
+            error: () => {
+                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.cancelEditCorruptionDegree();
+                this.isCorruptionDegreeEdit = false;
+                this.corruptionDegreeEditForm.controls[this.editCorruptionDegreeNumber].disable();
+            },
+        });
     }
 
     cancelEditCorruptionDegree() {
@@ -126,11 +163,17 @@ export class CorruptionFormComponent implements OnInit, AfterViewInit {
         this.corruptionDegreeEditForm.controls[this.editCorruptionDegreeNumber].disable();
     }
 
-    //TODO v bd net
     corruptionDegreeDelete(index: number) {
-        this.corruptionDegrees.splice(index, 1);
-        this.corruptionDegreeEditForm.controls.splice(index, 1);
-        this.corruptionDegreeArrSize--;
+        this.httpService.deleteMapDbValue(this.corruptionDegrees[index], 'corruption').subscribe({
+            next: () => {
+                this.corruptionDegrees.splice(index, 1);
+                this.corruptionDegreeEditForm.controls.splice(index, 1);
+                this.corruptionDegreeArrSize--;
+            },
+            error: () => {
+                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+            },
+        });
     }
 
     corruptionDegreeDuplicateValidation(

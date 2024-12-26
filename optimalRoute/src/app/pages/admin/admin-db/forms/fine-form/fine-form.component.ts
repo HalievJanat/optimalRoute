@@ -4,6 +4,7 @@ import { HttpService } from '../../../../../services/http-service.service';
 import { allowOnlyDigits, floatValidator, isRequiredError, rangeValidator, stringRangeValidator } from '../validators';
 import { NgbDropdownModule, NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 import { TypeFine } from '../../../../../models/fine-type.model';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
     selector: 'app-fine-form',
@@ -13,12 +14,16 @@ import { TypeFine } from '../../../../../models/fine-type.model';
     styleUrl: '../forms.scss',
 })
 export class FineFormComponent implements OnInit, AfterViewInit {
-    @Input() activeRightElement = 1;
+    @Input() activeRightElement = 2;
     @Output() activeRightElementChange = new EventEmitter<number>();
 
     private fb = inject(FormBuilder);
 
     httpService = inject(HttpService);
+
+    isgetErr = false;
+
+    toastr = inject(ToastrService);
 
     isFineTypeEdit = false;
 
@@ -32,11 +37,6 @@ export class FineFormComponent implements OnInit, AfterViewInit {
 
     fineTypes: TypeFine[] = [];
 
-    fineTypeAddForm = this.fb.nonNullable.group({
-        name: ['', [Validators.required, stringRangeValidator(40)]],
-        price: [null as number | null, [Validators.required, rangeValidator(300, 20000)]],
-    });
-
     fineTypeEditForm = this.fb.array<
         FormGroup<{
             name: FormControl<string>;
@@ -45,24 +45,30 @@ export class FineFormComponent implements OnInit, AfterViewInit {
     >([]);
 
     constructor() {
-        this.httpService.getTypeFines().subscribe(fineTypes => {
-            this.fineTypes = fineTypes;
-            this.fineTypesArrSize = this.fineTypes.length;
-            this.fineTypes.forEach(fineType => {
-                const addedfineTypeGroup = this.fb.nonNullable.group({
-                    name: [fineType.name, [Validators.required, stringRangeValidator(40)]],
-                    price: [fineType.price as number | null, [Validators.required, rangeValidator(300, 20000)]],
-                });
-                addedfineTypeGroup.disable();
+        this.httpService.getTypeFines().subscribe({
+            next: fineTypes => {
+                this.fineTypes = fineTypes;
+                this.fineTypesArrSize = this.fineTypes.length;
+                this.fineTypes.forEach(fineType => {
+                    const addedfineTypeGroup = this.fb.nonNullable.group({
+                        name: [fineType.name],
+                        price: [fineType.price as number | null, [Validators.required, rangeValidator(300, 20000)]],
+                    });
+                    addedfineTypeGroup.disable();
 
-                this.fineTypeEditForm.push(addedfineTypeGroup);
-            });
+                    this.fineTypeEditForm.push(addedfineTypeGroup);
+                });
+            },
+            error: _ => {
+                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.isgetErr = true;
+            },
         });
     }
 
-    //При инициализации компонент отображает именно форму добавления
+    //При инициализации компонент отображает именно форму редактирования
     ngOnInit(): void {
-        this.activeRightElement = 1;
+        this.activeRightElement = 2;
     }
 
     ngAfterViewInit(): void {
@@ -71,42 +77,28 @@ export class FineFormComponent implements OnInit, AfterViewInit {
         }, 150);
     }
 
-    addFineType() {
-        const control = this.fineTypeAddForm.controls;
-
-        const addedFineType = {
-            name: control.name.value,
-            price: control.price.value as number,
-        };
-
-        this.fineTypes.push(addedFineType);
-
-        this.httpService.addMapDbValue<TypeFine>(addedFineType, 'fine');
-
-        const addedFineTypeGroup = this.fb.nonNullable.group({
-            name: [control.name.value, [Validators.required, stringRangeValidator(40)]],
-            price: [control.price.value, [Validators.required, rangeValidator(300, 20000)]],
-        });
-        addedFineTypeGroup.disable();
-
-        this.fineTypeEditForm.push(addedFineTypeGroup);
-
-        this.fineTypeAddForm.reset();
-
-        this.fineTypesArrSize++;
-    }
-
-    //TODO
     editFineTypes() {
         const control = this.fineTypeEditForm.controls[this.editFineTypeNumber].controls;
 
-        this.fineTypes[this.editFineTypeNumber] = {
+        const editFine = {
             name: control.name.value,
             price: control.price.value as number,
         };
 
-        this.isFineTypeEdit = false;
-        this.fineTypeEditForm.controls[this.editFineTypeNumber].disable();
+        this.httpService.updateMapDbValue<TypeFine>(editFine, 'fine').subscribe({
+            next: () => {
+                this.fineTypes[this.editFineTypeNumber] = editFine;
+
+                this.isFineTypeEdit = false;
+                this.fineTypeEditForm.controls[this.editFineTypeNumber].disable();
+            },
+            error: () => {
+                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.cancelEditFineTypes();
+                this.isFineTypeEdit = false;
+                this.fineTypeEditForm.controls[this.editFineTypeNumber].disable();
+            },
+        });
     }
 
     cancelEditFineTypes() {
@@ -119,40 +111,12 @@ export class FineFormComponent implements OnInit, AfterViewInit {
         this.fineTypeEditForm.controls[this.editFineTypeNumber].disable();
     }
 
-    //TODO
-    fineTypeDelete(index: number) {
-        this.fineTypes.splice(index, 1);
-        this.fineTypeEditForm.controls.splice(index, 1);
-        this.fineTypesArrSize--;
-    }
-
-    fineTypeDuplicateValidation(
-        formGroup: FormGroup<{
-            name: FormControl<string>;
-            price: FormControl<number | null>;
-        }>,
-        editIndex?: number
-    ) {
-        let hasDuplicate = false;
-
-        this.fineTypes.forEach((fineType, index) => {
-            if (editIndex === undefined || editIndex !== index) {
-                if (formGroup.controls.name.value === fineType.name) {
-                    hasDuplicate = true;
-                    return;
-                }
-            }
-        });
-
-        return hasDuplicate;
-    }
-
     //Шаблон не видит импортируемые функции
     isRequiredFineError(form: FormGroup) {
         return isRequiredError(form);
     }
 
-	allowOnlyDigitsFine(event: KeyboardEvent): void {
+    allowOnlyDigitsFine(event: KeyboardEvent): void {
         allowOnlyDigits(event);
     }
 }

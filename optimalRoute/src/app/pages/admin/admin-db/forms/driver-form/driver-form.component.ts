@@ -4,6 +4,7 @@ import { HttpService } from '../../../../../services/http-service.service';
 import { Driver, Vehicle } from '../../../../../models/driver.model';
 import { isRequiredError, stringRangeValidator } from '../validators';
 import { NgbDropdownModule, NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
     selector: 'app-driver-form',
@@ -19,6 +20,10 @@ export class DriverFormComponent implements OnInit, AfterViewInit {
     private fb = inject(FormBuilder);
 
     httpService = inject(HttpService);
+
+    isgetErr = false;
+
+    toastr = inject(ToastrService);
 
     isDriverEdit = false;
 
@@ -53,25 +58,40 @@ export class DriverFormComponent implements OnInit, AfterViewInit {
     >([]);
 
     constructor() {
-        this.httpService.getVehicles().subscribe(vehicles => {
-            this.vehicles = vehicles;
+        this.httpService.getVehicles().subscribe({
+            next: vehicles => {
+                this.vehicles = vehicles;
+            },
+            error: () => {
+                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.isgetErr = true;
+            },
         });
 
-        this.httpService.getDrivers().subscribe(drivers => {
-            this.drivers = drivers;
-            this.driversArrSize = this.drivers.length;
-            this.drivers.forEach(driver => {
-                const addedDriverGroup = this.fb.nonNullable.group({
-                    name: [driver.name, [Validators.required, stringRangeValidator(15)]],
-                    surname: [driver.surname, [Validators.required, stringRangeValidator(20)]],
-                    family: [driver.family, [Validators.required, stringRangeValidator(15)]],
-                    infringer: [driver.infringer, Validators.required],
-                    vehicle: [driver.vehicle.brand, Validators.required],
-                });
-                addedDriverGroup.disable();
+        this.httpService.getDrivers().subscribe({
+            next: drivers => {
+                this.drivers = drivers;
+                this.driversArrSize = this.drivers.length;
+                this.drivers.forEach(driver => {
+                    const addedDriverGroup = this.fb.nonNullable.group({
+                        name: [driver.name, [Validators.required, stringRangeValidator(15)]],
+                        surname: [driver.surname, [Validators.required, stringRangeValidator(20)]],
+                        family: [driver.family, [Validators.required, stringRangeValidator(15)]],
+                        infringer: [driver.infringer, Validators.required],
+                        vehicle: [driver.vehicle.brand, Validators.required],
+                    });
+                    addedDriverGroup.disable();
 
-                this.driverEditForm.push(addedDriverGroup);
-            });
+                    this.driverEditForm.push(addedDriverGroup);
+                });
+            },
+            error: _ => {
+                if (this.isgetErr) {
+                    return;
+                }
+                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.isgetErr = true;
+            },
         });
     }
 
@@ -87,11 +107,17 @@ export class DriverFormComponent implements OnInit, AfterViewInit {
     }
 
     addDriver() {
+        if (this.isgetErr) {
+            this.driverAddForm.reset();
+            this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+            return;
+        }
+
         const control = this.driverAddForm.controls;
         const driverAuto = this.vehicles.find(vehicle => vehicle.brand === control.vehicle.value) as Vehicle;
 
         const addedDriver = {
-            id_driver: 0,
+            id_driver: this.drivers[this.drivers.length - 1].id_driver,
             name: control.name.value,
             surname: control.surname.value,
             family: control.family.value,
@@ -99,27 +125,31 @@ export class DriverFormComponent implements OnInit, AfterViewInit {
             vehicle: driverAuto,
         };
 
-        this.drivers.push(addedDriver);
+        this.httpService.addMapDbValue<Driver>(addedDriver, 'driver').subscribe({
+            next: () => {
+                this.drivers.push(addedDriver);
+                const addedDriverGroup = this.fb.nonNullable.group({
+                    name: [control.name.value, [Validators.required, stringRangeValidator(15)]],
+                    surname: [control.surname.value, [Validators.required, stringRangeValidator(20)]],
+                    family: [control.family.value, [Validators.required, stringRangeValidator(15)]],
+                    infringer: [control.infringer.value, Validators.required],
+                    vehicle: [driverAuto.brand, Validators.required],
+                });
+                addedDriverGroup.disable();
 
-        this.httpService.addMapDbValue<Driver>(addedDriver, 'driver');
+                this.driverEditForm.push(addedDriverGroup);
 
-        const addedDriverGroup = this.fb.nonNullable.group({
-            name: [control.name.value, [Validators.required, stringRangeValidator(15)]],
-            surname: [control.surname.value, [Validators.required, stringRangeValidator(20)]],
-            family: [control.family.value, [Validators.required, stringRangeValidator(15)]],
-            infringer: [control.infringer.value, Validators.required],
-            vehicle: [driverAuto.brand, Validators.required],
+                this.driverAddForm.reset();
+
+                this.driversArrSize++;
+            },
+            error: () => {
+                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.driverAddForm.reset();
+            },
         });
-        addedDriverGroup.disable();
-
-        this.driverEditForm.push(addedDriverGroup);
-
-        this.driverAddForm.reset();
-
-        this.driversArrSize++;
     }
 
-    //TODO с бд пока нет редактирования
     editDriver() {
         const control = this.driverEditForm.controls[this.editDriverNumber].controls;
 
@@ -127,7 +157,7 @@ export class DriverFormComponent implements OnInit, AfterViewInit {
 
         const id = this.drivers[this.editDriverNumber].id_driver;
 
-        this.drivers[this.editDriverNumber] = {
+        const editDriver = {
             id_driver: id,
             name: control.name.value,
             surname: control.surname.value,
@@ -136,8 +166,20 @@ export class DriverFormComponent implements OnInit, AfterViewInit {
             vehicle: driverAuto,
         };
 
-        this.isDriverEdit = false;
-        this.driverEditForm.controls[this.editDriverNumber].disable();
+        this.httpService.updateMapDbValue<Driver>(editDriver, 'driver').subscribe({
+            next: () => {
+                this.drivers[this.editDriverNumber] = editDriver;
+
+                this.isDriverEdit = false;
+                this.driverEditForm.controls[this.editDriverNumber].disable();
+            },
+            error: () => {
+                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.cancelEditDriver();
+                this.isDriverEdit = false;
+                this.driverEditForm.controls[this.editDriverNumber].disable();
+            },
+        });
     }
 
     cancelEditDriver() {
@@ -153,11 +195,17 @@ export class DriverFormComponent implements OnInit, AfterViewInit {
         this.driverEditForm.controls[this.editDriverNumber].disable();
     }
 
-    //TODO в бд пока нет
     driverDelete(index: number) {
-        this.drivers.splice(index, 1);
-        this.driverEditForm.controls.splice(index, 1);
-        this.driversArrSize--;
+        this.httpService.deleteMapDbValue(this.drivers[index], 'driver').subscribe({
+            next: () => {
+                this.drivers.splice(index, 1);
+                this.driverEditForm.controls.splice(index, 1);
+                this.driversArrSize--;
+            },
+            error: () => {
+                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+            },
+        });
     }
 
     driverDuplicateValidation(

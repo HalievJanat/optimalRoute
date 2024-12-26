@@ -31,4 +31,6 @@ import { FineFormComponent } from './forms/fine-form/fine-form.component';
 })
 export class AdminDbComponent {
     activeRightElement = 1;
+
+    isFineTypeEdit = false; //чтобы прятать кнопку добавить у штрафа
 }

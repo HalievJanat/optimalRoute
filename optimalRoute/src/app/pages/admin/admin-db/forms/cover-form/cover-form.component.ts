@@ -4,6 +4,7 @@ import { HttpService } from '../../../../../services/http-service.service';
 import { floatValidator, isRequiredError, rangeValidator, stringRangeValidator } from '../validators';
 import { NgbDropdownModule, NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 import { TypeCover } from '../../../../../models/cover-type.model';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
     selector: 'app-cover-form',
@@ -19,6 +20,10 @@ export class CoverFormComponent implements OnInit, AfterViewInit {
     private fb = inject(FormBuilder);
 
     httpService = inject(HttpService);
+
+    isgetErr = false;
+
+    toastr = inject(ToastrService);
 
     isCoverTypeEdit = false;
 
@@ -45,21 +50,27 @@ export class CoverFormComponent implements OnInit, AfterViewInit {
     >([]);
 
     constructor() {
-        this.httpService.getTypeCovers().subscribe(coverTypes => {
-            this.coverTypes = coverTypes;
-            this.coverTypesArrSize = this.coverTypes.length;
-            this.coverTypes.forEach(coverType => {
-                const addedCoverTypeGroup = this.fb.nonNullable.group({
-                    name: [coverType.name, [Validators.required, stringRangeValidator(30)]],
-                    coefficient_braking: [
-                        coverType.coefficient_braking as number | null,
-                        [Validators.required, rangeValidator(1, 2), floatValidator()],
-                    ],
-                });
-                addedCoverTypeGroup.disable();
+        this.httpService.getTypeCovers().subscribe({
+            next: coverTypes => {
+                this.coverTypes = coverTypes;
+                this.coverTypesArrSize = this.coverTypes.length;
+                this.coverTypes.forEach(coverType => {
+                    const addedCoverTypeGroup = this.fb.nonNullable.group({
+                        name: [coverType.name, [Validators.required, stringRangeValidator(30)]],
+                        coefficient_braking: [
+                            coverType.coefficient_braking as number | null,
+                            [Validators.required, rangeValidator(1, 2), floatValidator()],
+                        ],
+                    });
+                    addedCoverTypeGroup.disable();
 
-                this.coverTypeEditForm.push(addedCoverTypeGroup);
-            });
+                    this.coverTypeEditForm.push(addedCoverTypeGroup);
+                });
+            },
+            error: _ => {
+                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.isgetErr = true;
+            },
         });
     }
 
@@ -75,45 +86,68 @@ export class CoverFormComponent implements OnInit, AfterViewInit {
     }
 
     addCoverType() {
+        if (this.isgetErr) {
+            this.coverTypeAddForm.reset();
+            this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+            return;
+        }
+
         const control = this.coverTypeAddForm.controls;
 
         const addedCoverType = {
-            id_type_cover: 0,
+            id_type_cover: this.coverTypes[this.coverTypes.length - 1].id_type_cover + 1,
             name: control.name.value,
             coefficient_braking: control.coefficient_braking.value as number,
         };
 
-        this.coverTypes.push(addedCoverType);
+        this.httpService.addMapDbValue<TypeCover>(addedCoverType, 'coverage').subscribe({
+            next: () => {
+                this.coverTypes.push(addedCoverType);
 
-        this.httpService.addMapDbValue<TypeCover>(addedCoverType, 'coverage');
+                const addedCoverTypeGroup = this.fb.nonNullable.group({
+                    name: [control.name.value, [Validators.required, stringRangeValidator(30)]],
+                    coefficient_braking: [control.coefficient_braking.value, [Validators.required, rangeValidator(1, 2), floatValidator()]],
+                });
+                addedCoverTypeGroup.disable();
 
-        const addedCoverTypeGroup = this.fb.nonNullable.group({
-            name: [control.name.value, [Validators.required, stringRangeValidator(30)]],
-            coefficient_braking: [control.coefficient_braking.value, [Validators.required, rangeValidator(1, 2), floatValidator()]],
+                this.coverTypeEditForm.push(addedCoverTypeGroup);
+
+                this.coverTypeAddForm.reset();
+
+                this.coverTypesArrSize++;
+            },
+            error: () => {
+                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.coverTypeAddForm.reset();
+            },
         });
-        addedCoverTypeGroup.disable();
-
-        this.coverTypeEditForm.push(addedCoverTypeGroup);
-
-        this.coverTypeAddForm.reset();
-
-        this.coverTypesArrSize++;
     }
 
-    //TODO
     editCoverType() {
         const control = this.coverTypeEditForm.controls[this.editCoverTypeNumber].controls;
 
         const id = this.coverTypes[this.editCoverTypeNumber].id_type_cover;
 
-        this.coverTypes[this.editCoverTypeNumber] = {
+        const editCover = {
             id_type_cover: id,
             name: control.name.value,
             coefficient_braking: control.coefficient_braking.value as number,
         };
 
-        this.isCoverTypeEdit = false;
-        this.coverTypeEditForm.controls[this.editCoverTypeNumber].disable();
+        this.httpService.updateMapDbValue<TypeCover>(editCover, 'coverage').subscribe({
+            next: () => {
+                this.coverTypes[this.editCoverTypeNumber] = editCover;
+
+                this.isCoverTypeEdit = false;
+                this.coverTypeEditForm.controls[this.editCoverTypeNumber].disable();
+            },
+            error: () => {
+                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.cancelEditCoverType();
+                this.isCoverTypeEdit = false;
+                this.coverTypeEditForm.controls[this.editCoverTypeNumber].disable();
+            },
+        });
     }
 
     cancelEditCoverType() {
@@ -126,11 +160,17 @@ export class CoverFormComponent implements OnInit, AfterViewInit {
         this.coverTypeEditForm.controls[this.editCoverTypeNumber].disable();
     }
 
-    //TODO
     coverTypeDelete(index: number) {
-        this.coverTypes.splice(index, 1);
-        this.coverTypeEditForm.controls.splice(index, 1);
-        this.coverTypesArrSize--;
+        this.httpService.deleteMapDbValue(this.coverTypes[index], 'coverage').subscribe({
+            next: () => {
+                this.coverTypes.splice(index, 1);
+                this.coverTypeEditForm.controls.splice(index, 1);
+                this.coverTypesArrSize--;
+            },
+            error: () => {
+                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+            },
+        });
     }
 
     coverTypeDuplicateValidation(

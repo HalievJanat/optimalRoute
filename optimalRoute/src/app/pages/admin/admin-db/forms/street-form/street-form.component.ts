@@ -5,6 +5,7 @@ import { TypeFuel } from '../../../../../models/driver.model';
 import { allowOnlyDigits, isRequiredError, rangeValidator, stringRangeValidator } from '../validators';
 import { NgbDropdownModule, NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 import { Street } from '../../../../../models/street.model';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
     selector: 'app-street-form',
@@ -20,6 +21,10 @@ export class StreetFormComponent implements OnInit, AfterViewInit {
     private fb = inject(FormBuilder);
 
     httpService = inject(HttpService);
+
+    isgetErr = false;
+
+    toastr = inject(ToastrService);
 
     isStreetEdit = false;
 
@@ -44,17 +49,23 @@ export class StreetFormComponent implements OnInit, AfterViewInit {
     >([]);
 
     constructor() {
-        this.httpService.getStreets().subscribe(streets => {
-            this.streets = streets;
-            this.streetsArrSize = this.streets.length;
-            this.streets.forEach(street => {
-                const addedStreetGroup = this.fb.nonNullable.group({
-                    name: [street.name, [Validators.required, stringRangeValidator(30)]],
-                });
-                addedStreetGroup.disable();
+        this.httpService.getStreets().subscribe({
+            next: streets => {
+                this.streets = streets;
+                this.streetsArrSize = this.streets.length;
+                this.streets.forEach(street => {
+                    const addedStreetGroup = this.fb.nonNullable.group({
+                        name: [street.name, [Validators.required, stringRangeValidator(30)]],
+                    });
+                    addedStreetGroup.disable();
 
-                this.streetEditForm.push(addedStreetGroup);
-            });
+                    this.streetEditForm.push(addedStreetGroup);
+                });
+            },
+            error: _ => {
+                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.isgetErr = true;
+            },
         });
     }
 
@@ -70,42 +81,65 @@ export class StreetFormComponent implements OnInit, AfterViewInit {
     }
 
     addStreet() {
+        if (this.isgetErr) {
+            this.streetAddForm.reset();
+            this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+            return;
+        }
+
         const control = this.streetAddForm.controls;
 
         const addedStreet = {
-            id_street: 0,
+            id_street: this.streets[this.streets.length - 1].id_street + 1,
             name: control.name.value,
         };
 
-        this.streets.push(addedStreet);
+        this.httpService.addMapDbValue<Street>(addedStreet, 'street').subscribe({
+            next: () => {
+                this.streets.push(addedStreet);
 
-        this.httpService.addMapDbValue<Street>(addedStreet, 'street');
+                const addedStreetGroup = this.fb.nonNullable.group({
+                    name: [control.name.value, [Validators.required, stringRangeValidator(30)]],
+                });
+                addedStreetGroup.disable();
 
-        const addedStreetGroup = this.fb.nonNullable.group({
-            name: [control.name.value, [Validators.required, stringRangeValidator(30)]],
+                this.streetEditForm.push(addedStreetGroup);
+
+                this.streetAddForm.reset();
+
+                this.streetsArrSize++;
+            },
+            error: () => {
+                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.streetAddForm.reset();
+            },
         });
-        addedStreetGroup.disable();
-
-        this.streetEditForm.push(addedStreetGroup);
-
-        this.streetAddForm.reset();
-
-        this.streetsArrSize++;
     }
 
-    //TODO
     editStreet() {
         const control = this.streetEditForm.controls[this.editStreetNumber].controls;
 
         const id = this.streets[this.editStreetNumber].id_street;
 
-        this.streets[this.editStreetNumber] = {
+        const editStreet = {
             id_street: id,
             name: control.name.value,
         };
 
-        this.isStreetEdit = false;
-        this.streetEditForm.controls[this.editStreetNumber].disable();
+        this.httpService.updateMapDbValue<Street>(editStreet, 'street').subscribe({
+            next: () => {
+                this.streets[this.editStreetNumber] = editStreet;
+
+                this.isStreetEdit = false;
+                this.streetEditForm.controls[this.editStreetNumber].disable();
+            },
+            error: () => {
+                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.cancelEditStreet();
+                this.isStreetEdit = false;
+                this.streetEditForm.controls[this.editStreetNumber].disable();
+            },
+        });
     }
 
     cancelEditStreet() {
@@ -117,11 +151,17 @@ export class StreetFormComponent implements OnInit, AfterViewInit {
         this.streetEditForm.controls[this.editStreetNumber].disable();
     }
 
-    //TODO
     streetDelete(index: number) {
-        this.streets.splice(index, 1);
-        this.streetEditForm.controls.splice(index, 1);
-        this.streetsArrSize--;
+        this.httpService.deleteMapDbValue(this.streets[index], 'street').subscribe({
+            next: () => {
+                this.streets.splice(index, 1);
+                this.streetEditForm.controls.splice(index, 1);
+                this.streetsArrSize--;
+            },
+            error: () => {
+                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+            },
+        });
     }
 
     streetDuplicateValidation(

@@ -4,6 +4,7 @@ import { HttpService } from '../../../../../services/http-service.service';
 import { TypeFuel, Vehicle } from '../../../../../models/driver.model';
 import { allowOnlyDigits, isRequiredError, rangeValidator, stringRangeValidator } from '../validators';
 import { NgbDropdownModule, NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
     selector: 'app-vehicle-form',
@@ -15,6 +16,10 @@ import { NgbDropdownModule, NgbPaginationModule } from '@ng-bootstrap/ng-bootstr
 export class VehicleFormComponent implements OnInit, AfterViewInit {
     @Input() activeRightElement = 1;
     @Output() activeRightElementChange = new EventEmitter<number>();
+
+    isgetErr = false;
+
+    toastr = inject(ToastrService);
 
     private fb = inject(FormBuilder);
 
@@ -51,24 +56,39 @@ export class VehicleFormComponent implements OnInit, AfterViewInit {
     >([]);
 
     constructor() {
-        this.httpService.getTypeFuels().subscribe(typeFuels => {
-            this.typeFuels = typeFuels;
+        this.httpService.getTypeFuels().subscribe({
+            next: typeFuels => {
+                this.typeFuels = typeFuels;
+            },
+            error: () => {
+                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.isgetErr = true;
+            },
         });
 
-        this.httpService.getVehicles().subscribe(vehicles => {
-            this.vehicles = vehicles;
-            this.vehiclesArrSize = this.vehicles.length;
-            this.vehicles.forEach(vehicle => {
-                const addedVehicleGroup = this.fb.nonNullable.group({
-                    brand: [vehicle.brand, [Validators.required, stringRangeValidator(15)]],
-                    typeFuel: [vehicle.type_fuel.name, Validators.required],
-                    consumption_fuel: [vehicle.consumption_fuel as number | null, [Validators.required, rangeValidator(1, 20)]],
-                    max_speed: [vehicle.max_speed as number | null, [Validators.required, rangeValidator(1, 300)]],
-                });
-                addedVehicleGroup.disable();
+        this.httpService.getVehicles().subscribe({
+            next: vehicles => {
+                this.vehicles = vehicles;
+                this.vehiclesArrSize = this.vehicles.length;
+                this.vehicles.forEach(vehicle => {
+                    const addedVehicleGroup = this.fb.nonNullable.group({
+                        brand: [vehicle.brand, [Validators.required, stringRangeValidator(15)]],
+                        typeFuel: [vehicle.type_fuel.name, Validators.required],
+                        consumption_fuel: [vehicle.consumption_fuel as number | null, [Validators.required, rangeValidator(1, 20)]],
+                        max_speed: [vehicle.max_speed as number | null, [Validators.required, rangeValidator(1, 300)]],
+                    });
+                    addedVehicleGroup.disable();
 
-                this.vehicleEditForm.push(addedVehicleGroup);
-            });
+                    this.vehicleEditForm.push(addedVehicleGroup);
+                });
+            },
+            error: _ => {
+                if (this.isgetErr) {
+                    return;
+                }
+                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.isgetErr = true;
+            },
         });
     }
 
@@ -84,46 +104,55 @@ export class VehicleFormComponent implements OnInit, AfterViewInit {
     }
 
     addVehicle() {
+        if (this.isgetErr) {
+            this.vehicleAddForm.reset();
+            this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+            return;
+        }
+
         const control = this.vehicleAddForm.controls;
 
         const vehicleFuel = this.typeFuels.find(typeFuel => typeFuel.name === control.typeFuel.value) as TypeFuel;
 
         const addedVehicle = {
-            id_vehicle: 0,
+            id_vehicle: this.vehicles[this.vehicles.length - 1].id_vehicle + 1,
             brand: control.brand.value,
             type_fuel: vehicleFuel,
             consumption_fuel: control.consumption_fuel.value as unknown as number,
             max_speed: control.max_speed.value as unknown as number,
         };
 
-        this.vehicles.push(addedVehicle);
+        this.httpService.addMapDbValue<Vehicle>(addedVehicle, 'car').subscribe({
+            next: () => {
+                this.vehicles.push(addedVehicle);
+                const addedVehicleGroup = this.fb.nonNullable.group({
+                    brand: [control.brand.value, [Validators.required, stringRangeValidator(15)]],
+                    typeFuel: [control.typeFuel.value, Validators.required],
+                    consumption_fuel: [control.consumption_fuel.value as number | null, [Validators.required, rangeValidator(1, 20)]],
+                    max_speed: [control.max_speed.value as number | null, [Validators.required, rangeValidator(1, 300)]],
+                });
+                addedVehicleGroup.disable();
 
-        this.httpService.addMapDbValue<Vehicle>(addedVehicle, 'car');
+                this.vehicleEditForm.push(addedVehicleGroup);
 
-        const addedVehicleGroup = this.fb.nonNullable.group({
-            brand: [control.brand.value, [Validators.required, stringRangeValidator(15)]],
-            typeFuel: [control.typeFuel.value, Validators.required],
-            consumption_fuel: [control.consumption_fuel.value as number | null, [Validators.required, rangeValidator(1, 20)]],
-            max_speed: [control.max_speed.value as number | null, [Validators.required, rangeValidator(1, 300)]],
+                this.vehicleAddForm.reset();
+
+                this.vehiclesArrSize++;
+            },
+            error: () => {
+                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.vehicleAddForm.reset();
+            },
         });
-        addedVehicleGroup.disable();
-
-        this.vehicleEditForm.push(addedVehicleGroup);
-
-        this.vehicleAddForm.reset();
-
-        this.vehiclesArrSize++;
     }
 
-    //TODO с бд пока нет редактирования
     editVehicle() {
         const control = this.vehicleEditForm.controls[this.editVehicleNumber].controls;
 
         const vehicleFuel = this.typeFuels.find(typeFuel => typeFuel.name === control.typeFuel.value) as TypeFuel;
 
         const id = this.vehicles[this.editVehicleNumber].id_vehicle;
-
-        this.vehicles[this.editVehicleNumber] = {
+        const editVehicle = {
             id_vehicle: id,
             brand: control.brand.value,
             type_fuel: vehicleFuel,
@@ -131,8 +160,20 @@ export class VehicleFormComponent implements OnInit, AfterViewInit {
             max_speed: control.max_speed.value as unknown as number,
         };
 
-        this.isVehicleEdit = false;
-        this.vehicleEditForm.controls[this.editVehicleNumber].disable();
+        this.httpService.updateMapDbValue<Vehicle>(editVehicle, 'car').subscribe({
+            next: () => {
+                this.vehicles[this.editVehicleNumber] = editVehicle;
+
+                this.isVehicleEdit = false;
+                this.vehicleEditForm.controls[this.editVehicleNumber].disable();
+            },
+            error: () => {
+                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.cancelEditVehicle();
+                this.isVehicleEdit = false;
+                this.vehicleEditForm.controls[this.editVehicleNumber].disable();
+            },
+        });
     }
 
     cancelEditVehicle() {
@@ -147,11 +188,17 @@ export class VehicleFormComponent implements OnInit, AfterViewInit {
         this.vehicleEditForm.controls[this.editVehicleNumber].disable();
     }
 
-    //TODO в бд пока нет
     vehicleDelete(index: number) {
-        this.vehicles.splice(index, 1);
-        this.vehicleEditForm.controls.splice(index, 1);
-        this.vehiclesArrSize--;
+        this.httpService.deleteMapDbValue(this.vehicles[index], 'car').subscribe({
+            next: () => {
+                this.vehicles.splice(index, 1);
+                this.vehicleEditForm.controls.splice(index, 1);
+                this.vehiclesArrSize--;
+            },
+            error: () => {
+                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+            },
+        });
     }
 
     vehicleDuplicateValidation(
