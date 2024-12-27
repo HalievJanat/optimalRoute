@@ -411,7 +411,7 @@
         @if (crossroadList[indexSelectedElement].traffic_light == null) {
             <button class="dropdown-item" (click)="actionAddTrafficLights()">Добавить светофор</button>
         }
-        <button class="dropdown-item" (click)="moveCrossroad()">Переместить светофор</button>
+        <button class="dropdown-item" (click)="moveCrossroad()">Переместить перекресток</button>
         @if (crossroadList[indexSelectedElement].traffic_light != null) {
             <button class="dropdown-item" (click)="actionDeleteTrafficLights()">Удалить светофор</button>
         }
