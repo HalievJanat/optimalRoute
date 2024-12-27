@@ -181,14 +181,15 @@ export class CoverFormComponent implements OnInit, AfterViewInit {
             centered: true,
         });
         modalRef.componentInstance.deletedObj = this.coverTypes[index].name;
-        this.udsList.forEach(uds => {
-            uds.roads.forEach(road => {
+
+        for (let uds of this.udsList) {
+            for (let road of uds.roads) {
                 if (road.typeCover.id_type_cover === this.coverTypes[index].id_type_cover) {
                     modalRef.componentInstance.relatedObjects.push('Карта' + ' ' + uds.name);
-                    return;
+                    break;
                 }
-            });
-        });
+            }
+        }
 
         modalRef.result
             .then(() => {
