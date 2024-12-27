@@ -7,6 +7,7 @@ import { AdminPageComponent } from './pages/admin/admin-page.component';
 import { UserPageComponent } from './pages/user-page/user-page.component';
 import { SystemPageComponent } from './pages/system-page/system-page.component';
 import { UserReferencePageComponent } from './pages/user-reference/user-reference-page.component';
+import { ErrorPageComponent } from './pages/error-page/error-page/error-page.component';
 
 export const routes: Routes = [
     {
@@ -40,5 +41,9 @@ export const routes: Routes = [
     {
         path: 'user-page/user-reference-page',
         component: UserReferencePageComponent,
+    },
+    {
+        path: 'error-page',
+        component: ErrorPageComponent
     }
 ];

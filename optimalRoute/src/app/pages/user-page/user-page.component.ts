@@ -13,6 +13,7 @@ import { Driver } from '../../models/driver.model';
 import { ModalSelectingComponent } from '../../modals/modal-selecting/modal-selecting/modal-selecting.component';
 import { TypeFine } from '../../models/fine-type.model';
 import { ToastrService } from 'ngx-toastr';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-user-page',
@@ -22,7 +23,7 @@ import { ToastrService } from 'ngx-toastr';
     styleUrl: './user-page.component.scss',
 })
 export class UserPageComponent {
-    constructor(config: NgbModalConfig, private modalService: NgbModal, httpService: HttpService, private toastr: ToastrService) {
+    constructor(config: NgbModalConfig, private modalService: NgbModal, httpService: HttpService, private toastr: ToastrService, private router: Router) {
         // customize default values of modals used by this component tree
         config.backdrop = 'static';
         config.keyboard = false;
@@ -32,7 +33,7 @@ export class UserPageComponent {
                 this.UDSList = uds;
             },
             error: () => {
-                //TODO СТРАНИЧКУ ВЫВОДИТЬ С ОШИБКОЙ
+                router.navigateByUrl('error-page');
             },
         });
 
@@ -41,7 +42,7 @@ export class UserPageComponent {
                 this.drivers = drivers;
             },
             error: () => {
-                //TODO СТРАНИЧКУ ВЫВОДИТЬ С ОШИБКОЙ
+                router.navigateByUrl('error-page');
             },
         });
 
@@ -50,7 +51,7 @@ export class UserPageComponent {
                 this.drivers = drivers;
             },
             error: () => {
-                //TODO СТРАНИЧКУ ВЫВОДИТЬ С ОШИБКОЙ
+                router.navigateByUrl('error-page');
             },
         });
 
@@ -59,7 +60,7 @@ export class UserPageComponent {
                 this.fines = fines;
             },
             error: () => {
-                //TODO СТРАНИЧКУ ВЫВОДИТЬ С ОШИБКОЙ
+                router.navigateByUrl('error-page');
             },
         });
     }

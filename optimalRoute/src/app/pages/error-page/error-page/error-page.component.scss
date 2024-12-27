@@ -1,0 +1,27 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f8f9fa;
+    color: #343a40;
+}
+.error-container {
+    text-align: center;
+    padding: 20px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.error-container h1 {
+    font-size: 3rem;
+    margin-bottom: 10px;
+    color: #dc3545;
+}
+.error-container p {
+    font-size: 1.25rem;
+    margin: 0;
+}

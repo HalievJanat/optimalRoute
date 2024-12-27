@@ -13,6 +13,7 @@ import { Crossroad, Road, UDS } from '../../models/UDS.model';
 import { ModalInputComponent } from '../../modals/modal-input/modal-input/modal-input.component';
 import { ToastrService } from 'ngx-toastr';
 import { ModalSelectingComponent } from '../../modals/modal-selecting/modal-selecting/modal-selecting.component';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-admin-page',
@@ -32,7 +33,7 @@ export class AdminPageComponent {
 
     currentUDS: UDS | null = null;
 
-    constructor(config: NgbModalConfig, private modalService: NgbModal, private toastr: ToastrService) {
+    constructor(config: NgbModalConfig, private modalService: NgbModal, private toastr: ToastrService, private router: Router) {
         // customize default values of modals used by this component tree
         config.backdrop = 'static';
         config.keyboard = false;
@@ -42,7 +43,7 @@ export class AdminPageComponent {
                 this.UDSList = udsList;
             },
             error: () => {
-                //TODO СТРАНИЦА С ОШИБКОЙ
+                router.navigateByUrl('error-page');
             },
         });
         this.httpService.getTrafficLights().subscribe({
@@ -50,7 +51,7 @@ export class AdminPageComponent {
                 this.trafficLights = trafficLights;
             },
             error: () => {
-                //TODO СТРАНИЦА С ОШИБКОЙ
+                router.navigateByUrl('error-page');
             },
         });
         this.httpService.getStreets().subscribe({
@@ -58,7 +59,7 @@ export class AdminPageComponent {
                 this.streets = streets;
             },
             error: () => {
-                //TODO СТРАНИЦА С ОШИБКОЙ
+                router.navigateByUrl('error-page');
             },
         });
         this.httpService.getTypeCovers().subscribe({
@@ -66,7 +67,7 @@ export class AdminPageComponent {
                 this.coverTypes = coverTypes;
             },
             error: () => {
-                //TODO СТРАНИЦА С ОШИБКОЙ
+                router.navigateByUrl('error-page');
             },
         });
         this.httpService.getDegreeCorruptions().subscribe({
@@ -74,7 +75,7 @@ export class AdminPageComponent {
                 this.corruptionDegrees = corruptionDegrees;
             },
             error: () => {
-                //TODO СТРАНИЦА С ОШИБКОЙ
+                router.navigateByUrl('error-page');
             },
         });
     }
