@@ -231,6 +231,8 @@ export class UserPageComponent {
                 }
 
                 this.crossroadOptimalRoute = [];
+                this.start_crossroad = -1;
+                this.end_crossroad = -1;
             },
             error: () => {
                 this.toastr.error('Не удалось получить карту с маршрутом', 'Ошибка сервера');
