@@ -1174,8 +1174,12 @@ export class AdminPageComponent {
 
                     this.httpService.sendUDS(uds).subscribe({
                         next: () => {
-                            this.UDSList.push(uds);
-                            this.currentUDS = uds;
+                            this.httpService.getUDSList().subscribe({
+                                next: (udsList) => {
+                                    this.UDSList = udsList;
+                                    this.currentUDS = this.UDSList[this.UDSList.length - 1];
+                                }
+                            })
                         },
                         error: () => {
                             this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
