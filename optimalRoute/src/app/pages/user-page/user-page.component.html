@@ -33,14 +33,33 @@
         @if (isVisualMenu) {
             <ul ngbNav class="nav-tabs" orientation="vertical">
                 <li ngbNavItem>
-                    <button ngbNavLink autofocus (click)="isRoute=true; isDriver=false; isCriteria=false; this.gridDrowSize();
+                    <button ngbNavLink autofocus (click)="isRouteStart=true; isRouteEnd=false; isDriver=false; isCriteria=false; 
+                    this.isLeftClickCrossroad = false;
+                    this.isLeftClickRoad = false;
+                    rightPanelHeaderText = '';
+                    this.gridDrowSize();
                     this.visualOptimalRoute(this.gridSize);">
                         <img src="/assets/route-32.png" alt="" />
-                        <span>Выбор точки отправления и прибытия</span>
+                        <span>Выбор точки отправления</span>
                     </button>
                 </li>
                 <li ngbNavItem>
-                    <button ngbNavLink autofocus (click)="isRoute=false; isDriver=true; isCriteria=false; this.gridDrowSize();
+                    <button ngbNavLink autofocus (click)="isRouteStart=false; isRouteEnd=true; isDriver=false; isCriteria=false; 
+                    this.isLeftClickCrossroad = false;
+                    this.isLeftClickRoad = false;
+                    rightPanelHeaderText = '';
+                    this.gridDrowSize();
+                    this.visualOptimalRoute(this.gridSize);">
+                        <img src="/assets/route-32.png" alt="" />
+                        <span>Выбор точки прибытия</span>
+                    </button>
+                </li>
+                <li ngbNavItem>
+                    <button ngbNavLink autofocus (click)="isRouteStart=false; isRouteEnd=false; isDriver=true; isCriteria=false; 
+                    rightPanelHeaderText = 'Водитель';
+                    this.isLeftClickCrossroad = false;
+                    this.isLeftClickRoad = false;
+                    this.gridDrowSize();
                     this.visualOptimalRoute(this.gridSize);">
                         <img src="/assets/auto.png" alt="" />
                         <span>Выбор водителя</span>
@@ -63,7 +82,10 @@
                     </div>
                 }
                 <li ngbNavItem>
-                    <button ngbNavLink autofocus (click)="isRoute=false; isDriver=false; isCriteria=true; 
+                    <button ngbNavLink autofocus (click)="isRouteStart=false; isRouteEnd=false;  isDriver=false; isCriteria=true; 
+                    rightPanelHeaderText = '';
+                    this.isLeftClickCrossroad = false;
+                    this.isLeftClickRoad = false;
                     this.gridDrowSize();
                     this.visualOptimalRoute(this.gridSize);">
                         <img src="/assets/criteria.png" alt="" />
@@ -72,15 +94,15 @@
                 </li>
                 @if(isCriteria) {
                     <div class="panel-el">
-                        <input type="radio" name="criteria" id="distance"> 
+                        <input type="radio" name="criteria" id="distance" (click)="addCriteria()" [checked]="isDistance"> 
                         <span>Расстояние </span>
                     </div>
                     <div class="panel-el">
-                        <input type="radio" name="criteria" id="time"> 
+                        <input type="radio" name="criteria" id="time" (click)="addCriteria()" [checked]="isTime"> 
                         <span>Время </span>
                     </div>
                     <div class="panel-el">
-                        <input type="radio"     name="criteria" id="cost"> 
+                        <input type="radio"     name="criteria" id="cost" (click)="addCriteria()" [checked]="isCost"> 
                         <span>Стоимость </span>
                     </div>
                     <button class="buttonRoute submit-button" (click)="buildRoute()">Построить маршрут</button>
@@ -128,11 +150,12 @@
             id="container"
             (click)="leftClickCanvas($event.layerX, $event.layerY)"
             (contextmenu)="openContextMenu($event)"
+            (dblclick)="doubleClickCanvas($event.layerX, $event.layerY)"
         ></div>     
     </div>
 
     <div class="right-panel" [hidden]="!isRightPanelOpen">
-        <div [class.border-right]="isDriver" class="right-panel-header">
+        <div [class.border-right]="isDriver || isLeftClickCrossroad || isLeftClickRoad" class="right-panel-header">
             <button
                 type="button"
                 class="btn btn-outline-secondary"
@@ -153,8 +176,7 @@
                 </svg>
                 <span class="visually-hidden">Button</span>
             </button>
-            @if (isDriver) {<h5 class="offcanvas-title">Водитель</h5>}
-            @else {<h5 class="offcanvas-title"></h5>}
+            <h5 class="offcanvas-titles">{{rightPanelHeaderText}}</h5>
         </div>
 
         @if (dropDownDriver != undefined && isDriver) {
@@ -173,7 +195,7 @@
                 </div>
                 <div class="panel-el">
                     <span>Признак нарушителя: </span>
-                    <input type="radio" [checked]="dropDownDriver.infringer" [disabled]="true"> 
+                    <input type="checkbox" [checked]="dropDownDriver.infringer" [disabled]="true"> 
                 </div>
                 <div class="panel-el">
                     <h4>Автомобиль</h4>
@@ -203,6 +225,69 @@
                 </div>
             </div>
         }
+
+        @if (isLeftClickCrossroad) {
+            <div class="right-panel-body">
+                <div class="panel-el">
+                    <h4>Светофор</h4>
+                </div>
+                <div class="panel-el">
+                    <span>Длительность зелёной фазы: </span>
+                    <input type="text" class="form-control" value="{{dropdownGreenDuration}}" disabled="false"> 
+                </div>
+                <div class="panel-el">
+                    <span>Длительность красной фазы: </span>
+                    <input type="text" class="form-control" value="{{dropdownRedDuration}}" disabled="false"> 
+                </div>
+            </div>
+        }
+
+        @if (isLeftClickRoad) {
+            <div class="right-panel-body">
+                <div class="panel-el">
+                    <span>Название улицы: </span>
+                    <input type="text" class="form-control" value="{{dropdownStreet}}" disabled="false"> 
+                </div>
+                <div class="panel-el">
+                    <span>Направление движения: </span>
+                    <input type="text" class="form-control" value="{{dropdownMoveDirection}}" disabled="false"> 
+                </div>
+                <div class="panel-el">
+                    <span>Длина: </span>
+                    <input type="text" class="form-control" value="{{dropdownLength}}" disabled="false"> 
+                </div>
+                <div class="panel-el">
+                    <h4>Покрытие</h4>
+                </div>
+                <div class="panel-el">
+                    <span>Название: </span>
+                    <input type="text" class="form-control" value="{{dropdownCoverTypeName}}" disabled="false"> 
+                </div>
+                <div class="panel-el">
+                    <span>Коэффициент торможения: </span>
+                    <input type="text" class="form-control" value="{{dropdownCoverTypeCoef}}" disabled="false"> 
+                </div>
+                <div class="panel-el">
+                    <h4>Знак дорожного движения</h4>
+                </div>
+                <div class="panel-el">
+                    <span>Скорость:</span>
+                    <input type="text" class="form-control" value="{{dropdownTrafficSign}}" disabled="false"> 
+                </div>
+                <div class="panel-el">
+                    <h4>Полицейский пост</h4>
+                </div>
+                <div class="panel-el">
+                    <span>Название коэффициента коррумпированности:</span>
+                    <input type="text" class="form-control" value="{{dropdownCorruptionName}}" disabled="false"> 
+                </div>
+                <div class="panel-el">
+                    <span>Коэффициент коррумпированности: </span>
+                    <input type="text" class="form-control" value="{{dropdownCorruptionCoef}}" disabled="false"> 
+                </div>
+            </div>
+        }
+
     </div>
     <button
         type="button"

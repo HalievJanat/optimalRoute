@@ -1,3 +1,8 @@
+:host {
+    display: flex;
+    flex-direction: column;
+}
+
 a {
     color: white;
 }
@@ -244,6 +249,8 @@ a:hover {
     background-color: #efefef;
     flex-grow: 0;
     width: 22%;
+    height: 670px;
+    overflow: auto;
 
     .border-right {
         border-bottom: solid black;
@@ -262,10 +269,12 @@ a:hover {
         margin-left: 5px;
         margin-right: 5px;
     }
-    :last-child {
-        font-size: 1em;
-        margin-left: 20%;
-        margin-right: 35%;
+    h5 {
+        font-size: 1.1em;
+        width: 75%;
+        text-align: center;
+        margin-top: 1%;
+        margin-bottom: 1%;
     }
 }
 
@@ -328,9 +337,10 @@ a:hover {
         box-shadow: 1px 1px 2px 0 rgba($color: #908d8d, $alpha: 1);
         border-right: none;
         span {
-            flex: 0;
             margin-left: 10px;
-            width: 30%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 40%;
         }
         h4 {
             font-size: 1em;

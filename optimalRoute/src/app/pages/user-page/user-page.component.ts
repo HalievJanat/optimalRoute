@@ -28,41 +28,47 @@ export class UserPageComponent {
         config.backdrop = 'static';
         config.keyboard = false;
 
-        httpService.getUDSList().subscribe({
-            next: uds => {
-                this.UDSList = uds;
-            },
-            error: () => {
-                router.navigateByUrl('error-page');
-            },
-        });
+        let udsJSON: string = '{"id_uds":0,"name":"Samara","crossroads":[{"id_crossroad":0,"id_uds":0,"x":150,"y":100,"traffic_light":{"id_traffic_light":0,"time_green_signal":20,"time_red_signal":20}},{"id_crossroad":1,"id_uds":0,"x":300,"y":50,"traffic_light":{"id_traffic_light":0,"time_green_signal":20,"time_red_signal":20}},{"id_crossroad":2,"id_uds":0,"x":100,"y":200,"traffic_light":{"id_traffic_light":0,"time_green_signal":20,"time_red_signal":20}},{"id_crossroad":3,"id_uds":0,"x":150,"y":250,"traffic_light":{"id_traffic_light":0,"time_green_signal":20,"time_red_signal":20}},{"id_crossroad":4,"id_uds":0,"x":250,"y":300,"traffic_light":{"id_traffic_light":0,"time_green_signal":20,"time_red_signal":20}},{"id_crossroad":5,"id_uds":0,"x":300,"y":150,"traffic_light":{"id_traffic_light":0,"time_green_signal":20,"time_red_signal":20}}],"roads":[{"crossroad_1":0,"crossroad_2":2,"id_uds":0,"street":{"id_street":0,"name":"Московское шоссе"},"traffic_signs":null,"typeCover":{"id_type_cover":0,"name":"Асфальт","coefficient_braking":1.5},"police_post":null,"length":4,"direction":0},{"crossroad_1":2,"crossroad_2":3,"id_uds":0,"street":{"id_street":1,"name":"Советская"},"traffic_signs":{"id_traffic_sign":0,"speed":30},"typeCover":{"id_type_cover":0,"name":"Асфальт","coefficient_braking":1.5},"police_post":null,"length":9,"direction":0},{"crossroad_1":1,"crossroad_2":5,"id_uds":0,"street":{"id_street":2,"name":"Ставропольская"},"traffic_signs":{"id_traffic_sign":0,"speed":30},"typeCover":{"id_type_cover":0,"name":"Асфальт","coefficient_braking":1.5},"police_post":{"corruption":{"id_corruption":0,"name":"Слабо","coefficient_corruption":1.2}},"length":1,"direction":0},{"crossroad_1":3,"crossroad_2":5,"id_uds":0,"street":{"id_street":3,"name":"Гагарина"},"traffic_signs":{"id_traffic_sign":0,"speed":30},"typeCover":{"id_type_cover":0,"name":"Асфальт","coefficient_braking":1.5},"police_post":{"corruption":{"id_corruption":1,"name":"Сильно","coefficient_corruption":1.9}},"length":1,"direction":0},{"crossroad_1":0,"crossroad_2":4,"id_uds":0,"street":{"id_street":0,"name":"Московское шоссе"},"traffic_signs":{"id_traffic_sign":0,"speed":30},"typeCover":{"id_type_cover":0,"name":"Асфальт","coefficient_braking":1.5},"police_post":null,"length":8,"direction":0}], "route": null}';
 
-        httpService.getDrivers().subscribe({
-            next: drivers => {
-                this.drivers = drivers;
-            },
-            error: () => {
-                router.navigateByUrl('error-page');
-            },
-        });
+        this.UDSList[0] = JSON.parse(udsJSON);
+        console.log(this.UDSList[0]);
+        
 
-        httpService.getDrivers().subscribe({
-            next: drivers => {
-                this.drivers = drivers;
-            },
-            error: () => {
-                router.navigateByUrl('error-page');
-            },
-        });
+        // httpService.getUDSList().subscribe({
+        //     next: uds => {
+        //         this.UDSList = uds;
+        //     },
+        //     error: () => {
+        //         router.navigateByUrl('error-page');
+        //     },
+        // });
 
-        httpService.getTypeFines().subscribe({
-            next: fines => {
-                this.fines = fines;
-            },
-            error: () => {
-                router.navigateByUrl('error-page');
-            },
-        });
+        // httpService.getDrivers().subscribe({
+        //     next: drivers => {
+        //         this.drivers = drivers;
+        //     },
+        //     error: () => {
+        //         router.navigateByUrl('error-page');
+        //     },
+        // });
+
+        // httpService.getDrivers().subscribe({
+        //     next: drivers => {
+        //         this.drivers = drivers;
+        //     },
+        //     error: () => {
+        //         router.navigateByUrl('error-page');
+        //     },
+        // });
+
+        // httpService.getTypeFines().subscribe({
+        //     next: fines => {
+        //         this.fines = fines;
+        //     },
+        //     error: () => {
+        //         router.navigateByUrl('error-page');
+        //     },
+        // });
     }
 
     UDSList: UDS[] = [];
@@ -77,15 +83,29 @@ export class UserPageComponent {
 
     isVisualMenu = false;
 
-    isRoute = false;
+    isRouteStart = false;
+    isRouteEnd = false;
     isDriver = false;
     isCriteria = false;
+    isLeftClickCrossroad = false;
+    isLeftClickRoad = false;
 
     isLeftPanelOpen = true;
     isRightPanelOpen = true;
 
     indexSelectedElement = -1;
-    isFirstClick = true;
+
+    rightPanelHeaderText: string = '';
+    dropdownCorruptionName: string = '';
+    dropdownCorruptionCoef: string = '';
+    dropdownTrafficSign: string = '';
+    dropdownCoverTypeName: string = '';
+    dropdownCoverTypeCoef: string = '';
+    dropdownStreet: string = '';
+    dropdownLength: string = '';
+    dropdownRedDuration: string = '';
+    dropdownGreenDuration: string = '';
+    dropdownMoveDirection: string = '';
 
     dropDownDriver?: Driver;
 
@@ -94,6 +114,10 @@ export class UserPageComponent {
     crossroadOptimalRoute?: number[] = [];
 
     route?: Route;
+
+    isDistance: boolean = false;
+    isTime: boolean = false;
+    isCost: boolean = false;
 
     start_crossroad: number = -1;
     end_crossroad: number = -1;
@@ -132,7 +156,8 @@ export class UserPageComponent {
 
         this.isDriver = false;
         this.isCriteria = false;
-        this.isRoute = false;
+        this.isRouteStart = false;
+        this.isRouteEnd = false;
 
         this.full_name = null;
 
@@ -148,7 +173,7 @@ export class UserPageComponent {
         this.crossroadList = this.uds.crossroads;
         this.roadList = this.uds.roads;
 
-        let route: Route = {
+        this.route = {
             start_crossroad: -1,
             end_crossroad: -1,
             driver: {
@@ -174,29 +199,66 @@ export class UserPageComponent {
             type_fines: [],
         };
 
-        this.route = route;
-
         this.gridDrowSize();
 
         this.drawScaleCanvas(this.gridSize);
     }
 
     leftClickCanvas(X: number, Y: number): void {
-        if (!this.isRoute || !this.defineClickCrossroad(X, Y)) {
+        this.isLeftClickCrossroad = false;
+        this.isLeftClickRoad = false;
+        
+        if ((!this.isRouteStart && !this.isRouteEnd) || !this.defineClickCrossroad(X, Y)) {
+            this.rightPanelHeaderText = '';
             return;
         }
         if (this.start_crossroad === this.indexSelectedElement || this.end_crossroad === this.indexSelectedElement) {
             alert('Нельзя выбрать один и тот же перекресток');
             return;
-        } else if (this.isFirstClick === true) {
+        } else if (this.isRouteStart === true) {
             this.start_crossroad = this.indexSelectedElement;
-            this.isFirstClick = false;
-        } else {
+        } else if (this.isRouteEnd === true) {
             this.end_crossroad = this.indexSelectedElement;
-            this.isFirstClick = true;
         }
         this.gridDrowSize();
         this.visualOptimalRoute(this.gridSize);
+    }
+
+    doubleClickCanvas(X: number, Y: number): void {
+        this.isLeftClickCrossroad = false;
+        this.isLeftClickRoad = false;
+        if (this.defineClickCrossroad(X, Y)) {
+            this.rightPanelHeaderText = 'Параметры перекрёстка';
+            const crossroad = this.crossroadList[this.indexSelectedElement].traffic_light;
+            if (crossroad) {
+                this.dropdownGreenDuration = crossroad.time_green_signal.toString();
+                this.dropdownRedDuration = crossroad.time_red_signal.toString();
+            }
+            this.isLeftClickCrossroad = true;
+        } else if (this.defineClickRoad(X, Y)) {
+            this.rightPanelHeaderText = 'Параметры прогона';
+            const road = this.roadList[this.indexSelectedElement];
+            if (road.length) {
+                this.dropdownLength = road.length.toString();
+            }
+            this.dropdownMoveDirection = road.direction.toString();
+            if (road.street) {
+                this.dropdownStreet = road.street.name;
+            }
+            if (road.typeCover) {
+                this.dropdownCoverTypeName = road.typeCover.name;
+                this.dropdownCoverTypeCoef = road.typeCover.coefficient_braking.toString();
+            }
+            if (road.traffic_signs) {
+                this.dropdownTrafficSign = road.traffic_signs.speed.toString();
+            }
+            if (road.police_post) {
+                this.dropdownCorruptionName = road.police_post.corruption.name;
+                this.dropdownCorruptionCoef = road.police_post.corruption.coefficient_corruption.toString();
+            }
+            this.isLeftClickRoad = true;
+        }
+        this.indexSelectedElement = -1;
     }
 
     openContextMenu(event: MouseEvent): void {
@@ -211,6 +273,47 @@ export class UserPageComponent {
             if (r <= Math.pow(this.radius, 2)) {
                 this.indexSelectedElement = i;
                 return true;
+            }
+        }
+        return false;
+    }
+
+    private defineClickRoad(x: number, y: number): boolean {
+        for (let i = 0; i < this.roadList.length; i++) {
+            let k = this.calculateKLine(
+                this.crossroadList[this.roadList[i].crossroad_1].x,
+                this.crossroadList[this.roadList[i].crossroad_1].y,
+                this.crossroadList[this.roadList[i].crossroad_2].x,
+                this.crossroadList[this.roadList[i].crossroad_2].y
+            );
+            let b = this.calculateBLine(
+                this.crossroadList[this.roadList[i].crossroad_1].y,
+                k,
+                this.crossroadList[this.roadList[i].crossroad_1].x
+            );
+
+            if (k == Infinity || k == -Infinity) {
+                let x1 = this.crossroadList[this.roadList[i].crossroad_1].x;
+                let yMax = this.crossroadList[this.roadList[i].crossroad_1].y;
+                let yMin = this.crossroadList[this.roadList[i].crossroad_2].y;
+                if (yMax < yMin) {
+                    yMax = this.crossroadList[this.roadList[i].crossroad_2].y;
+                    yMin = this.crossroadList[this.roadList[i].crossroad_1].y;
+                }
+
+                if (x > x1 - 6 && x < x1 + 6 && y > yMin && y < yMax) {
+                    this.indexSelectedElement = i;
+                    return true;
+                }
+            } else {
+                for (let j = 0; j < 6; j++) {
+                    let y1 = Math.round(k * x + b + j);
+                    let y2 = Math.round(k * x + b - j);
+                    if (y === y1 || y === y2) {
+                        this.indexSelectedElement = i;
+                        return true;
+                    }
+                }
             }
         }
         return false;
@@ -528,29 +631,36 @@ export class UserPageComponent {
         this.full_name = this.dropDownDriver.family + ' ' + this.dropDownDriver.name + ' ' + this.dropDownDriver.surname;
     }
 
+    addCriteria(): void {
+        this.isDistance = (<HTMLInputElement>document.querySelector('#distance')).checked;
+        this.isTime = (<HTMLInputElement>document.querySelector('#time')).checked;
+        this.isCost = (<HTMLInputElement>document.querySelector('#cost')).checked;
+    }
+
     buildRoute(): void {
-        if (this.start_crossroad === -1 || this.end_crossroad === -1) {
-            alert('Точки прибытия и отправления не выбраны');
+        if (this.start_crossroad === -1) {
+            alert('Точка отправления не выбрана');
+            return;
+        }
+        if (this.end_crossroad === -1) {
+            alert('Точка прибытия не выбрана');
             return;
         }
         if (this.dropDownDriver === undefined) {
-            alert('Водитель не выбраны');
+            alert('Водитель не выбран');
             return;
         }
 
-        let distance = (<HTMLInputElement>document.querySelector('#distance')).checked;
-        let time = (<HTMLInputElement>document.querySelector('#time')).checked;
-        let cost = (<HTMLInputElement>document.querySelector('#cost')).checked;
-        if (!distance && !time && !cost) {
-            alert('Критерий не выбраны');
+        if (!this.isCost && !this.isTime && !this.isDistance) {
+            alert('Критерий не выбран');
             return;
         }
 
-        if (distance) {
+        if (this.isDistance) {
             this.route!.criteria_searche = 'Расстояние';
-        } else if (time) {
+        } else if (this.isTime) {
             this.route!.criteria_searche = 'Время';
-        } else if (cost) {
+        } else if (this.isCost) {
             this.route!.criteria_searche = 'Стоимость';
         }
 
