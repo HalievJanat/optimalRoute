@@ -181,14 +181,6 @@ export class StreetFormComponent implements OnInit, AfterViewInit {
                 }
             }
         }
-        // this.udsList.forEach(uds => {
-        //     uds.roads.forEach(road => {
-        //         if (road.street.id_street === this.streets[index].id_street) {
-        //             modalRef.componentInstance.relatedObjects.push('Карта' + ' ' + uds.name);
-        //             return;
-        //         }
-        //     });
-        // });
 
         modalRef.result
             .then(() => {
