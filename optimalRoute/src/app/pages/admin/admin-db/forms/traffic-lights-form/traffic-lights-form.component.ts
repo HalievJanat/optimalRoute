@@ -181,6 +181,7 @@ export class TrafficLightsFormComponent implements OnInit, AfterViewInit {
             centered: true,
         });
         modalRef.componentInstance.deletedObj = 'Светофор';
+        modalRef.componentInstance.relatedObjects = [];
 
         for (let uds of this.udsList) {
             for (let crossroad of uds.crossroads) {

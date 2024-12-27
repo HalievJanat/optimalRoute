@@ -181,6 +181,7 @@ export class CoverFormComponent implements OnInit, AfterViewInit {
             centered: true,
         });
         modalRef.componentInstance.deletedObj = this.coverTypes[index].name;
+        modalRef.componentInstance.relatedObjects = [];
 
         for (let uds of this.udsList) {
             for (let road of uds.roads) {

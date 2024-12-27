@@ -184,6 +184,7 @@ export class CorruptionFormComponent implements OnInit, AfterViewInit {
             centered: true,
         });
         modalRef.componentInstance.deletedObj = this.corruptionDegrees[index].name;
+        modalRef.componentInstance.relatedObjects = [];
 
         for (let uds of this.udsList) {
             for (let road of uds.roads) {
