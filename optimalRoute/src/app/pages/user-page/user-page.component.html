@@ -29,6 +29,7 @@
                 <span class="visually-hidden">Скрыть панель</span>
             </button>
         </div>
+
         <!--
         <div class="left-panel-body">
             <div (click)="addCrossroad()">
@@ -126,6 +127,16 @@
         <span class="visually-hidden">Открыть панель</span>
     </button>
 
+    @if (isVisualMenu) {
+        <div class="scale-button-left">
+            <img src="assets/downsize.png" (click)="replaceSizeGrid(false)">
+        </div>
+    
+        <div class="scale-button-right" >
+            <img src="assets/upsize.png" (click)="replaceSizeGrid(true)">
+        </div>
+    }
+    
     <div class="graph-editor">
         <div
             data-toggle="context"

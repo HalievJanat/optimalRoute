@@ -6,6 +6,30 @@ a:hover {
     color: gray;
 }
 
+.scale-button-left {
+    position: absolute;
+    right: 30%;
+    left: 68%;
+    top: 90%;
+    bottom: 5%;
+    z-index: 9999;
+    .index {
+        z-index: 9999;
+    }
+}
+
+.scale-button-right {
+    position: absolute;
+    right: 25%;
+    left: 73%;
+    top: 90%;
+    bottom: 5%;
+    z-index: 9999;
+    .index {
+        z-index: 9999;
+    }
+}
+
 .editor-container {
     flex: 1;
     height: 100%;
