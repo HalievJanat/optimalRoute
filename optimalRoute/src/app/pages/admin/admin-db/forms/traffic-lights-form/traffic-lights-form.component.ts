@@ -185,7 +185,7 @@ export class TrafficLightsFormComponent implements OnInit, AfterViewInit {
 
         for (let uds of this.udsList) {
             for (let crossroad of uds.crossroads) {
-                if (crossroad.trafficLights?.id_traffic_light === this.trafficLights[index].id_traffic_light) {
+                if (crossroad.traffic_light?.id_traffic_light === this.trafficLights[index].id_traffic_light) {
                     modalRef.componentInstance.relatedObjects.push('Карта' + ' ' + uds.name);
                     break;
                 }
@@ -194,7 +194,7 @@ export class TrafficLightsFormComponent implements OnInit, AfterViewInit {
 
         this.udsList.forEach(uds => {
             uds.crossroads.forEach(crossroad => {
-                if (crossroad.trafficLights?.id_traffic_light === this.trafficLights[index].id_traffic_light) {
+                if (crossroad.traffic_light?.id_traffic_light === this.trafficLights[index].id_traffic_light) {
                     modalRef.componentInstance.relatedObjects.push('Карта' + ' ' + uds.name);
                     return;
                 }

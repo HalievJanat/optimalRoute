@@ -151,7 +151,7 @@
         
 
         <!--Перекресток-->
-        @if (isLeftClickCrossroad && crossroadList[indexSelectedElement].trafficLights != null) {
+        @if (isLeftClickCrossroad && crossroadList[indexSelectedElement].traffic_light != null) {
             <div class="right-panel-body">
                 <div class="panel-el">
                     <span>Длительность зелёной фазы</span>
@@ -408,11 +408,11 @@
         class="dropdown-menu show"
         (click)="closeContextMenu()"
     >
-        @if (crossroadList[indexSelectedElement].trafficLights == null) {
+        @if (crossroadList[indexSelectedElement].traffic_light == null) {
             <button class="dropdown-item" (click)="actionAddTrafficLights()">Добавить светофор</button>
         }
         <button class="dropdown-item" (click)="moveCrossroad()">Переместить светофор</button>
-        @if (crossroadList[indexSelectedElement].trafficLights != null) {
+        @if (crossroadList[indexSelectedElement].traffic_light != null) {
             <button class="dropdown-item" (click)="actionDeleteTrafficLights()">Удалить светофор</button>
         }
         <button class="dropdown-item" (click)="actionDeleteCrossroad()">Удалить перекресток</button>

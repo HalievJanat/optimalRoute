@@ -293,7 +293,7 @@ export class AdminPageComponent {
             let crossroad = {
                 x: X,
                 y: Y,
-                trafficLights: null,
+                traffic_light: null,
             };
             this.crossroadList.push(crossroad);
             const jsonCrossroad: string = JSON.stringify(this.crossroadList);
@@ -464,7 +464,7 @@ export class AdminPageComponent {
         this.isAddTrafficSigns = false;
         if (this.defineClickCrossroad(X, Y)) {
             this.rightPanelHeaderText = 'Параметры перекрёстка';
-            const crossroad = this.crossroadList[this.indexSelectedElement].trafficLights;
+            const crossroad = this.crossroadList[this.indexSelectedElement].traffic_light;
             if (crossroad) {
                 this.dropdownGreenDuration = crossroad.time_green_signal.toString();
                 this.dropdownRedDuration = crossroad.time_red_signal.toString();
@@ -803,7 +803,7 @@ export class AdminPageComponent {
         this.isAddPolicePost = false;
         this.isAddTrafficSigns = false;
 
-        this.crossroadList[this.indexSelectedElement].trafficLights = null;
+        this.crossroadList[this.indexSelectedElement].traffic_light = null;
         this.closeContextMenu();
     }
 
@@ -914,10 +914,10 @@ export class AdminPageComponent {
     }
 
     modifyCrossroadParamener(): void {
-        this.crossroadList[this.indexSelectedElement].trafficLights!.time_green_signal = Number(this.dropdownGreenDuration);
-        this.crossroadList[this.indexSelectedElement].trafficLights!.time_red_signal = Number(this.dropdownRedDuration);
+        this.crossroadList[this.indexSelectedElement].traffic_light!.time_green_signal = Number(this.dropdownGreenDuration);
+        this.crossroadList[this.indexSelectedElement].traffic_light!.time_red_signal = Number(this.dropdownRedDuration);
 
-        this.crossroadList[this.indexSelectedElement].trafficLights!.id_traffic_light = this.findTrafficLightIndex();
+        this.crossroadList[this.indexSelectedElement].traffic_light!.id_traffic_light = this.findTrafficLightIndex();
 
         const jsonCrossroad: string = JSON.stringify(this.crossroadList);
         console.log(jsonCrossroad);
@@ -1064,7 +1064,7 @@ export class AdminPageComponent {
     }
 
     addTrafficLights(): void {
-        this.crossroadList[this.indexSelectedElement].trafficLights = {
+        this.crossroadList[this.indexSelectedElement].traffic_light = {
             id_traffic_light: this.findTrafficLightIndex(),
             time_green_signal: Number(this.dropdownRedDuration),
             time_red_signal: Number(this.dropdownGreenDuration),
