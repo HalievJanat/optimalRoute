@@ -1115,7 +1115,7 @@ export class AdminPageComponent {
             alert('Ошибка, нельзя сохранить карту');
             return;
         }
-        
+
         for (let i = 0; i < this.crossroadList.length; i++) {
             this.crossroadList[i].x = Math.round(this.crossroadList[i].x / this.gridSize) * 50;
             this.crossroadList[i].y = Math.round(this.crossroadList[i].y / this.gridSize) * 50;
@@ -1132,11 +1132,17 @@ export class AdminPageComponent {
 
             this.httpService.deleteUDS(uds).subscribe({
                 next: () => {
-                    uds.id_uds = this.UDSList.length;
                     this.httpService.sendUDS(uds).subscribe({
                         next: () => {
-                            const udsIndex = this.UDSList.findIndex(uds => uds.id_uds === this.currentUDS?.id_uds);
-                            this.UDSList[udsIndex] = this.currentUDS!;
+                            this.httpService.getUDSList().subscribe({
+                                next: udsList => {
+                                    this.UDSList = udsList;
+                                    this.currentUDS = this.UDSList[this.UDSList.length - 1];
+                                },
+                                error: () => {
+                                    this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
+                                },
+                            });
                         },
                         error: () => {
                             this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
@@ -1147,15 +1153,14 @@ export class AdminPageComponent {
                     this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
                 },
             });
-        }
-        else {
+        } else {
             const modalRef = this.modalService.open(ModalInputComponent, {
                 centered: true,
             });
             this.UDSList.forEach(uds => {
                 modalRef.componentInstance.existingNames.push(uds.name);
             });
-    
+
             modalRef.result
                 .then(name => {
                     let uds: UDS = {
@@ -1166,10 +1171,11 @@ export class AdminPageComponent {
                         route: null,
                     };
                     console.log(name);
-    
+
                     this.httpService.sendUDS(uds).subscribe({
                         next: () => {
                             this.UDSList.push(uds);
+                            this.currentUDS = uds;
                         },
                         error: () => {
                             this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
@@ -1215,7 +1221,7 @@ export class AdminPageComponent {
 
     findTrafficSignIndex() {
         let index = -1;
-        switch(this.dropdownTrafficSign) {
+        switch (this.dropdownTrafficSign) {
             case '30':
                 index = 0;
                 break;
