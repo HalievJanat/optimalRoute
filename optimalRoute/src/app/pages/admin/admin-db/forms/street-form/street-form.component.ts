@@ -172,14 +172,23 @@ export class StreetFormComponent implements OnInit, AfterViewInit {
             centered: true,
         });
         modalRef.componentInstance.deletedObj = this.streets[index].name;
-        this.udsList.forEach(uds => {
-            uds.roads.forEach(road => {
+
+        for (let uds of this.udsList) {
+            for (let road of uds.roads) {
                 if (road.street.id_street === this.streets[index].id_street) {
                     modalRef.componentInstance.relatedObjects.push('Карта' + ' ' + uds.name);
-                    return;
+                    break;
                 }
-            });
-        });
+            }
+        }
+        // this.udsList.forEach(uds => {
+        //     uds.roads.forEach(road => {
+        //         if (road.street.id_street === this.streets[index].id_street) {
+        //             modalRef.componentInstance.relatedObjects.push('Карта' + ' ' + uds.name);
+        //             return;
+        //         }
+        //     });
+        // });
 
         modalRef.result
             .then(() => {
