@@ -38,46 +38,46 @@ export class AdminPageComponent {
         config.backdrop = 'static';
         config.keyboard = false;
 
-        // this.httpService.getUDSList().subscribe({
-        //     next: udsList => {
-        //         this.UDSList = udsList;
-        //     },
-        //     error: () => {
-        //         router.navigateByUrl('error-page');
-        //     },
-        // });
-        // this.httpService.getTrafficLights().subscribe({
-        //     next: trafficLights => {
-        //         this.trafficLights = trafficLights;
-        //     },
-        //     error: () => {
-        //         router.navigateByUrl('error-page');
-        //     },
-        // });
-        // this.httpService.getStreets().subscribe({
-        //     next: streets => {
-        //         this.streets = streets;
-        //     },
-        //     error: () => {
-        //         router.navigateByUrl('error-page');
-        //     },
-        // });
-        // this.httpService.getTypeCovers().subscribe({
-        //     next: coverTypes => {
-        //         this.coverTypes = coverTypes;
-        //     },
-        //     error: () => {
-        //         router.navigateByUrl('error-page');
-        //     },
-        // });
-        // this.httpService.getDegreeCorruptions().subscribe({
-        //     next: corruptionDegrees => {
-        //         this.corruptionDegrees = corruptionDegrees;
-        //     },
-        //     error: () => {
-        //         router.navigateByUrl('error-page');
-        //     },
-        // });
+        this.httpService.getUDSList().subscribe({
+            next: udsList => {
+                this.UDSList = udsList;
+            },
+            error: () => {
+                router.navigateByUrl('error-page');
+            },
+        });
+        this.httpService.getTrafficLights().subscribe({
+            next: trafficLights => {
+                this.trafficLights = trafficLights;
+            },
+            error: () => {
+                router.navigateByUrl('error-page');
+            },
+        });
+        this.httpService.getStreets().subscribe({
+            next: streets => {
+                this.streets = streets;
+            },
+            error: () => {
+                router.navigateByUrl('error-page');
+            },
+        });
+        this.httpService.getTypeCovers().subscribe({
+            next: coverTypes => {
+                this.coverTypes = coverTypes;
+            },
+            error: () => {
+                router.navigateByUrl('error-page');
+            },
+        });
+        this.httpService.getDegreeCorruptions().subscribe({
+            next: corruptionDegrees => {
+                this.corruptionDegrees = corruptionDegrees;
+            },
+            error: () => {
+                router.navigateByUrl('error-page');
+            },
+        });
     }
 
     open(content: any) {
