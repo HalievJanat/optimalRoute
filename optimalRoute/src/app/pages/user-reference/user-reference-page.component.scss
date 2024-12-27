@@ -1,0 +1,112 @@
+:host {
+    display: flex;
+    flex-direction: column;
+}
+
+.menu {
+    color: white;
+}
+
+ul {
+    margin-left: 10px;
+    padding-left: 0;
+    list-style-position: inside;
+}
+
+h3 {
+    color: greenyellow;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+h4 {
+    color: lightsalmon;
+    font-weight: bold;
+    margin-top: 40px;
+    margin-bottom: 24px;
+}
+
+h5 {
+    color: rgb(62, 188, 146);
+    font-weight: bold;
+    margin-top: 24px;
+    margin-bottom: 24px;
+}
+
+.menu:hover {
+    color: gray;
+}
+
+.top {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.editor-container {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    width: 100%;
+
+    .left-panel {
+        background-color: #efefef;
+        flex-grow: 0;
+        width: 22%;
+        font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+
+        .ul-main {
+            margin-top: 5%;
+        }
+
+        a:link {
+            color: #007bff;
+            text-decoration: none;
+          }
+          
+          a:visited {
+            color: #666;
+          }
+          
+          a:hover {
+            color: #0056b3;
+            text-decoration: underline;
+          }
+          
+          a:active {
+            color: #ff0000;
+          }
+    }
+
+    .scroll-div {
+        flex-grow: 2;
+        width: 56%;
+        height: 670px;
+        overflow: auto;
+
+        .graph-editor {
+            margin-top: 4%;
+            margin-left: 4%;
+            margin-right: 4%;
+            margin-bottom: 4%;
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+
+            p {
+                text-align: justify;
+            }
+        }
+    }
+    
+    .right-panel {
+        background-color: #efefef;
+        flex-grow: 0;
+        width: 22%;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+}
+
+
+
