@@ -191,6 +191,7 @@ export class FuelFormComponent implements OnInit, AfterViewInit {
             centered: true,
         });
         modalRef.componentInstance.deletedObj = this.typeFuels[index].name;
+        modalRef.componentInstance.relatedObjects = [];
 
         let relatedVehicles: Vehicle[] = [];
 

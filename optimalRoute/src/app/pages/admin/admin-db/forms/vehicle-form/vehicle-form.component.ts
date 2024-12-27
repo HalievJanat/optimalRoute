@@ -209,6 +209,8 @@ export class VehicleFormComponent implements OnInit, AfterViewInit {
             centered: true,
         });
         modalRef.componentInstance.deletedObj = this.vehicles[index].brand;
+        modalRef.componentInstance.relatedObjects = [];
+
         this.drivers.forEach(driver => {
             if (driver.vehicle.id_vehicle === this.vehicles[index].id_vehicle) {
                 modalRef.componentInstance.relatedObjects.push('Водитель' + ' ' + driver.family + ' ' + driver.name + ' ' + driver.surname);

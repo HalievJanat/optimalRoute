@@ -184,14 +184,16 @@ export class CorruptionFormComponent implements OnInit, AfterViewInit {
             centered: true,
         });
         modalRef.componentInstance.deletedObj = this.corruptionDegrees[index].name;
-        this.udsList.forEach(uds => {
-            uds.roads.forEach(road => {
+        modalRef.componentInstance.relatedObjects = [];
+
+        for (let uds of this.udsList) {
+            for (let road of uds.roads) {
                 if (road.police_post?.corruption.id_corruption === this.corruptionDegrees[index].id_corruption) {
                     modalRef.componentInstance.relatedObjects.push('Карта' + ' ' + uds.name);
-                    return;
+                    break;
                 }
-            });
-        });
+            }
+        }
 
         modalRef.result
             .then(() => {

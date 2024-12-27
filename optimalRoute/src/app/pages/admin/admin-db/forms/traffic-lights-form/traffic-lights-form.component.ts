@@ -181,6 +181,17 @@ export class TrafficLightsFormComponent implements OnInit, AfterViewInit {
             centered: true,
         });
         modalRef.componentInstance.deletedObj = 'Светофор';
+        modalRef.componentInstance.relatedObjects = [];
+
+        for (let uds of this.udsList) {
+            for (let crossroad of uds.crossroads) {
+                if (crossroad.trafficLights?.id_traffic_light === this.trafficLights[index].id_traffic_light) {
+                    modalRef.componentInstance.relatedObjects.push('Карта' + ' ' + uds.name);
+                    break;
+                }
+            }
+        }
+
         this.udsList.forEach(uds => {
             uds.crossroads.forEach(crossroad => {
                 if (crossroad.trafficLights?.id_traffic_light === this.trafficLights[index].id_traffic_light) {

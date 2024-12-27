@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
@@ -9,6 +9,6 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 export class ModalConfirmComponent {
     activeModal = inject(NgbActiveModal);
 
-    deletedObj: string = '';
-    relatedObjects: string[] = [];
+    @Input() deletedObj: string = '';
+    @Input() relatedObjects: string[] = [];
 }
