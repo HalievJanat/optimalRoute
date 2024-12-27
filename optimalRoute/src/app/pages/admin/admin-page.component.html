@@ -70,11 +70,11 @@
             </button>
         </div>
         <div class="left-panel-body">
-            <div (click)="addCrossroad()">
+            <div (click)="addCrossroad()" [class.focus-element-uds]="isCrossroadAdd">
                 <img class="crossroad" src="/assets/crossroad.png" alt="" />
                 <span>Перекресток</span>
             </div>
-            <div (click)="addRoad()">
+            <div (click)="addRoad()" [class.focus-element-uds]="isRoadAdd">
                 <img class="roadrun" src="/assets/roadrun.png" alt="" />
                 <span>Прогон</span>
             </div>

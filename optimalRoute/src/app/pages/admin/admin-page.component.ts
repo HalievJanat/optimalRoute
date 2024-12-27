@@ -221,13 +221,13 @@ export class AdminPageComponent {
         this.isAddTrafficSigns = false;
         this.isContextMenuVisibleCrossroad = false;
         this.isContextMenuVisibleRoad = false;
+        this.indexCrossroad1 = -1;
         if (this.crossroadList.length == 30) {
             alert('Больше 30 нельзя');
             return;
         }
         this.isCrossroadAdd = true;
-        this.isRoadAdd = false;
-        this.indexCrossroad1 = -1;
+        this.isRoadAdd = false;  
     }
 
     eventClickConvas(coordX: number, coordY: number): void {
@@ -393,6 +393,7 @@ export class AdminPageComponent {
             }
             this.indexCrossroad1 = i;
         }
+        this.indexSelectedElement = -1;
     }
 
     checkIntersectionCrossroad(ky: number, by: number, crossroad1: number, crossroad2: number): boolean {
@@ -519,6 +520,7 @@ export class AdminPageComponent {
         this.isAddTrafficSigns = false;
         this.isContextMenuVisibleCrossroad = false;
         this.isContextMenuVisibleRoad = false;
+        this.indexCrossroad1 = -1;
         if (this.crossroadList.length == 60) {
             alert('Больше 60 нельзя');
             return;
@@ -709,6 +711,7 @@ export class AdminPageComponent {
         this.isMoveCrossroad = false;
         this.isAddPolicePost = false;
         this.isAddTrafficSigns = false;
+        this.indexSelectedElement = -1;
         event.preventDefault(); // Отключаем стандартное меню браузера
         if (this.defineClickCrossroad(event.layerX, event.layerY)) {
             this.isContextMenuVisibleCrossroad = true;
