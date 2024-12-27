@@ -3,9 +3,11 @@ import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } 
 import { HttpService } from '../../../../../services/http-service.service';
 import { TypeFuel } from '../../../../../models/driver.model';
 import { allowOnlyDigits, isRequiredError, rangeValidator, stringRangeValidator } from '../validators';
-import { NgbDropdownModule, NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDropdownModule, NgbModal, NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 import { Street } from '../../../../../models/street.model';
 import { ToastrService } from 'ngx-toastr';
+import { UDS } from '../../../../../models/UDS.model';
+import { ModalConfirmComponent } from '../../../../../modals/modal-confirm/modal-confirm.component';
 
 @Component({
     selector: 'app-street-form',
@@ -37,6 +39,7 @@ export class StreetFormComponent implements OnInit, AfterViewInit {
     streetsTabPage = 1;
 
     streets: Street[] = [];
+    udsList: UDS[] = []; //для каскадного удаления
 
     streetAddForm = this.fb.nonNullable.group({
         name: ['', [Validators.required, stringRangeValidator(30)]],
@@ -48,7 +51,17 @@ export class StreetFormComponent implements OnInit, AfterViewInit {
         }>
     >([]);
 
-    constructor() {
+    constructor(private modalService: NgbModal) {
+        this.httpService.getUDSList().subscribe({
+            next: udsList => {
+                this.udsList = udsList;
+            },
+            error: () => {
+                this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
+                this.isgetErr = true;
+            },
+        });
+
         this.httpService.getStreets().subscribe({
             next: streets => {
                 this.streets = streets;
@@ -63,7 +76,10 @@ export class StreetFormComponent implements OnInit, AfterViewInit {
                 });
             },
             error: _ => {
-                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                if (this.isgetErr) {
+                    return;
+                }
+                this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
                 this.isgetErr = true;
             },
         });
@@ -83,7 +99,7 @@ export class StreetFormComponent implements OnInit, AfterViewInit {
     addStreet() {
         if (this.isgetErr) {
             this.streetAddForm.reset();
-            this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+            this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
             return;
         }
 
@@ -110,7 +126,7 @@ export class StreetFormComponent implements OnInit, AfterViewInit {
                 this.streetsArrSize++;
             },
             error: () => {
-                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
                 this.streetAddForm.reset();
             },
         });
@@ -134,7 +150,7 @@ export class StreetFormComponent implements OnInit, AfterViewInit {
                 this.streetEditForm.controls[this.editStreetNumber].disable();
             },
             error: () => {
-                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
                 this.cancelEditStreet();
                 this.isStreetEdit = false;
                 this.streetEditForm.controls[this.editStreetNumber].disable();
@@ -152,16 +168,33 @@ export class StreetFormComponent implements OnInit, AfterViewInit {
     }
 
     streetDelete(index: number) {
-        this.httpService.deleteMapDbValue(this.streets[index], 'street').subscribe({
-            next: () => {
-                this.streets.splice(index, 1);
-                this.streetEditForm.controls.splice(index, 1);
-                this.streetsArrSize--;
-            },
-            error: () => {
-                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
-            },
+        const modalRef = this.modalService.open(ModalConfirmComponent, {
+            centered: true,
         });
+        modalRef.componentInstance.deletedObj = this.streets[index].name;
+        this.udsList.forEach(uds => {
+            uds.roads.forEach(road => {
+                if (road.street.id_street === this.streets[index].id_street) {
+                    modalRef.componentInstance.relatedObjects.push('Карта' + ' ' + uds.name);
+                    return;
+                }
+            });
+        });
+
+        modalRef.result
+            .then(() => {
+                this.httpService.deleteMapDbValue(this.streets[index], 'street').subscribe({
+                    next: () => {
+                        this.streets.splice(index, 1);
+                        this.streetEditForm.controls.splice(index, 1);
+                        this.streetsArrSize--;
+                    },
+                    error: () => {
+                        this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
+                    },
+                });
+            })
+            .catch(() => {});
     }
 
     streetDuplicateValidation(

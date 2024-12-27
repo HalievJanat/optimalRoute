@@ -2,9 +2,11 @@ import { AfterViewInit, Component, EventEmitter, inject, Input, OnInit, Output }
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpService } from '../../../../../services/http-service.service';
 import { floatValidator, isRequiredError, rangeValidator, stringRangeValidator } from '../validators';
-import { NgbDropdownModule, NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDropdownModule, NgbModal, NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 import { DegreeCorruption } from '../../../../../models/police-post.model';
 import { ToastrService } from 'ngx-toastr';
+import { UDS } from '../../../../../models/UDS.model';
+import { ModalConfirmComponent } from '../../../../../modals/modal-confirm/modal-confirm.component';
 
 @Component({
     selector: 'app-corruption-form',
@@ -36,6 +38,7 @@ export class CorruptionFormComponent implements OnInit, AfterViewInit {
     corruptionDegreesTabPage = 1;
 
     corruptionDegrees: DegreeCorruption[] = [];
+    udsList: UDS[] = []; //для каскадного удаления
 
     corruptionDegreeAddForm = this.fb.nonNullable.group({
         name: ['', [Validators.required, stringRangeValidator(30)]],
@@ -49,7 +52,17 @@ export class CorruptionFormComponent implements OnInit, AfterViewInit {
         }>
     >([]);
 
-    constructor() {
+    constructor(private modalService: NgbModal) {
+        this.httpService.getUDSList().subscribe({
+            next: udsList => {
+                this.udsList = udsList;
+            },
+            error: () => {
+                this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
+                this.isgetErr = true;
+            },
+        });
+
         this.httpService.getDegreeCorruptions().subscribe({
             next: corruptionDegrees => {
                 this.corruptionDegrees = corruptionDegrees;
@@ -68,7 +81,10 @@ export class CorruptionFormComponent implements OnInit, AfterViewInit {
                 });
             },
             error: _ => {
-                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                if (this.isgetErr) {
+                    return;
+                }
+                this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
                 this.isgetErr = true;
             },
         });
@@ -88,15 +104,14 @@ export class CorruptionFormComponent implements OnInit, AfterViewInit {
     addCorruptionDegree() {
         if (this.isgetErr) {
             this.corruptionDegreeAddForm.reset();
-            this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+            this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
             return;
         }
 
         const control = this.corruptionDegreeAddForm.controls;
 
         const addedCorruptionDegree = {
-            id_corruption:
-                this.corruptionDegrees.length ? this.corruptionDegrees[this.corruptionDegrees.length - 1].id_corruption + 1 : 0,
+            id_corruption: this.corruptionDegrees.length ? this.corruptionDegrees[this.corruptionDegrees.length - 1].id_corruption + 1 : 0,
             name: control.name.value,
             coefficient_corruption: control.coefficient_corruption.value as number,
         };
@@ -121,7 +136,7 @@ export class CorruptionFormComponent implements OnInit, AfterViewInit {
                 this.corruptionDegreeArrSize++;
             },
             error: () => {
-                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
                 this.corruptionDegreeAddForm.reset();
             },
         });
@@ -146,7 +161,7 @@ export class CorruptionFormComponent implements OnInit, AfterViewInit {
                 this.corruptionDegreeEditForm.controls[this.editCorruptionDegreeNumber].disable();
             },
             error: () => {
-                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
                 this.cancelEditCorruptionDegree();
                 this.isCorruptionDegreeEdit = false;
                 this.corruptionDegreeEditForm.controls[this.editCorruptionDegreeNumber].disable();
@@ -165,16 +180,33 @@ export class CorruptionFormComponent implements OnInit, AfterViewInit {
     }
 
     corruptionDegreeDelete(index: number) {
-        this.httpService.deleteMapDbValue(this.corruptionDegrees[index], 'corruption').subscribe({
-            next: () => {
-                this.corruptionDegrees.splice(index, 1);
-                this.corruptionDegreeEditForm.controls.splice(index, 1);
-                this.corruptionDegreeArrSize--;
-            },
-            error: () => {
-                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
-            },
+        const modalRef = this.modalService.open(ModalConfirmComponent, {
+            centered: true,
         });
+        modalRef.componentInstance.deletedObj = this.corruptionDegrees[index].name;
+        this.udsList.forEach(uds => {
+            uds.roads.forEach(road => {
+                if (road.police_post?.corruption.id_corruption === this.corruptionDegrees[index].id_corruption) {
+                    modalRef.componentInstance.relatedObjects.push('Карта' + ' ' + uds.name);
+                    return;
+                }
+            });
+        });
+
+        modalRef.result
+            .then(() => {
+                this.httpService.deleteMapDbValue(this.corruptionDegrees[index], 'corruption').subscribe({
+                    next: () => {
+                        this.corruptionDegrees.splice(index, 1);
+                        this.corruptionDegreeEditForm.controls.splice(index, 1);
+                        this.corruptionDegreeArrSize--;
+                    },
+                    error: () => {
+                        this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
+                    },
+                });
+            })
+            .catch(() => {});
     }
 
     corruptionDegreeDuplicateValidation(

@@ -564,7 +564,7 @@ export class UserPageComponent {
                 this.showOptimalRoute();
             },
             error: () => {
-                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
             },
         });
     }

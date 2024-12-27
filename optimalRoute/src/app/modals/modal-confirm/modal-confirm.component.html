@@ -15,9 +15,9 @@
     <p>
         Удаление этого элемента приведёт к удалению следующих объектов:
     </p>
-        <span class="text-danger">Ауди</span> <br>
-        <span class="text-danger">Поликарп Поликарпыч</span> <br>
-        <span class="text-danger">Сын Поликарпа Поликарпыча</span>  <br>
+        @for (relatedObject of relatedObjects; track $index) {
+            <span class="text-danger">{{ relatedObject }}</span> <br>
+        }
 </div>
 <div class="modal-footer">
     <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss('cancel click')">Отмена</button>

@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpService } from '../../../../../services/http-service.service';
-import { TypeFuel } from '../../../../../models/driver.model';
+import { Driver, TypeFuel, Vehicle } from '../../../../../models/driver.model';
 import { allowOnlyDigits, isRequiredError, rangeValidator, stringRangeValidator } from '../validators';
 import { NgbDropdownModule, NgbModal, NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 import { ModalConfirmComponent } from '../../../../../modals/modal-confirm/modal-confirm.component';
@@ -37,6 +37,8 @@ export class FuelFormComponent implements OnInit, AfterViewInit {
     typeFuelsTabPage = 1;
 
     typeFuels: TypeFuel[] = [];
+    vehicles: Vehicle[] = []; //для каскадного удаления
+    drivers: Driver[] = []; //для каскадного удаления
 
     typeFuelAddForm = this.fb.nonNullable.group({
         name: ['', [Validators.required, stringRangeValidator(15)]],
@@ -51,6 +53,29 @@ export class FuelFormComponent implements OnInit, AfterViewInit {
     >([]);
 
     constructor(private modalService: NgbModal) {
+        this.httpService.getDrivers().subscribe({
+            next: drivers => {
+                this.drivers = drivers;
+            },
+            error: () => {
+                this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
+                this.isgetErr = true;
+            },
+        });
+
+        this.httpService.getVehicles().subscribe({
+            next: vehicles => {
+                this.vehicles = vehicles;
+            },
+            error: () => {
+                if (this.isgetErr) {
+                    return;
+                }
+                this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
+                this.isgetErr = true;
+            },
+        });
+
         this.httpService.getTypeFuels().subscribe({
             next: fuels => {
                 this.typeFuels = fuels;
@@ -66,7 +91,10 @@ export class FuelFormComponent implements OnInit, AfterViewInit {
                 });
             },
             error: _ => {
-                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                if (this.isgetErr) {
+                    return;
+                }
+                this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
                 this.isgetErr = true;
             },
         });
@@ -86,7 +114,7 @@ export class FuelFormComponent implements OnInit, AfterViewInit {
     addTypeFuel() {
         if (this.isgetErr) {
             this.typeFuelAddForm.reset();
-            this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+            this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
             return;
         }
 
@@ -115,7 +143,7 @@ export class FuelFormComponent implements OnInit, AfterViewInit {
                 this.typeFuelsArrSize++;
             },
             error: () => {
-                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
                 this.typeFuelAddForm.reset();
             },
         });
@@ -140,7 +168,7 @@ export class FuelFormComponent implements OnInit, AfterViewInit {
                 this.typeFuelEditForm.controls[this.editTypeFuelNumber].disable();
             },
             error: () => {
-                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
                 this.cancelEditTypeFuel();
                 this.isTypeFuelEdit = false;
                 this.typeFuelEditForm.controls[this.editTypeFuelNumber].disable();
@@ -159,29 +187,44 @@ export class FuelFormComponent implements OnInit, AfterViewInit {
     }
 
     typeFuelDelete(index: number) {
-        this.httpService.deleteMapDbValue(this.typeFuels[index], 'fuel').subscribe({
-            next: () => {
-                this.typeFuels.splice(index, 1);
-                this.typeFuelEditForm.controls.splice(index, 1);
-                this.typeFuelsArrSize--;
-            },
-            error: () => {
-                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
-            },
+        const modalRef = this.modalService.open(ModalConfirmComponent, {
+            centered: true,
+        });
+        modalRef.componentInstance.deletedObj = this.typeFuels[index].name;
+
+        let relatedVehicles: Vehicle[] = [];
+
+        this.vehicles.forEach(vehicle => {
+            if (vehicle.type_fuel.id_type_fuel === this.typeFuels[index].id_type_fuel) {
+                modalRef.componentInstance.relatedObjects.push('Автомобиль' + ' ' + vehicle.brand);
+                relatedVehicles.push(vehicle);
+            }
         });
 
-        // const modalRef = this.modalService.open(ModalConfirmComponent, {
-        //     centered: true,
-        // });
-        // modalRef.componentInstance.deletedObj = this.typeFuels[index].name;
+        this.drivers.forEach(driver => {
+            relatedVehicles.forEach(vehicle => {
+                if (driver.vehicle.id_vehicle === vehicle.id_vehicle) {
+                    modalRef.componentInstance.relatedObjects.push(
+                        'Водитель' + ' ' + driver.family + ' ' + driver.name + ' ' + driver.surname
+                    );
+                }
+            });
+        });
 
-        // modalRef.result
-        //     .then(() => {
-        //         this.typeFuels.splice(index, 1);
-        //         this.typeFuelEditForm.controls.splice(index, 1);
-        //         this.typeFuelsArrSize--;
-        //     })
-        //     .catch(() => {});
+        modalRef.result
+            .then(() => {
+                this.httpService.deleteMapDbValue(this.typeFuels[index], 'fuel').subscribe({
+                    next: () => {
+                        this.typeFuels.splice(index, 1);
+                        this.typeFuelEditForm.controls.splice(index, 1);
+                        this.typeFuelsArrSize--;
+                    },
+                    error: () => {
+                        this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
+                    },
+                });
+            })
+            .catch(() => {});
     }
 
     typeFuelDuplicateValidation(

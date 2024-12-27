@@ -60,7 +60,7 @@ export class FineFormComponent implements OnInit, AfterViewInit {
                 });
             },
             error: _ => {
-                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
                 this.isgetErr = true;
             },
         });
@@ -93,7 +93,7 @@ export class FineFormComponent implements OnInit, AfterViewInit {
                 this.fineTypeEditForm.controls[this.editFineTypeNumber].disable();
             },
             error: () => {
-                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
                 this.cancelEditFineTypes();
                 this.isFineTypeEdit = false;
                 this.fineTypeEditForm.controls[this.editFineTypeNumber].disable();

@@ -1,10 +1,11 @@
 import { AfterViewInit, Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpService } from '../../../../../services/http-service.service';
-import { TypeFuel, Vehicle } from '../../../../../models/driver.model';
+import { Driver, TypeFuel, Vehicle } from '../../../../../models/driver.model';
 import { allowOnlyDigits, isRequiredError, rangeValidator, stringRangeValidator } from '../validators';
-import { NgbDropdownModule, NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDropdownModule, NgbModal, NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
+import { ModalConfirmComponent } from '../../../../../modals/modal-confirm/modal-confirm.component';
 
 @Component({
     selector: 'app-vehicle-form',
@@ -39,6 +40,8 @@ export class VehicleFormComponent implements OnInit, AfterViewInit {
 
     typeFuels: TypeFuel[] = [];
 
+    drivers: Driver[] = []; //для каскадного удаления
+
     vehicleAddForm = this.fb.nonNullable.group({
         brand: ['', [Validators.required, stringRangeValidator(15, 3)]],
         typeFuel: ['', Validators.required],
@@ -55,13 +58,26 @@ export class VehicleFormComponent implements OnInit, AfterViewInit {
         }>
     >([]);
 
-    constructor() {
+    constructor(private modalService: NgbModal) {
+        this.httpService.getDrivers().subscribe({
+            next: drivers => {
+                this.drivers = drivers;
+            },
+            error: () => {
+                this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
+                this.isgetErr = true;
+            },
+        });
+
         this.httpService.getTypeFuels().subscribe({
             next: typeFuels => {
                 this.typeFuels = typeFuels;
             },
             error: () => {
-                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                if (this.isgetErr) {
+                    return;
+                }
+                this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
                 this.isgetErr = true;
             },
         });
@@ -72,7 +88,7 @@ export class VehicleFormComponent implements OnInit, AfterViewInit {
                 this.vehiclesArrSize = this.vehicles.length;
                 this.vehicles.forEach(vehicle => {
                     const addedVehicleGroup = this.fb.nonNullable.group({
-                        brand: [vehicle.brand, [Validators.required, stringRangeValidator(15)]],
+                        brand: [vehicle.brand, [Validators.required, stringRangeValidator(15, 3)]],
                         typeFuel: [vehicle.type_fuel.name, Validators.required],
                         consumption_fuel: [vehicle.consumption_fuel as number | null, [Validators.required, rangeValidator(1, 20)]],
                         max_speed: [vehicle.max_speed as number | null, [Validators.required, rangeValidator(1, 300)]],
@@ -86,7 +102,7 @@ export class VehicleFormComponent implements OnInit, AfterViewInit {
                 if (this.isgetErr) {
                     return;
                 }
-                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
                 this.isgetErr = true;
             },
         });
@@ -106,7 +122,7 @@ export class VehicleFormComponent implements OnInit, AfterViewInit {
     addVehicle() {
         if (this.isgetErr) {
             this.vehicleAddForm.reset();
-            this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+            this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
             return;
         }
 
@@ -126,7 +142,7 @@ export class VehicleFormComponent implements OnInit, AfterViewInit {
             next: () => {
                 this.vehicles.push(addedVehicle);
                 const addedVehicleGroup = this.fb.nonNullable.group({
-                    brand: [control.brand.value, [Validators.required, stringRangeValidator(15)]],
+                    brand: [control.brand.value, [Validators.required, stringRangeValidator(15, 3)]],
                     typeFuel: [control.typeFuel.value, Validators.required],
                     consumption_fuel: [control.consumption_fuel.value as number | null, [Validators.required, rangeValidator(1, 20)]],
                     max_speed: [control.max_speed.value as number | null, [Validators.required, rangeValidator(1, 300)]],
@@ -140,7 +156,7 @@ export class VehicleFormComponent implements OnInit, AfterViewInit {
                 this.vehiclesArrSize++;
             },
             error: () => {
-                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
                 this.vehicleAddForm.reset();
             },
         });
@@ -168,7 +184,7 @@ export class VehicleFormComponent implements OnInit, AfterViewInit {
                 this.vehicleEditForm.controls[this.editVehicleNumber].disable();
             },
             error: () => {
-                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
                 this.cancelEditVehicle();
                 this.isVehicleEdit = false;
                 this.vehicleEditForm.controls[this.editVehicleNumber].disable();
@@ -189,16 +205,30 @@ export class VehicleFormComponent implements OnInit, AfterViewInit {
     }
 
     vehicleDelete(index: number) {
-        this.httpService.deleteMapDbValue(this.vehicles[index], 'car').subscribe({
-            next: () => {
-                this.vehicles.splice(index, 1);
-                this.vehicleEditForm.controls.splice(index, 1);
-                this.vehiclesArrSize--;
-            },
-            error: () => {
-                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
-            },
+        const modalRef = this.modalService.open(ModalConfirmComponent, {
+            centered: true,
         });
+        modalRef.componentInstance.deletedObj = this.vehicles[index].brand;
+        this.drivers.forEach(driver => {
+            if (driver.vehicle.id_vehicle === this.vehicles[index].id_vehicle) {
+                modalRef.componentInstance.relatedObjects.push('Водитель' + ' ' + driver.family + ' ' + driver.name + ' ' + driver.surname);
+            }
+        });
+
+        modalRef.result
+            .then(() => {
+                this.httpService.deleteMapDbValue(this.vehicles[index], 'car').subscribe({
+                    next: () => {
+                        this.vehicles.splice(index, 1);
+                        this.vehicleEditForm.controls.splice(index, 1);
+                        this.vehiclesArrSize--;
+                    },
+                    error: () => {
+                        this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
+                    },
+                });
+            })
+            .catch(() => {});
     }
 
     vehicleDuplicateValidation(

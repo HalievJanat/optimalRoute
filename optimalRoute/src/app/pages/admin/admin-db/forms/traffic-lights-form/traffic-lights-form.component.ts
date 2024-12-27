@@ -2,9 +2,11 @@ import { AfterViewInit, Component, EventEmitter, inject, Input, OnInit, Output }
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpService } from '../../../../../services/http-service.service';
 import { allowOnlyDigits, floatValidator, isRequiredError, rangeValidator, stringRangeValidator } from '../validators';
-import { NgbDropdownModule, NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDropdownModule, NgbModal, NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 import { TrafficLights } from '../../../../../models/traffic-light.model';
 import { ToastrService } from 'ngx-toastr';
+import { UDS } from '../../../../../models/UDS.model';
+import { ModalConfirmComponent } from '../../../../../modals/modal-confirm/modal-confirm.component';
 
 @Component({
     selector: 'app-traffic-lights-form',
@@ -36,6 +38,7 @@ export class TrafficLightsFormComponent implements OnInit, AfterViewInit {
     trafficLightsTabPage = 1;
 
     trafficLights: TrafficLights[] = [];
+    udsList: UDS[] = []; //для каскадного удаления
 
     trafficLightAddForm = this.fb.group({
         time_green_signal: [null, [Validators.required, rangeValidator(20, 120)]],
@@ -49,7 +52,17 @@ export class TrafficLightsFormComponent implements OnInit, AfterViewInit {
         }>
     >([]);
 
-    constructor() {
+    constructor(private modalService: NgbModal) {
+        this.httpService.getUDSList().subscribe({
+            next: udsList => {
+                this.udsList = udsList;
+            },
+            error: () => {
+                this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
+                this.isgetErr = true;
+            },
+        });
+
         this.httpService.getTrafficLights().subscribe({
             next: trafficLights => {
                 this.trafficLights = trafficLights;
@@ -68,7 +81,10 @@ export class TrafficLightsFormComponent implements OnInit, AfterViewInit {
                 });
             },
             error: _ => {
-                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                if (this.isgetErr) {
+                    return;
+                }
+                this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
                 this.isgetErr = true;
             },
         });
@@ -88,7 +104,7 @@ export class TrafficLightsFormComponent implements OnInit, AfterViewInit {
     addTrafficLight() {
         if (this.isgetErr) {
             this.trafficLightAddForm.reset();
-            this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+            this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
             return;
         }
 
@@ -117,7 +133,7 @@ export class TrafficLightsFormComponent implements OnInit, AfterViewInit {
                 this.trafficLightsArrSize++;
             },
             error: () => {
-                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
                 this.trafficLightAddForm.reset();
             },
         });
@@ -142,7 +158,7 @@ export class TrafficLightsFormComponent implements OnInit, AfterViewInit {
                 this.trafficLightEditForm.controls[this.editTrafficLightNumber].disable();
             },
             error: () => {
-                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
                 this.cancelEditTrafficLights();
                 this.isTrafficLightEdit = false;
                 this.trafficLightEditForm.controls[this.editTrafficLightNumber].disable();
@@ -161,16 +177,33 @@ export class TrafficLightsFormComponent implements OnInit, AfterViewInit {
     }
 
     trafficLightDelete(index: number) {
-        this.httpService.deleteMapDbValue(this.trafficLights[index], 'traffic-light').subscribe({
-            next: () => {
-                this.trafficLights.splice(index, 1);
-                this.trafficLightEditForm.controls.splice(index, 1);
-                this.trafficLightsArrSize--;
-            },
-            error: () => {
-                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
-            },
+        const modalRef = this.modalService.open(ModalConfirmComponent, {
+            centered: true,
         });
+        modalRef.componentInstance.deletedObj = 'Светофор';
+        this.udsList.forEach(uds => {
+            uds.crossroads.forEach(crossroad => {
+                if (crossroad.trafficLights?.id_traffic_light === this.trafficLights[index].id_traffic_light) {
+                    modalRef.componentInstance.relatedObjects.push('Карта' + ' ' + uds.name);
+                    return;
+                }
+            });
+        });
+
+        modalRef.result
+            .then(() => {
+                this.httpService.deleteMapDbValue(this.trafficLights[index], 'traffic-light').subscribe({
+                    next: () => {
+                        this.trafficLights.splice(index, 1);
+                        this.trafficLightEditForm.controls.splice(index, 1);
+                        this.trafficLightsArrSize--;
+                    },
+                    error: () => {
+                        this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
+                    },
+                });
+            })
+            .catch(() => {});
     }
 
     trafficLightDuplicateValidation(

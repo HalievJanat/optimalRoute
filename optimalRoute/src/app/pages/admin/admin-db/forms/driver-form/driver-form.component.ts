@@ -63,7 +63,7 @@ export class DriverFormComponent implements OnInit, AfterViewInit {
                 this.vehicles = vehicles;
             },
             error: () => {
-                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
                 this.isgetErr = true;
             },
         });
@@ -89,7 +89,7 @@ export class DriverFormComponent implements OnInit, AfterViewInit {
                 if (this.isgetErr) {
                     return;
                 }
-                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
                 this.isgetErr = true;
             },
         });
@@ -109,7 +109,7 @@ export class DriverFormComponent implements OnInit, AfterViewInit {
     addDriver() {
         if (this.isgetErr) {
             this.driverAddForm.reset();
-            this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+            this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
             return;
         }
 
@@ -144,7 +144,7 @@ export class DriverFormComponent implements OnInit, AfterViewInit {
                 this.driversArrSize++;
             },
             error: () => {
-                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
                 this.driverAddForm.reset();
             },
         });
@@ -174,7 +174,7 @@ export class DriverFormComponent implements OnInit, AfterViewInit {
                 this.driverEditForm.controls[this.editDriverNumber].disable();
             },
             error: () => {
-                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
                 this.cancelEditDriver();
                 this.isDriverEdit = false;
                 this.driverEditForm.controls[this.editDriverNumber].disable();
@@ -203,7 +203,7 @@ export class DriverFormComponent implements OnInit, AfterViewInit {
                 this.driversArrSize--;
             },
             error: () => {
-                this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
             },
         });
     }

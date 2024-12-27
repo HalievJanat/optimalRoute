@@ -1096,12 +1096,12 @@ export class AdminPageComponent {
                             this.UDSList[udsIndex] = this.currentUDS!;
                         },
                         error: () => {
-                            this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                            this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
                         },
                     });
                 },
                 error: () => {
-                    this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                    this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
                 },
             });
         }
@@ -1129,7 +1129,7 @@ export class AdminPageComponent {
                             this.UDSList.push(uds);
                         },
                         error: () => {
-                            this.toastr.error('Не удалость подключиться к серверу', 'Ошибка');
+                            this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
                         },
                     });
                 })
