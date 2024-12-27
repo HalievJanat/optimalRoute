@@ -1137,7 +1137,8 @@ export class AdminPageComponent {
                             this.httpService.getUDSList().subscribe({
                                 next: udsList => {
                                     this.UDSList = udsList;
-                                    this.currentUDS = this.UDSList[this.UDSList.length - 1];
+                                    const maxElement = udsList.reduce((max, current) => (current.id_uds > max.id_uds ? current : max));
+                                    this.currentUDS = maxElement;
                                 },
                                 error: () => {
                                     this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
@@ -1175,11 +1176,12 @@ export class AdminPageComponent {
                     this.httpService.sendUDS(uds).subscribe({
                         next: () => {
                             this.httpService.getUDSList().subscribe({
-                                next: (udsList) => {
+                                next: udsList => {
                                     this.UDSList = udsList;
-                                    this.currentUDS = this.UDSList[this.UDSList.length - 1];
-                                }
-                            })
+                                    const maxElement = udsList.reduce((max, current) => (current.id_uds > max.id_uds ? current : max));
+                                    this.currentUDS = maxElement;
+                                },
+                            });
                         },
                         error: () => {
                             this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
