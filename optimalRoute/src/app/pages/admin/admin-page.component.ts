@@ -38,46 +38,46 @@ export class AdminPageComponent {
         config.backdrop = 'static';
         config.keyboard = false;
 
-        this.httpService.getUDSList().subscribe({
-            next: udsList => {
-                this.UDSList = udsList;
-            },
-            error: () => {
-                router.navigateByUrl('error-page');
-            },
-        });
-        this.httpService.getTrafficLights().subscribe({
-            next: trafficLights => {
-                this.trafficLights = trafficLights;
-            },
-            error: () => {
-                router.navigateByUrl('error-page');
-            },
-        });
-        this.httpService.getStreets().subscribe({
-            next: streets => {
-                this.streets = streets;
-            },
-            error: () => {
-                router.navigateByUrl('error-page');
-            },
-        });
-        this.httpService.getTypeCovers().subscribe({
-            next: coverTypes => {
-                this.coverTypes = coverTypes;
-            },
-            error: () => {
-                router.navigateByUrl('error-page');
-            },
-        });
-        this.httpService.getDegreeCorruptions().subscribe({
-            next: corruptionDegrees => {
-                this.corruptionDegrees = corruptionDegrees;
-            },
-            error: () => {
-                router.navigateByUrl('error-page');
-            },
-        });
+        // this.httpService.getUDSList().subscribe({
+        //     next: udsList => {
+        //         this.UDSList = udsList;
+        //     },
+        //     error: () => {
+        //         router.navigateByUrl('error-page');
+        //     },
+        // });
+        // this.httpService.getTrafficLights().subscribe({
+        //     next: trafficLights => {
+        //         this.trafficLights = trafficLights;
+        //     },
+        //     error: () => {
+        //         router.navigateByUrl('error-page');
+        //     },
+        // });
+        // this.httpService.getStreets().subscribe({
+        //     next: streets => {
+        //         this.streets = streets;
+        //     },
+        //     error: () => {
+        //         router.navigateByUrl('error-page');
+        //     },
+        // });
+        // this.httpService.getTypeCovers().subscribe({
+        //     next: coverTypes => {
+        //         this.coverTypes = coverTypes;
+        //     },
+        //     error: () => {
+        //         router.navigateByUrl('error-page');
+        //     },
+        // });
+        // this.httpService.getDegreeCorruptions().subscribe({
+        //     next: corruptionDegrees => {
+        //         this.corruptionDegrees = corruptionDegrees;
+        //     },
+        //     error: () => {
+        //         router.navigateByUrl('error-page');
+        //     },
+        // });
     }
 
     open(content: any) {
@@ -219,6 +219,8 @@ export class AdminPageComponent {
         this.isMoveCrossroad = false;
         this.isAddPolicePost = false;
         this.isAddTrafficSigns = false;
+        this.isContextMenuVisibleCrossroad = false;
+        this.isContextMenuVisibleRoad = false;
         if (this.crossroadList.length == 30) {
             alert('Больше 30 нельзя');
             return;
@@ -239,7 +241,7 @@ export class AdminPageComponent {
         this.dropdownTrafficSign = '';
         this.dropdownCorruptionCoef = '';
         this.isContextMenuVisibleCrossroad = false; // Показывать ли меню
-        this.isContextMenuVisibleRoad = false; // Показывать ли
+        this.isContextMenuVisibleRoad = false; // Показывать ли меню
         this.isLeftClickCrossroad = false;
         this.isLeftClickRoad = false;
         this.isAddTrafficLights = false;
@@ -263,6 +265,7 @@ export class AdminPageComponent {
         }
 
         if (this.isCrossroadAdd == true) {
+            this.isCrossroadAdd = false;
             for (let i = 0; i < this.crossroadList.length; i++) {
                 if (this.crossroadList[i].x == X && this.crossroadList[i].y == Y) {
                     alert('Здесь нельзя установить перекресток');
@@ -300,6 +303,7 @@ export class AdminPageComponent {
             const jsonCrossroad: string = JSON.stringify(this.crossroadList);
             console.log(jsonCrossroad);
         } else if (this.isRoadAdd == true && this.indexCrossroad1 >= 0) {
+            this.isRoadAdd = false;
             let i = 0;
             while (i < this.crossroadList.length) {
                 if (this.crossroadList[i].x == X && this.crossroadList[i].y == Y) {
@@ -338,9 +342,6 @@ export class AdminPageComponent {
                     return;
                 }
             }
-            this.rightPanelHeaderText = 'Параметры прогона';
-
-            this.isLeftClickRoad = true;
 
             let ky = this.calculateKLine(this.crossroadList[this.indexCrossroad1].x, this.crossroadList[this.indexCrossroad1].y, X, Y);
             let by = this.calculateBLine(this.crossroadList[this.indexCrossroad1].y, ky, this.crossroadList[this.indexCrossroad1].x);
@@ -349,6 +350,10 @@ export class AdminPageComponent {
                 alert('Здесь нельзя установить прогон');
                 return;
             }
+
+            this.rightPanelHeaderText = 'Ввод начальных значений прогона';
+
+            this.isLeftClickRoad = true;
 
             this.road = {
                 crossroad_1: this.indexCrossroad1,
@@ -512,6 +517,8 @@ export class AdminPageComponent {
         this.isMoveCrossroad = false;
         this.isAddPolicePost = false;
         this.isAddTrafficSigns = false;
+        this.isContextMenuVisibleCrossroad = false;
+        this.isContextMenuVisibleRoad = false;
         if (this.crossroadList.length == 60) {
             alert('Больше 60 нельзя');
             return;
@@ -774,17 +781,9 @@ export class AdminPageComponent {
         this.closeContextMenu();
     }
 
-    moveCrossroad(): void {
-        this.dropdownMoveDirection = '';
-        this.dropdownStreet = '';
-        this.roadLength.setValue(null);
-        this.dropdownCoverType = '';
-        this.dropdownTrafficSign = '';
-        this.dropdownCorruptionCoef = '';
-        this.isAddTrafficLights = false;
-        this.isMoveCrossroad = false;
+    actionMoveCrossroad(): void {
         this.isMoveCrossroad = true;
-        this.rightPanelHeaderText = 'Добавить светофор';
+        this.rightPanelHeaderText = 'Перемещение перекрестка';
 
         this.closeContextMenu();
     }
