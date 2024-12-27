@@ -105,6 +105,7 @@ export class AdminPageComponent {
     isAddTrafficLights = false;
     isAddPolicePost = false;
     isAddTrafficSigns = false;
+    isMoveCrossroad = false;
 
     [x: string]: any;
     isLeftPanelOpen = true;
@@ -144,6 +145,7 @@ export class AdminPageComponent {
         this.isLeftClickCrossroad = false;
         this.isLeftClickRoad = false;
         this.isAddTrafficLights = false;
+        this.isMoveCrossroad = false;
         this.isAddPolicePost = false;
         this.isAddTrafficSigns = false;
         this.isRightPanelOpen = !this.isRightPanelOpen;
@@ -213,6 +215,7 @@ export class AdminPageComponent {
         this.isLeftClickCrossroad = false;
         this.isLeftClickRoad = false;
         this.isAddTrafficLights = false;
+        this.isMoveCrossroad = false;
         this.isAddPolicePost = false;
         this.isAddTrafficSigns = false;
         if (this.crossroadList.length == 30) {
@@ -248,6 +251,15 @@ export class AdminPageComponent {
 
         if (Y == 0) Y += this.gridSize;
         else if (Y == this.stage.height()) Y -= this.gridSize;
+
+        if (this.isMoveCrossroad) {
+            this.isMoveCrossroad = false;
+            this.crossroadList[this.indexSelectedElement].x = X;
+            this.crossroadList[this.indexSelectedElement].y = Y;
+            this.gridDrowSize();
+            this.drawScaleCanvas(this.gridSize);
+            return;
+        }
 
         if (this.isCrossroadAdd == true) {
             for (let i = 0; i < this.crossroadList.length; i++) {
@@ -447,6 +459,7 @@ export class AdminPageComponent {
         this.dropdownCorruptionCoef = '';
         this.isCrossroadAdd = false;
         this.isAddTrafficLights = false;
+        this.isMoveCrossroad = false;
         this.isAddPolicePost = false;
         this.isAddTrafficSigns = false;
         if (this.defineClickCrossroad(X, Y)) {
@@ -495,6 +508,7 @@ export class AdminPageComponent {
         this.isLeftClickCrossroad = false;
         this.isLeftClickRoad = false;
         this.isAddTrafficLights = false;
+        this.isMoveCrossroad = false;
         this.isAddPolicePost = false;
         this.isAddTrafficSigns = false;
         if (this.crossroadList.length == 60) {
@@ -518,6 +532,7 @@ export class AdminPageComponent {
         this.dropdownCorruptionCoef = '';
         this.isLeftClickCrossroad = false;
         this.isAddTrafficLights = false;
+        this.isMoveCrossroad = false;
         this.isAddPolicePost = false;
         this.isAddTrafficSigns = false;
         this.isLeftClickRoad = false;
@@ -683,6 +698,7 @@ export class AdminPageComponent {
         this.isLeftClickCrossroad = false;
         this.isLeftClickRoad = false;
         this.isAddTrafficLights = false;
+        this.isMoveCrossroad = false;
         this.isAddPolicePost = false;
         this.isAddTrafficSigns = false;
         event.preventDefault(); // Отключаем стандартное меню браузера
@@ -751,6 +767,22 @@ export class AdminPageComponent {
         this.dropdownTrafficSign = '';
         this.dropdownCorruptionCoef = '';
         this.isAddTrafficLights = true;
+        this.isMoveCrossroad = false;
+        this.rightPanelHeaderText = 'Добавить светофор';
+
+        this.closeContextMenu();
+    }
+
+    moveCrossroad(): void {
+        this.dropdownMoveDirection = '';
+        this.dropdownStreet = '';
+        this.roadLength.setValue(null);
+        this.dropdownCoverType = '';
+        this.dropdownTrafficSign = '';
+        this.dropdownCorruptionCoef = '';
+        this.isAddTrafficLights = false;
+        this.isMoveCrossroad = false;
+        this.isMoveCrossroad = true;
         this.rightPanelHeaderText = 'Добавить светофор';
 
         this.closeContextMenu();
@@ -767,6 +799,7 @@ export class AdminPageComponent {
         this.dropdownTrafficSign = '';
         this.dropdownCorruptionCoef = '';
         this.isAddTrafficLights = false;
+        this.isMoveCrossroad = false;
         this.isAddPolicePost = false;
         this.isAddTrafficSigns = false;
 
@@ -792,6 +825,7 @@ export class AdminPageComponent {
         this.dropdownTrafficSign = '';
         this.dropdownCorruptionCoef = '';
         this.isAddTrafficLights = false;
+        this.isMoveCrossroad = false;
         this.isAddPolicePost = false;
         this.isAddTrafficSigns = false;
 
@@ -817,6 +851,7 @@ export class AdminPageComponent {
         this.dropdownTrafficSign = '';
         this.dropdownCorruptionCoef = '';
         this.isAddTrafficLights = false;
+        this.isMoveCrossroad = false;
         this.isAddPolicePost = false;
         this.isAddTrafficSigns = false;
 
@@ -891,6 +926,7 @@ export class AdminPageComponent {
         this.dropdownGreenDuration = '';
         this.dropdownRedDuration = '';
         this.isAddTrafficLights = false;
+        this.isMoveCrossroad = false;
         this.isLeftClickCrossroad = false;
         this.isLeftClickRoad = false;
     }
@@ -1014,6 +1050,7 @@ export class AdminPageComponent {
         this.isLeftClickCrossroad = false;
         this.isLeftClickRoad = false;
         this.isAddTrafficLights = false;
+        this.isMoveCrossroad = false;
         this.rightPanelHeaderText = 'Параметры элементов УДС';
 
         this.dropdownGreenDuration = '';
@@ -1041,6 +1078,7 @@ export class AdminPageComponent {
 
         this.rightPanelHeaderText = 'Параметры элементов УДС';
         this.isAddTrafficLights = false;
+        this.isMoveCrossroad = false;
     }
 
     addPolicePost(): void {
@@ -1076,6 +1114,11 @@ export class AdminPageComponent {
         if (this.crossroadList.length < 2 || this.roadList.length < 1) {
             alert('Ошибка, нельзя сохранить карту');
             return;
+        }
+        
+        for (let i = 0; i < this.crossroadList.length; i++) {
+            this.crossroadList[i].x = Math.round(this.crossroadList[i].x / this.gridSize) * 50;
+            this.crossroadList[i].y = Math.round(this.crossroadList[i].y / this.gridSize) * 50;
         }
 
         if (this.currentUDS) {
@@ -1150,6 +1193,11 @@ export class AdminPageComponent {
                 this.currentUDS = this.UDSList[index];
                 this.crossroadList = this.currentUDS.crossroads;
                 this.roadList = this.currentUDS.roads;
+
+                for (let i = 0; i < this.crossroadList.length; i++) {
+                    this.crossroadList[i].x = Math.round(this.crossroadList[i].x / 50) * this.gridSize;
+                    this.crossroadList[i].y = Math.round(this.crossroadList[i].y / 50) * this.gridSize;
+                }
 
                 this.gridDrowSize();
                 this.drawScaleCanvas(this.gridSize);
