@@ -185,7 +185,7 @@ export class CoverFormComponent implements OnInit, AfterViewInit {
 
         for (let uds of this.udsList) {
             for (let road of uds.roads) {
-                if (road.typeCover.id_type_cover === this.coverTypes[index].id_type_cover) {
+                if (road.type_cover.id_type_cover === this.coverTypes[index].id_type_cover) {
                     modalRef.componentInstance.relatedObjects.push('Карта' + ' ' + uds.name);
                     break;
                 }

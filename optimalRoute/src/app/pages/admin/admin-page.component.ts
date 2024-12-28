@@ -227,7 +227,7 @@ export class AdminPageComponent {
             return;
         }
         this.isCrossroadAdd = true;
-        this.isRoadAdd = false;  
+        this.isRoadAdd = false;
     }
 
     eventClickConvas(coordX: number, coordY: number): void {
@@ -294,7 +294,9 @@ export class AdminPageComponent {
 
             this.isCrossroadAdd = false;
 
-            let crossroad = {
+            let crossroad: Crossroad = {
+                id_crossroad: this.crossroadList.length,
+                id_uds: this.currentUDS ? this.currentUDS.id_uds : -1,
                 x: X,
                 y: Y,
                 traffic_light: null,
@@ -361,7 +363,7 @@ export class AdminPageComponent {
                 street: { id_street: 0, name: '' },
                 traffic_signs: null,
                 police_post: null,
-                typeCover: { id_type_cover: 0, name: '', coefficient_braking: 1 },
+                type_cover: { id_type_cover: 0, name: '', coefficient_braking: 1 },
                 direction: 1,
                 length: 1,
             };
@@ -480,18 +482,15 @@ export class AdminPageComponent {
         } else if (this.defineClickRoad(X, Y)) {
             this.rightPanelHeaderText = 'Параметры прогона';
             const road = this.roadList[this.indexSelectedElement];
-            if (road.length) {
-                this.roadLength.setValue(road.length);
-            }
-            if (road.direction) {
-                this.dropdownMoveDirection = road.direction.toString();
-            }
-            if (road.street) {
-                this.dropdownStreet = road.street.name;
-            }
-            if (road.typeCover) {
-                this.dropdownCoverType = road.typeCover.name;
-            }
+
+            this.roadLength.setValue(road.length);
+
+            this.dropdownMoveDirection = road.direction.toString();
+
+            this.dropdownStreet = road.street.name;
+
+            this.dropdownCoverType = road.type_cover.name;
+
             if (road.traffic_signs) {
                 this.dropdownTrafficSign = road.traffic_signs.speed.toString();
             }
@@ -987,9 +986,9 @@ export class AdminPageComponent {
 
         this.roadList[this.indexSelectedElement].length = this.roadLength.value as number;
 
-        this.roadList[this.indexSelectedElement].typeCover.name = this.dropdownCoverType;
+        this.roadList[this.indexSelectedElement].type_cover.name = this.dropdownCoverType;
 
-        this.roadList[this.indexSelectedElement].typeCover.id_type_cover = this.coverTypes.find(
+        this.roadList[this.indexSelectedElement].type_cover.id_type_cover = this.coverTypes.find(
             coverType => coverType.name === this.dropdownCoverType
         )!.id_type_cover;
 

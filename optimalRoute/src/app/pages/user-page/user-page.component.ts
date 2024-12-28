@@ -271,9 +271,9 @@ export class UserPageComponent {
             if (road.street) {
                 this.dropdownStreet = road.street.name;
             }
-            if (road.typeCover) {
-                this.dropdownCoverTypeName = road.typeCover.name;
-                this.dropdownCoverTypeCoef = road.typeCover.coefficient_braking.toString();
+            if (road.type_cover) {
+                this.dropdownCoverTypeName = road.type_cover.name;
+                this.dropdownCoverTypeCoef = road.type_cover.coefficient_braking.toString();
             }
             if (road.traffic_signs) {
                 this.dropdownTrafficSign = road.traffic_signs.speed.toString();
