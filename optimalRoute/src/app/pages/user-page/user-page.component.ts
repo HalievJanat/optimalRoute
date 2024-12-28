@@ -787,7 +787,9 @@ export class UserPageComponent {
         this.timeShowOptimalRoute = 0;
         clearInterval(this.intervalDescriptorColor);
         clearInterval(this.intervalDescriptorTime);
+        this.timeModel = 0;
         this.isVisualMenu = true;
+        this.isColorFillTrafficLight = [];
     }
 
     simulateRoutes(): void {
@@ -802,6 +804,8 @@ export class UserPageComponent {
             clearInterval(this.intervalDescriptorTime);
             clearInterval(this.intervalDescriptorColor);
             this.isVisualMenu = true;
+            this.isColorFillTrafficLight = [];
+            this.timeModel = 0;
         }, this.timeShowOptimalRoute);
         this.intervalDescriptorTime = setInterval(() => {
             this.gridDrowSize();
