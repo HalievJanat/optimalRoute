@@ -305,7 +305,7 @@ export class AdminPageComponent {
             const jsonCrossroad: string = JSON.stringify(this.crossroadList);
             console.log(jsonCrossroad);
         } else if (this.isRoadAdd == true && this.indexCrossroad1 >= 0) {
-            this.isRoadAdd = false;
+            
             let i = 0;
             while (i < this.crossroadList.length) {
                 if (this.crossroadList[i].x == X && this.crossroadList[i].y == Y) {
@@ -974,8 +974,10 @@ export class AdminPageComponent {
             console.log(jsonRoad);
             this.indexCrossroad1 = -1;
             this.indexSelectedElement = this.roadList.length - 1;
+            this.isRoadAdd = false;
         }
 
+        console.log( this.indexSelectedElement);
         this.roadList[this.indexSelectedElement].direction = Number(this.dropdownMoveDirection);
 
         this.roadList[this.indexSelectedElement].street.name = this.dropdownStreet;
