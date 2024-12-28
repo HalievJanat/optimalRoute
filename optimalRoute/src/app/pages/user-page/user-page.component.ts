@@ -28,7 +28,7 @@ export class UserPageComponent {
         config.backdrop = 'static';
         config.keyboard = false;
 
-        let udsJSON: string = '{"id_uds":0,"name":"Samara","crossroads":[{"id_crossroad":0,"id_uds":0,"x":150,"y":100,"traffic_light":{"id_traffic_light":0,"time_green_signal":2,"time_red_signal":2}},{"id_crossroad":1,"id_uds":0,"x":300,"y":50,"traffic_light":{"id_traffic_light":0,"time_green_signal":5,"time_red_signal":5}},{"id_crossroad":2,"id_uds":0,"x":100,"y":200,"traffic_light":{"id_traffic_light":0,"time_green_signal":20,"time_red_signal":20}},{"id_crossroad":3,"id_uds":0,"x":150,"y":250,"traffic_light":{"id_traffic_light":0,"time_green_signal":20,"time_red_signal":20}},{"id_crossroad":4,"id_uds":0,"x":250,"y":300,"traffic_light":{"id_traffic_light":0,"time_green_signal":20,"time_red_signal":20}},{"id_crossroad":5,"id_uds":0,"x":300,"y":150,"traffic_light":{"id_traffic_light":0,"time_green_signal":20,"time_red_signal":20}}],"roads":[{"crossroad_1":0,"crossroad_2":2,"id_uds":0,"street":{"id_street":0,"name":"Московское шоссе"},"traffic_signs":null,"typeCover":{"id_type_cover":0,"name":"Асфальт","coefficient_braking":1.5},"police_post":null,"length":4,"direction":0},{"crossroad_1":2,"crossroad_2":3,"id_uds":0,"street":{"id_street":1,"name":"Советская"},"traffic_signs":{"id_traffic_sign":0,"speed":30},"typeCover":{"id_type_cover":0,"name":"Асфальт","coefficient_braking":1.5},"police_post":null,"length":9,"direction":0},{"crossroad_1":1,"crossroad_2":5,"id_uds":0,"street":{"id_street":2,"name":"Ставропольская"},"traffic_signs":{"id_traffic_sign":0,"speed":30},"typeCover":{"id_type_cover":0,"name":"Асфальт","coefficient_braking":1.5},"police_post":{"corruption":{"id_corruption":0,"name":"Слабо","coefficient_corruption":1.2}},"length":1,"direction":0},{"crossroad_1":3,"crossroad_2":5,"id_uds":0,"street":{"id_street":3,"name":"Гагарина"},"traffic_signs":{"id_traffic_sign":0,"speed":30},"typeCover":{"id_type_cover":0,"name":"Асфальт","coefficient_braking":1.5},"police_post":{"corruption":{"id_corruption":1,"name":"Сильно","coefficient_corruption":1.9}},"length":1,"direction":0},{"crossroad_1":0,"crossroad_2":4,"id_uds":0,"street":{"id_street":0,"name":"Московское шоссе"},"traffic_signs":{"id_traffic_sign":0,"speed":30},"typeCover":{"id_type_cover":0,"name":"Асфальт","coefficient_braking":1.5},"police_post":null,"length":8,"direction":0}], "route": null}';
+        let udsJSON: string = '{"id_uds":0,"name":"Samara","crossroads":[{"id_crossroad":0,"id_uds":0,"x":150,"y":100,"traffic_light":{"id_traffic_light":0,"time_green_signal":2,"time_red_signal":2}},{"id_crossroad":1,"id_uds":0,"x":300,"y":50,"traffic_light":{"id_traffic_light":0,"time_green_signal":5,"time_red_signal":5}},{"id_crossroad":2,"id_uds":0,"x":100,"y":200,"traffic_light":{"id_traffic_light":0,"time_green_signal":20,"time_red_signal":20}},{"id_crossroad":3,"id_uds":0,"x":150,"y":250,"traffic_light":{"id_traffic_light":0,"time_green_signal":20,"time_red_signal":20}},{"id_crossroad":4,"id_uds":0,"x":250,"y":300,"traffic_light":{"id_traffic_light":0,"time_green_signal":20,"time_red_signal":20}},{"id_crossroad":5,"id_uds":0,"x":300,"y":150,"traffic_light":{"id_traffic_light":0,"time_green_signal":20,"time_red_signal":20}}],"roads":[{"crossroad_1":0,"crossroad_2":2,"id_uds":0,"street":{"id_street":0,"name":"Московское шоссе"},"traffic_signs":null,"type_cover":{"id_type_cover":0,"name":"Асфальт","coefficient_braking":1.5},"police_post":null,"length":4,"direction":0},{"crossroad_1":2,"crossroad_2":3,"id_uds":0,"street":{"id_street":1,"name":"Советская"},"traffic_signs":{"id_traffic_sign":0,"speed":30},"type_cover":{"id_type_cover":0,"name":"Асфальт","coefficient_braking":1.5},"police_post":null,"length":9,"direction":0},{"crossroad_1":1,"crossroad_2":5,"id_uds":0,"street":{"id_street":2,"name":"Ставропольская"},"traffic_signs":{"id_traffic_sign":0,"speed":30},"type_cover":{"id_type_cover":0,"name":"Асфальт","coefficient_braking":1.5},"police_post":{"corruption":{"id_corruption":0,"name":"Слабо","coefficient_corruption":1.2}},"length":1,"direction":0},{"crossroad_1":3,"crossroad_2":5,"id_uds":0,"street":{"id_street":3,"name":"Гагарина"},"traffic_signs":{"id_traffic_sign":0,"speed":30},"type_cover":{"id_type_cover":0,"name":"Асфальт","coefficient_braking":1.5},"police_post":{"corruption":{"id_corruption":1,"name":"Сильно","coefficient_corruption":1.9}},"length":1,"direction":0},{"crossroad_1":0,"crossroad_2":4,"id_uds":0,"street":{"id_street":0,"name":"Московское шоссе"},"traffic_signs":{"id_traffic_sign":0,"speed":30},"type_cover":{"id_type_cover":0,"name":"Асфальт","coefficient_braking":1.5},"police_post":null,"length":8,"direction":0}], "route": null}';
 
         this.UDSList[0] = JSON.parse(udsJSON);
         console.log(this.UDSList[0]);
@@ -165,6 +165,10 @@ export class UserPageComponent {
 
             let tempGridSize = this.gridSize;
             this.visualOptimalRoute(tempGridSize);
+            this.isRouteStart = false;
+            this.isRouteEnd = false;
+            this.isDriver = false;
+            this.isCriteria = false;
         }
     }
 
@@ -177,6 +181,10 @@ export class UserPageComponent {
 
             let tempGridSize = this.gridSize;
             this.visualOptimalRoute(tempGridSize);
+            this.isRouteStart = false;
+            this.isRouteEnd = false;
+            this.isDriver = false;
+            this.isCriteria = false;
         }
     }
 
@@ -238,7 +246,12 @@ export class UserPageComponent {
         this.isLeftClickRoad = false;
         
         if ((!this.isRouteStart && !this.isRouteEnd) || !this.defineClickCrossroad(X, Y)) {
-            this.rightPanelHeaderText = '';
+            if (!this.isDriver) this.rightPanelHeaderText = '';
+            this.indexSelectedElement = -1;
+            this.isRouteStart = false;
+            this.isRouteEnd = false;
+            this.isDriver = false;
+            this.isCriteria = false;
             return;
         }
         if (this.start_crossroad === this.indexSelectedElement || this.end_crossroad === this.indexSelectedElement) {
@@ -251,6 +264,11 @@ export class UserPageComponent {
         }
         this.gridDrowSize();
         this.visualOptimalRoute(this.gridSize);
+        this.indexSelectedElement = -1;
+        this.isRouteStart = false;
+        this.isRouteEnd = false;
+        this.isDriver = false;
+        this.isCriteria = false;
     }
 
     doubleClickCanvas(X: number, Y: number): void {
@@ -267,27 +285,23 @@ export class UserPageComponent {
         } else if (this.defineClickRoad(X, Y)) {
             this.rightPanelHeaderText = 'Параметры прогона';
             const road = this.roadList[this.indexSelectedElement];
-            if (road.length) {
-                this.dropdownLength = road.length.toString();
-            }
+
+            console.log(road);
+
+            this.dropdownLength = road.length.toString();
             this.dropdownMoveDirection = road.direction.toString();
-            if (road.street) {
-                this.dropdownStreet = road.street.name;
-            }
-            if (road.type_cover) {
-                this.dropdownCoverTypeName = road.type_cover.name;
-                this.dropdownCoverTypeCoef = road.type_cover.coefficient_braking.toString();
-            }
-            if (road.traffic_signs) {
+            this.dropdownStreet = road.street.name;
+            this.dropdownCoverTypeName = road.type_cover.name;
+            this.dropdownCoverTypeCoef = road.type_cover.coefficient_braking.toString();
+            if (road.traffic_signs != null) {
                 this.dropdownTrafficSign = road.traffic_signs.speed.toString();
             }
-            if (road.police_post) {
+            if (road.police_post != null) {
                 this.dropdownCorruptionName = road.police_post.corruption.name;
                 this.dropdownCorruptionCoef = road.police_post.corruption.coefficient_corruption.toString();
             }
             this.isLeftClickRoad = true;
         }
-        this.indexSelectedElement = -1;
     }
 
     openContextMenu(event: MouseEvent): void {
@@ -566,6 +580,10 @@ export class UserPageComponent {
     }
 
     replaceSizeGrid(flag: boolean): void {
+        this.isRouteStart = false;
+        this.isRouteEnd = false;
+        this.isDriver = false;
+        this.isCriteria = false;
         let tempGridSize = this.gridSize;
         if (!flag && this.gridSize > 30) this.gridSize -= 10;
         else if (flag && this.gridSize < 100) this.gridSize += 10;

@@ -102,7 +102,7 @@
                         <span>Время </span>
                     </div>
                     <div class="panel-el">
-                        <input type="radio"     name="criteria" id="cost" (click)="addCriteria()" [checked]="isCost"> 
+                        <input type="radio"   name="criteria" id="cost" (click)="addCriteria()" [checked]="isCost"> 
                         <span>Стоимость </span>
                     </div>
                     <button class="buttonRoute submit-button" (click)="buildRoute()">Построить маршрут</button>
@@ -228,17 +228,20 @@
 
         @if (isLeftClickCrossroad) {
             <div class="right-panel-body">
-                <div class="panel-el">
-                    <h4>Светофор</h4>
-                </div>
-                <div class="panel-el">
-                    <span>Длительность зелёной фазы: </span>
-                    <input type="text" class="form-control" value="{{dropdownGreenDuration}}" disabled="false"> 
-                </div>
-                <div class="panel-el">
-                    <span>Длительность красной фазы: </span>
-                    <input type="text" class="form-control" value="{{dropdownRedDuration}}" disabled="false"> 
-                </div>
+                @if (crossroadList[indexSelectedElement].traffic_light != null) {
+                    <div class="panel-el">
+                        <h4>Светофор</h4>
+                    </div>
+                    <div class="panel-el">
+                        <span>Длительность зелёной фазы: </span>
+                        <input type="text" class="form-control" value="{{dropdownGreenDuration}}" disabled="false"> 
+                    </div>
+                    <div class="panel-el">
+                        <span>Длительность красной фазы: </span>
+                        <input type="text" class="form-control" value="{{dropdownRedDuration}}" disabled="false"> 
+                    </div>
+                }
+                
             </div>
         }
 
@@ -267,24 +270,28 @@
                     <span>Коэффициент торможения: </span>
                     <input type="text" class="form-control" value="{{dropdownCoverTypeCoef}}" disabled="false"> 
                 </div>
-                <div class="panel-el">
-                    <h4>Знак дорожного движения</h4>
-                </div>
-                <div class="panel-el">
-                    <span>Скорость:</span>
-                    <input type="text" class="form-control" value="{{dropdownTrafficSign}}" disabled="false"> 
-                </div>
-                <div class="panel-el">
-                    <h4>Полицейский пост</h4>
-                </div>
-                <div class="panel-el">
-                    <span>Название коэффициента коррумпированности:</span>
-                    <input type="text" class="form-control" value="{{dropdownCorruptionName}}" disabled="false"> 
-                </div>
-                <div class="panel-el">
-                    <span>Коэффициент коррумпированности: </span>
-                    <input type="text" class="form-control" value="{{dropdownCorruptionCoef}}" disabled="false"> 
-                </div>
+                @if (roadList[indexSelectedElement].traffic_signs != null) {
+                    <div class="panel-el">
+                        <h4>Знак дорожного движения</h4>
+                    </div>
+                    <div class="panel-el">
+                        <span>Скорость:</span>
+                        <input type="text" class="form-control" value="{{dropdownTrafficSign}}" disabled="false"> 
+                    </div>
+                }
+                @if (roadList[indexSelectedElement].police_post != null) {
+                    <div class="panel-el">
+                        <h4>Полицейский пост</h4>
+                    </div>
+                    <div class="panel-el">
+                        <span>Название коэффициента коррумпированности:</span>
+                        <input type="text" class="form-control" value="{{dropdownCorruptionName}}" disabled="false"> 
+                    </div>
+                    <div class="panel-el">
+                        <span>Коэффициент коррумпированности: </span>
+                        <input type="text" class="form-control" value="{{dropdownCorruptionCoef}}" disabled="false"> 
+                    </div>
+                }          
             </div>
         }
 
