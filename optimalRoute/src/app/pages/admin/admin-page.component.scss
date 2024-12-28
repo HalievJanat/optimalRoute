@@ -77,6 +77,8 @@ input::placeholder {
 .left-panel-body {
     display: flex;
     flex-direction: column;
+    user-select: none;
+    cursor: pointer;
     div {
         display: flex;
         align-items: center;
