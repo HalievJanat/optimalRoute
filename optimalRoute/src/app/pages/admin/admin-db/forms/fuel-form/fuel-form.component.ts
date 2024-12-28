@@ -216,9 +216,27 @@ export class FuelFormComponent implements OnInit, AfterViewInit {
             .then(() => {
                 this.httpService.deleteMapDbValue(this.typeFuels[index], 'fuel').subscribe({
                     next: () => {
-                        this.typeFuels.splice(index, 1);
-                        this.typeFuelEditForm.controls.splice(index, 1);
-                        this.typeFuelsArrSize--;
+                        this.httpService.getDrivers().subscribe({
+                            next: drivers => {
+                                this.drivers = drivers;
+
+                                this.httpService.getVehicles().subscribe({
+                                    next: vehicles => {
+                                        this.vehicles = vehicles;
+
+                                        this.httpService.getTypeFuels().subscribe({
+                                            next: typeFuels => {
+                                                this.typeFuels = typeFuels;
+
+                                                this.typeFuels.splice(index, 1);
+                                                this.typeFuelEditForm.controls.splice(index, 1);
+                                                this.typeFuelsArrSize--;
+                                            },
+                                        });
+                                    },
+                                });
+                            },
+                        });
                     },
                     error: () => {
                         this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');

@@ -187,9 +187,21 @@ export class StreetFormComponent implements OnInit, AfterViewInit {
             .then(() => {
                 this.httpService.deleteMapDbValue(this.streets[index], 'street').subscribe({
                     next: () => {
-                        this.streets.splice(index, 1);
-                        this.streetEditForm.controls.splice(index, 1);
-                        this.streetsArrSize--;
+                        this.httpService.getUDSList().subscribe({
+                            next: udsList => {
+                                this.udsList = udsList;
+
+                                this.httpService.getStreets().subscribe({
+                                    next: streets => {
+                                        this.streets = streets;
+
+                                        this.streets.splice(index, 1);
+                                        this.streetEditForm.controls.splice(index, 1);
+                                        this.streetsArrSize--;
+                                    },
+                                });
+                            },
+                        });
                     },
                     error: () => {
                         this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');

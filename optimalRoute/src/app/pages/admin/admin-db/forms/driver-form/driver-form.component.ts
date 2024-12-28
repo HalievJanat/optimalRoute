@@ -3,8 +3,9 @@ import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } 
 import { HttpService } from '../../../../../services/http-service.service';
 import { Driver, Vehicle } from '../../../../../models/driver.model';
 import { isRequiredError, stringRangeValidator } from '../validators';
-import { NgbDropdownModule, NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDropdownModule, NgbModal, NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
+import { ModalConfirmComponent } from '../../../../../modals/modal-confirm/modal-confirm.component';
 
 @Component({
     selector: 'app-driver-form',
@@ -57,7 +58,7 @@ export class DriverFormComponent implements OnInit, AfterViewInit {
         }>
     >([]);
 
-    constructor() {
+    constructor(private modalService: NgbModal) {
         this.httpService.getVehicles().subscribe({
             next: vehicles => {
                 this.vehicles = vehicles;
@@ -196,16 +197,31 @@ export class DriverFormComponent implements OnInit, AfterViewInit {
     }
 
     driverDelete(index: number) {
-        this.httpService.deleteMapDbValue(this.drivers[index], 'driver').subscribe({
-            next: () => {
-                this.drivers.splice(index, 1);
-                this.driverEditForm.controls.splice(index, 1);
-                this.driversArrSize--;
-            },
-            error: () => {
-                this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
-            },
+        const modalRef = this.modalService.open(ModalConfirmComponent, {
+            centered: true,
         });
+        modalRef.componentInstance.deletedObj = this.drivers[index].name;
+        
+        modalRef.result
+            .then(() => {
+                this.httpService.deleteMapDbValue(this.drivers[index], 'driver').subscribe({
+                    next: () => {
+                        this.httpService.getDrivers().subscribe({
+                            next: drivers => {
+                                this.drivers = drivers;
+
+                                this.drivers.splice(index, 1);
+                                this.driverEditForm.controls.splice(index, 1);
+                                this.driversArrSize--;
+                            },
+                        });
+                    },
+                    error: () => {
+                        this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
+                    },
+                });
+            })
+            .catch(() => {});
     }
 
     driverDuplicateValidation(

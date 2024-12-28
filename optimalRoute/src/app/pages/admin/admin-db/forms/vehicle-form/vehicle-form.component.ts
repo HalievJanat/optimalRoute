@@ -221,9 +221,21 @@ export class VehicleFormComponent implements OnInit, AfterViewInit {
             .then(() => {
                 this.httpService.deleteMapDbValue(this.vehicles[index], 'car').subscribe({
                     next: () => {
-                        this.vehicles.splice(index, 1);
-                        this.vehicleEditForm.controls.splice(index, 1);
-                        this.vehiclesArrSize--;
+                        this.httpService.getDrivers().subscribe({
+                            next: drivers => {
+                                this.drivers = drivers;
+
+                                this.httpService.getVehicles().subscribe({
+                                    next: vehicles => {
+                                        this.vehicles = vehicles;
+
+                                        this.vehicles.splice(index, 1);
+                                        this.vehicleEditForm.controls.splice(index, 1);
+                                        this.vehiclesArrSize--;
+                                    },
+                                });
+                            },
+                        });
                     },
                     error: () => {
                         this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');

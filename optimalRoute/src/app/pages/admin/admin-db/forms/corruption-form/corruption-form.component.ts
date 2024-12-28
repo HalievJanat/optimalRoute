@@ -199,14 +199,21 @@ export class CorruptionFormComponent implements OnInit, AfterViewInit {
             .then(() => {
                 this.httpService.deleteMapDbValue(this.corruptionDegrees[index], 'corruption').subscribe({
                     next: () => {
-                        this.corruptionDegrees.splice(index, 1);
-                        this.corruptionDegreeEditForm.controls.splice(index, 1);
-                        this.corruptionDegreeArrSize--;
                         this.httpService.getDegreeCorruptions().subscribe({
-                            next: (corruptionDegrees) => {
+                            next: corruptionDegrees => {
                                 this.corruptionDegrees = corruptionDegrees;
-                            }
-                        })
+
+                                this.httpService.getUDSList().subscribe({
+                                    next: udsList => {
+                                        this.udsList = udsList;
+
+                                        this.corruptionDegrees.splice(index, 1);
+                                        this.corruptionDegreeEditForm.controls.splice(index, 1);
+                                        this.corruptionDegreeArrSize--;
+                                    },
+                                });
+                            },
+                        });
                     },
                     error: () => {
                         this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');

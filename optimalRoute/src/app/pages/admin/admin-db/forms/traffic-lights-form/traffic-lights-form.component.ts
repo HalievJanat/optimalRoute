@@ -196,9 +196,21 @@ export class TrafficLightsFormComponent implements OnInit, AfterViewInit {
             .then(() => {
                 this.httpService.deleteMapDbValue(this.trafficLights[index], 'traffic-light').subscribe({
                     next: () => {
-                        this.trafficLights.splice(index, 1);
-                        this.trafficLightEditForm.controls.splice(index, 1);
-                        this.trafficLightsArrSize--;
+                        this.httpService.getUDSList().subscribe({
+                            next: udsList => {
+                                this.udsList = udsList;
+
+                                this.httpService.getTrafficLights().subscribe({
+                                    next: trafficLights => {
+                                        this.trafficLights = trafficLights;
+
+                                        this.trafficLights.splice(index, 1);
+                                        this.trafficLightEditForm.controls.splice(index, 1);
+                                        this.trafficLightsArrSize--;
+                                    },
+                                });
+                            },
+                        });
                     },
                     error: () => {
                         this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');

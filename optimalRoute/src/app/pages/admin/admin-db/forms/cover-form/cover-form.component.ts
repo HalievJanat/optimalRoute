@@ -196,9 +196,21 @@ export class CoverFormComponent implements OnInit, AfterViewInit {
             .then(() => {
                 this.httpService.deleteMapDbValue(this.coverTypes[index], 'coverage').subscribe({
                     next: () => {
-                        this.coverTypes.splice(index, 1);
-                        this.coverTypeEditForm.controls.splice(index, 1);
-                        this.coverTypesArrSize--;
+                        this.httpService.getUDSList().subscribe({
+                            next: udsList => {
+                                this.udsList = udsList;
+
+                                this.httpService.getTypeCovers().subscribe({
+                                    next: typeCovers => {
+                                        this.coverTypes = typeCovers;
+
+                                        this.coverTypes.splice(index, 1);
+                                        this.coverTypeEditForm.controls.splice(index, 1);
+                                        this.coverTypesArrSize--;
+                                    },
+                                });
+                            },
+                        });
                     },
                     error: () => {
                         this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
