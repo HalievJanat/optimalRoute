@@ -202,6 +202,11 @@ export class CorruptionFormComponent implements OnInit, AfterViewInit {
                         this.corruptionDegrees.splice(index, 1);
                         this.corruptionDegreeEditForm.controls.splice(index, 1);
                         this.corruptionDegreeArrSize--;
+                        this.httpService.getDegreeCorruptions().subscribe({
+                            next: (corruptionDegrees) => {
+                                this.corruptionDegrees = corruptionDegrees;
+                            }
+                        })
                     },
                     error: () => {
                         this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
