@@ -15,6 +15,8 @@ export interface UDS {
 }
 
 export interface Crossroad {
+    id_crossroad: number;
+    id_uds: number;
     x: number;
     y: number;
     traffic_light: TrafficLights | null;
@@ -25,7 +27,7 @@ export interface Road {
     crossroad_2: number;
     street: Street;
     traffic_signs: TrafficSigns | null;
-    typeCover: TypeCover;
+    type_cover: TypeCover;
     police_post: PolicePost | null;
     length: number;
     direction: number;
