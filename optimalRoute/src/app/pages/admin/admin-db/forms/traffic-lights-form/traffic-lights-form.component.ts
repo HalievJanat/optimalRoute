@@ -192,15 +192,6 @@ export class TrafficLightsFormComponent implements OnInit, AfterViewInit {
             }
         }
 
-        this.udsList.forEach(uds => {
-            uds.crossroads.forEach(crossroad => {
-                if (crossroad.traffic_light?.id_traffic_light === this.trafficLights[index].id_traffic_light) {
-                    modalRef.componentInstance.relatedObjects.push('Карта' + ' ' + uds.name);
-                    return;
-                }
-            });
-        });
-
         modalRef.result
             .then(() => {
                 this.httpService.deleteMapDbValue(this.trafficLights[index], 'traffic-light').subscribe({
