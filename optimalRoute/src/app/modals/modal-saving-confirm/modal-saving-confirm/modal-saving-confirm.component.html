@@ -1,0 +1,11 @@
+<div class="modal-header">
+    <h4 class="modal-title">Сохранение</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss('Cross click')"></button>
+</div>
+<div class="modal-body">
+    <p>У вас остались несохранённые изменения. Сохранить их?</p>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-outline-secondary" (click)="activeModal.close('Save click')">Сохранить</button>
+    <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss('Close click')">Не сохранять</button>
+</div>

@@ -6,7 +6,7 @@ import { NgbDropdownModule, NgbModal, NgbPaginationModule } from '@ng-bootstrap/
 import { DegreeCorruption } from '../../../../../models/police-post.model';
 import { ToastrService } from 'ngx-toastr';
 import { UDS } from '../../../../../models/UDS.model';
-import { ModalConfirmComponent } from '../../../../../modals/modal-confirm/modal-confirm.component';
+import { ModalDeleteConfirmComponent } from '../../../../../modals/modal-delete-confirm/modal-delete-confirm.component';
 
 @Component({
     selector: 'app-corruption-form',
@@ -180,7 +180,7 @@ export class CorruptionFormComponent implements OnInit, AfterViewInit {
     }
 
     corruptionDegreeDelete(index: number) {
-        const modalRef = this.modalService.open(ModalConfirmComponent, {
+        const modalRef = this.modalService.open(ModalDeleteConfirmComponent, {
             centered: true,
         });
         modalRef.componentInstance.deletedObj = this.corruptionDegrees[index].name;

@@ -4,7 +4,7 @@ import { HttpService } from '../../../../../services/http-service.service';
 import { Driver, TypeFuel, Vehicle } from '../../../../../models/driver.model';
 import { allowOnlyDigits, isRequiredError, rangeValidator, stringRangeValidator } from '../validators';
 import { NgbDropdownModule, NgbModal, NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
-import { ModalConfirmComponent } from '../../../../../modals/modal-confirm/modal-confirm.component';
+import { ModalDeleteConfirmComponent } from '../../../../../modals/modal-delete-confirm/modal-delete-confirm.component';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
@@ -187,7 +187,7 @@ export class FuelFormComponent implements OnInit, AfterViewInit {
     }
 
     typeFuelDelete(index: number) {
-        const modalRef = this.modalService.open(ModalConfirmComponent, {
+        const modalRef = this.modalService.open(ModalDeleteConfirmComponent, {
             centered: true,
         });
         modalRef.componentInstance.deletedObj = this.typeFuels[index].name;

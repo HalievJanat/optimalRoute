@@ -14,6 +14,7 @@ import { ModalInputComponent } from '../../modals/modal-input/modal-input/modal-
 import { ToastrService } from 'ngx-toastr';
 import { ModalSelectingComponent } from '../../modals/modal-selecting/modal-selecting/modal-selecting.component';
 import { Router } from '@angular/router';
+import { ModalSavingConfirmComponent } from '../../modals/modal-saving-confirm/modal-saving-confirm/modal-saving-confirm.component';
 
 @Component({
     selector: 'app-admin-page',
@@ -305,7 +306,6 @@ export class AdminPageComponent {
             const jsonCrossroad: string = JSON.stringify(this.crossroadList);
             console.log(jsonCrossroad);
         } else if (this.isRoadAdd == true && this.indexCrossroad1 >= 0) {
-            
             let i = 0;
             while (i < this.crossroadList.length) {
                 if (this.crossroadList[i].x == X && this.crossroadList[i].y == Y) {
@@ -977,7 +977,7 @@ export class AdminPageComponent {
             this.isRoadAdd = false;
         }
 
-        console.log( this.indexSelectedElement);
+        console.log(this.indexSelectedElement);
         this.roadList[this.indexSelectedElement].direction = Number(this.dropdownMoveDirection);
 
         this.roadList[this.indexSelectedElement].street.name = this.dropdownStreet;
@@ -1249,5 +1249,34 @@ export class AdminPageComponent {
 
     findPolicePostIndex() {
         return this.corruptionDegrees.find(corruptionDegree => corruptionDegree.name === this.dropdownCorruptionCoef)!.id_corruption;
+    }
+
+    openDbPage() {
+        this.openConfirmModal('admin-page/db');
+    }
+
+    openSystemPage() {
+        this.openConfirmModal('system-page');
+    }
+
+    openConfirmModal(nextPageUrl: string) {
+        console.log(this.roadList.length);
+        if (this.crossroadList.length < 2 || !this.roadList.length) {
+            this.router.navigateByUrl(nextPageUrl);
+            return;
+        }
+
+        const modalRef = this.modalService.open(ModalSavingConfirmComponent, {
+            centered: true,
+        });
+
+        modalRef.result
+            .then(() => {
+                this.saveUDS();
+                this.router.navigateByUrl(nextPageUrl);
+            })
+            .catch(() => {
+                this.router.navigateByUrl(nextPageUrl);
+            });
     }
 }

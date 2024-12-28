@@ -6,7 +6,7 @@ import { NgbDropdownModule, NgbModal, NgbPaginationModule } from '@ng-bootstrap/
 import { TrafficLights } from '../../../../../models/traffic-light.model';
 import { ToastrService } from 'ngx-toastr';
 import { UDS } from '../../../../../models/UDS.model';
-import { ModalConfirmComponent } from '../../../../../modals/modal-confirm/modal-confirm.component';
+import { ModalDeleteConfirmComponent } from '../../../../../modals/modal-delete-confirm/modal-delete-confirm.component';
 
 @Component({
     selector: 'app-traffic-lights-form',
@@ -177,7 +177,7 @@ export class TrafficLightsFormComponent implements OnInit, AfterViewInit {
     }
 
     trafficLightDelete(index: number) {
-        const modalRef = this.modalService.open(ModalConfirmComponent, {
+        const modalRef = this.modalService.open(ModalDeleteConfirmComponent, {
             centered: true,
         });
         modalRef.componentInstance.deletedObj = 'Светофор';

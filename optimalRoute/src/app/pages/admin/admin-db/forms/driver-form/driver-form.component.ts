@@ -5,7 +5,7 @@ import { Driver, Vehicle } from '../../../../../models/driver.model';
 import { isRequiredError, stringRangeValidator } from '../validators';
 import { NgbDropdownModule, NgbModal, NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
-import { ModalConfirmComponent } from '../../../../../modals/modal-confirm/modal-confirm.component';
+import { ModalDeleteConfirmComponent } from '../../../../../modals/modal-delete-confirm/modal-delete-confirm.component';
 
 @Component({
     selector: 'app-driver-form',
@@ -197,11 +197,11 @@ export class DriverFormComponent implements OnInit, AfterViewInit {
     }
 
     driverDelete(index: number) {
-        const modalRef = this.modalService.open(ModalConfirmComponent, {
+        const modalRef = this.modalService.open(ModalDeleteConfirmComponent, {
             centered: true,
         });
         modalRef.componentInstance.deletedObj = this.drivers[index].name;
-        
+
         modalRef.result
             .then(() => {
                 this.httpService.deleteMapDbValue(this.drivers[index], 'driver').subscribe({

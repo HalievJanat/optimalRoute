@@ -4,9 +4,9 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 @Component({
     selector: 'app-modal-confirm',
     standalone: true,
-    templateUrl: './modal-confirm.component.html',
+    templateUrl: './modal-delete-confirm.component.html',
 })
-export class ModalConfirmComponent {
+export class ModalDeleteConfirmComponent {
     activeModal = inject(NgbActiveModal);
 
     @Input() deletedObj: string = '';

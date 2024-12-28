@@ -6,7 +6,7 @@ import { NgbDropdownModule, NgbModal, NgbPaginationModule } from '@ng-bootstrap/
 import { TypeCover } from '../../../../../models/cover-type.model';
 import { ToastrService } from 'ngx-toastr';
 import { UDS } from '../../../../../models/UDS.model';
-import { ModalConfirmComponent } from '../../../../../modals/modal-confirm/modal-confirm.component';
+import { ModalDeleteConfirmComponent } from '../../../../../modals/modal-delete-confirm/modal-delete-confirm.component';
 
 @Component({
     selector: 'app-cover-form',
@@ -177,7 +177,7 @@ export class CoverFormComponent implements OnInit, AfterViewInit {
     }
 
     coverTypeDelete(index: number) {
-        const modalRef = this.modalService.open(ModalConfirmComponent, {
+        const modalRef = this.modalService.open(ModalDeleteConfirmComponent, {
             centered: true,
         });
         modalRef.componentInstance.deletedObj = this.coverTypes[index].name;

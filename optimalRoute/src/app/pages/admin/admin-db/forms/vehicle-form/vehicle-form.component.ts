@@ -5,7 +5,7 @@ import { Driver, TypeFuel, Vehicle } from '../../../../../models/driver.model';
 import { allowOnlyDigits, isRequiredError, rangeValidator, stringRangeValidator } from '../validators';
 import { NgbDropdownModule, NgbModal, NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
-import { ModalConfirmComponent } from '../../../../../modals/modal-confirm/modal-confirm.component';
+import { ModalDeleteConfirmComponent } from '../../../../../modals/modal-delete-confirm/modal-delete-confirm.component';
 
 @Component({
     selector: 'app-vehicle-form',
@@ -205,7 +205,7 @@ export class VehicleFormComponent implements OnInit, AfterViewInit {
     }
 
     vehicleDelete(index: number) {
-        const modalRef = this.modalService.open(ModalConfirmComponent, {
+        const modalRef = this.modalService.open(ModalDeleteConfirmComponent, {
             centered: true,
         });
         modalRef.componentInstance.deletedObj = this.vehicles[index].brand;
