@@ -1141,8 +1141,9 @@ export class AdminPageComponent {
                             this.httpService.getUDSList().subscribe({
                                 next: udsList => {
                                     this.UDSList = udsList;
-                                    const maxElement = udsList.reduce((max, current) => (current.id_uds > max.id_uds ? current : max));
-                                    this.currentUDS = maxElement;
+                                    const lastAddedUDS = udsList.reduce((max, current) => (current.id_uds > max.id_uds ? current : max));
+                                    this.currentUDS = lastAddedUDS;
+                                    this.toastr.success('Карта сохранена', 'Сохранение');
                                 },
                                 error: () => {
                                     this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
@@ -1182,8 +1183,9 @@ export class AdminPageComponent {
                             this.httpService.getUDSList().subscribe({
                                 next: udsList => {
                                     this.UDSList = udsList;
-                                    const maxElement = udsList.reduce((max, current) => (current.id_uds > max.id_uds ? current : max));
-                                    this.currentUDS = maxElement;
+                                    const lastAddedUDS = udsList.reduce((max, current) => (current.id_uds > max.id_uds ? current : max));
+                                    this.currentUDS = lastAddedUDS;
+                                    this.toastr.success('Карта сохранена', 'Сохранение');
                                 },
                             });
                         },
