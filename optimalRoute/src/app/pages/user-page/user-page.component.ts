@@ -28,7 +28,7 @@ export class UserPageComponent {
         config.backdrop = 'static';
         config.keyboard = false;
 
-        let udsJSON: string = '{"id_uds":0,"name":"Samara","crossroads":[{"id_crossroad":0,"id_uds":0,"x":150,"y":100,"traffic_light":{"id_traffic_light":0,"time_green_signal":20,"time_red_signal":20}},{"id_crossroad":1,"id_uds":0,"x":300,"y":50,"traffic_light":{"id_traffic_light":0,"time_green_signal":20,"time_red_signal":20}},{"id_crossroad":2,"id_uds":0,"x":100,"y":200,"traffic_light":{"id_traffic_light":0,"time_green_signal":20,"time_red_signal":20}},{"id_crossroad":3,"id_uds":0,"x":150,"y":250,"traffic_light":{"id_traffic_light":0,"time_green_signal":20,"time_red_signal":20}},{"id_crossroad":4,"id_uds":0,"x":250,"y":300,"traffic_light":{"id_traffic_light":0,"time_green_signal":20,"time_red_signal":20}},{"id_crossroad":5,"id_uds":0,"x":300,"y":150,"traffic_light":{"id_traffic_light":0,"time_green_signal":20,"time_red_signal":20}}],"roads":[{"crossroad_1":0,"crossroad_2":2,"id_uds":0,"street":{"id_street":0,"name":"Московское шоссе"},"traffic_signs":null,"typeCover":{"id_type_cover":0,"name":"Асфальт","coefficient_braking":1.5},"police_post":null,"length":4,"direction":0},{"crossroad_1":2,"crossroad_2":3,"id_uds":0,"street":{"id_street":1,"name":"Советская"},"traffic_signs":{"id_traffic_sign":0,"speed":30},"typeCover":{"id_type_cover":0,"name":"Асфальт","coefficient_braking":1.5},"police_post":null,"length":9,"direction":0},{"crossroad_1":1,"crossroad_2":5,"id_uds":0,"street":{"id_street":2,"name":"Ставропольская"},"traffic_signs":{"id_traffic_sign":0,"speed":30},"typeCover":{"id_type_cover":0,"name":"Асфальт","coefficient_braking":1.5},"police_post":{"corruption":{"id_corruption":0,"name":"Слабо","coefficient_corruption":1.2}},"length":1,"direction":0},{"crossroad_1":3,"crossroad_2":5,"id_uds":0,"street":{"id_street":3,"name":"Гагарина"},"traffic_signs":{"id_traffic_sign":0,"speed":30},"typeCover":{"id_type_cover":0,"name":"Асфальт","coefficient_braking":1.5},"police_post":{"corruption":{"id_corruption":1,"name":"Сильно","coefficient_corruption":1.9}},"length":1,"direction":0},{"crossroad_1":0,"crossroad_2":4,"id_uds":0,"street":{"id_street":0,"name":"Московское шоссе"},"traffic_signs":{"id_traffic_sign":0,"speed":30},"typeCover":{"id_type_cover":0,"name":"Асфальт","coefficient_braking":1.5},"police_post":null,"length":8,"direction":0}], "route": null}';
+        let udsJSON: string = '{"id_uds":0,"name":"Samara","crossroads":[{"id_crossroad":0,"id_uds":0,"x":150,"y":100,"traffic_light":{"id_traffic_light":0,"time_green_signal":2,"time_red_signal":2}},{"id_crossroad":1,"id_uds":0,"x":300,"y":50,"traffic_light":{"id_traffic_light":0,"time_green_signal":5,"time_red_signal":5}},{"id_crossroad":2,"id_uds":0,"x":100,"y":200,"traffic_light":{"id_traffic_light":0,"time_green_signal":20,"time_red_signal":20}},{"id_crossroad":3,"id_uds":0,"x":150,"y":250,"traffic_light":{"id_traffic_light":0,"time_green_signal":20,"time_red_signal":20}},{"id_crossroad":4,"id_uds":0,"x":250,"y":300,"traffic_light":{"id_traffic_light":0,"time_green_signal":20,"time_red_signal":20}},{"id_crossroad":5,"id_uds":0,"x":300,"y":150,"traffic_light":{"id_traffic_light":0,"time_green_signal":20,"time_red_signal":20}}],"roads":[{"crossroad_1":0,"crossroad_2":2,"id_uds":0,"street":{"id_street":0,"name":"Московское шоссе"},"traffic_signs":null,"typeCover":{"id_type_cover":0,"name":"Асфальт","coefficient_braking":1.5},"police_post":null,"length":4,"direction":0},{"crossroad_1":2,"crossroad_2":3,"id_uds":0,"street":{"id_street":1,"name":"Советская"},"traffic_signs":{"id_traffic_sign":0,"speed":30},"typeCover":{"id_type_cover":0,"name":"Асфальт","coefficient_braking":1.5},"police_post":null,"length":9,"direction":0},{"crossroad_1":1,"crossroad_2":5,"id_uds":0,"street":{"id_street":2,"name":"Ставропольская"},"traffic_signs":{"id_traffic_sign":0,"speed":30},"typeCover":{"id_type_cover":0,"name":"Асфальт","coefficient_braking":1.5},"police_post":{"corruption":{"id_corruption":0,"name":"Слабо","coefficient_corruption":1.2}},"length":1,"direction":0},{"crossroad_1":3,"crossroad_2":5,"id_uds":0,"street":{"id_street":3,"name":"Гагарина"},"traffic_signs":{"id_traffic_sign":0,"speed":30},"typeCover":{"id_type_cover":0,"name":"Асфальт","coefficient_braking":1.5},"police_post":{"corruption":{"id_corruption":1,"name":"Сильно","coefficient_corruption":1.9}},"length":1,"direction":0},{"crossroad_1":0,"crossroad_2":4,"id_uds":0,"street":{"id_street":0,"name":"Московское шоссе"},"traffic_signs":{"id_traffic_sign":0,"speed":30},"typeCover":{"id_type_cover":0,"name":"Асфальт","coefficient_braking":1.5},"police_post":null,"length":8,"direction":0}], "route": null}';
 
         this.UDSList[0] = JSON.parse(udsJSON);
         console.log(this.UDSList[0]);
@@ -146,7 +146,8 @@ export class UserPageComponent {
     intervalDescriptorColor!: ReturnType<typeof setTimeout>;
     intervalDescriptorTime!: ReturnType<typeof setTimeout>;
 
-    isColorFillTrafficLight: boolean = false;
+    isColorFillTrafficLight: boolean[] = [];
+    timeModel: number = 1;
 
     gridSize = 50; // Масштаб
     radius = (this.gridSize * 2) / 5;
@@ -370,6 +371,80 @@ export class UserPageComponent {
     }
 
     public visualOptimalRoute(tempGridSize: number) {
+        for (let i = 0; i < this.crossroadList.length; i++) {
+            this.radius = (this.gridSize * 2) / 5;
+            this.crossroadList[i].x = Math.round(this.crossroadList[i].x / tempGridSize) * this.gridSize;
+            this.crossroadList[i].y = Math.round(this.crossroadList[i].y / tempGridSize) * this.gridSize;
+
+            let stroke: string = 'black';
+
+            if (i === this.start_crossroad) stroke = 'blue';
+            else if (i === this.end_crossroad) stroke = 'red';
+
+            const circle = new Konva.Circle({
+                x: this.crossroadList[i].x,
+                y: this.crossroadList[i].y,
+                radius: this.radius,
+                stroke: stroke,
+                full: '#fff',
+                //draggable: true, // Включаем перетаскивание
+            });
+
+            this.layer.add(circle);
+            this.layer.draw();
+
+            if (this.timeShowOptimalRoute !== 0 && this.crossroadList[i].traffic_light !== null) {
+                for (let j = 0; j < 2; j++) {
+                    let placeXHorizontal;
+                    let plaseYHorizontal;
+                    let placeXVertical;
+                    let plaseYVertical;
+                    let side = this.radius / 2;
+                    switch (j) {
+                        case 0:
+                            placeXHorizontal = - 5*this.radius / 3;
+                            plaseYHorizontal = - this.radius / 4;
+                            placeXVertical = - this.radius / 4;
+                            plaseYVertical = - 5*this.radius / 3;
+                            break;
+                        default:
+                            placeXHorizontal = 5*this.radius / 3 - side;
+                            plaseYHorizontal = this.radius / 4 - side;
+                            placeXVertical = this.radius / 4 - side;
+                            plaseYVertical = 5*this.radius / 3 - side;
+                            break;
+                    }
+
+                    let square = new Konva.Rect({
+                        x: this.crossroadList[i].x + placeXHorizontal,
+                        y: this.crossroadList[i].y + plaseYHorizontal,
+                        width: side,
+                        height: side,
+                        stroke: this.isColorFillTrafficLight[i] ? 'red' : 'green',
+                        fill: '#fff'
+                        //draggable: true, // Включаем перетаскивание
+                    });
+
+                    this.layer.add(square);
+                    this.layer.draw();
+
+                    square = new Konva.Rect({
+                        x: this.crossroadList[i].x + placeXVertical,
+                        y: this.crossroadList[i].y + plaseYVertical,
+                        width: side,
+                        height: side,
+                        stroke: !this.isColorFillTrafficLight[i] ? 'red' : 'green',
+                        fill: '#fff'
+                        //draggable: true, // Включаем перетаскивание
+                    });
+        
+                    this.layer.add(square);
+                    this.layer.draw();
+                }
+            }
+
+        }
+
         for (let i = 0; i < this.roadList.length; i++) {
             let ky = this.calculateKLine(
                 this.crossroadList[this.roadList[i].crossroad_1].x,
@@ -438,68 +513,7 @@ export class UserPageComponent {
             }
             this.drawLine(x1, y1, x2, y2, stroke, this.roadList[i].direction);
         }
-
-        for (let i = 0; i < this.crossroadList.length; i++) {
-            this.radius = (this.gridSize * 2) / 5;
-            this.crossroadList[i].x = Math.round(this.crossroadList[i].x / tempGridSize) * this.gridSize;
-            this.crossroadList[i].y = Math.round(this.crossroadList[i].y / tempGridSize) * this.gridSize;
-
-            let stroke: string = 'black';
-
-            if (i === this.start_crossroad) stroke = 'blue';
-            else if (i === this.end_crossroad) stroke = 'red';
-
-            const circle = new Konva.Circle({
-                x: this.crossroadList[i].x,
-                y: this.crossroadList[i].y,
-                radius: this.radius,
-                stroke: stroke,
-                full: '#fff',
-                //draggable: true, // Включаем перетаскивание
-            });
-
-            this.layer.add(circle);
-
-            if (this.timeShowOptimalRoute !== 0 && this.crossroadList[i].traffic_light !== null) {
-                for (let j = 0; j < 4; j++) {
-                    let placeX;
-                    let plaseY;
-                    let side = this.radius / 2;
-                    switch (j) {
-                        case 0:
-                            placeX = - 5*this.radius / 3;
-                            plaseY = - this.radius / 4;
-                            break;
-                        case 1:
-                            placeX = 5*this.radius / 3 - side;
-                            plaseY = this.radius / 4 - side;
-                            break;
-                        case 2:
-                            placeX = - this.radius / 4;
-                            plaseY = - 5*this.radius / 3;
-                            break;
-                        default:
-                            placeX = this.radius / 4 - side;
-                            plaseY = 5*this.radius / 3 - side;
-                            break;
-                    }
-
-                    const square = new Konva.Rect({
-                        x: this.crossroadList[i].x + placeX,
-                        y: this.crossroadList[i].y + plaseY,
-                        width: side,
-                        height: side,
-                        stroke: this.isColorFillTrafficLight ? 'red' : 'green',
-                        fill: '#fff'
-                        //draggable: true, // Включаем перетаскивание
-                    });
-        
-                    this.layer.add(square);
-                }
-            }
-            // Обновляем слой
-            this.layer.draw();
-        }
+        this.layer.draw();
     }
 
     public gridDrowSize(): void {
@@ -736,32 +750,12 @@ export class UserPageComponent {
         this.isCriteria = false;
 
         this.isVisualMenu = false;
-        this.timeShowOptimalRoute = 15000;
 
-        console.log("Страница загрузилась");
-
-        this.timeOut = setTimeout(() => {
-            clearInterval(this.intervalDescriptorTime);
-            clearInterval(this.intervalDescriptorColor);
-            this.isVisualMenu = true;
-        }, this.timeShowOptimalRoute);
-        let sec = 1;
-        this.intervalDescriptorTime = setInterval(() => {
-            this.visualOptimalRoute(this.gridSize);
-            console.log("Прошла(-о): " + sec + " секунд(-ы)(-а).");
-            setTimeout(() => {
-                sec += 1;
-            }, 1);
-        }, 999);
-        this.intervalDescriptorColor = setInterval(() => {
-            setTimeout(() => {
-                this.isColorFillTrafficLight = !this.isColorFillTrafficLight;
-            }, 1);
-        }, 1999);
+        this.simulateRoutes();
 
         // this.httpService.sendOptimalRoute(this.uds).subscribe({
         //     next: () => {
-        //         this.showOptimalRoute();
+        //         this.simulateRoutes();
         //     },
         //     error: () => {
         //         this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
@@ -794,5 +788,41 @@ export class UserPageComponent {
         clearInterval(this.intervalDescriptorColor);
         clearInterval(this.intervalDescriptorTime);
         this.isVisualMenu = true;
+    }
+
+    simulateRoutes(): void {
+        this.timeShowOptimalRoute = 15000;
+
+        console.log("Страница загрузилась");
+        for (let i = 0; i < this.crossroadList.length; i++) {
+            this.isColorFillTrafficLight.push(false);
+        }
+
+        this.timeOut = setTimeout(() => {
+            clearInterval(this.intervalDescriptorTime);
+            clearInterval(this.intervalDescriptorColor);
+            this.isVisualMenu = true;
+        }, this.timeShowOptimalRoute);
+        this.intervalDescriptorTime = setInterval(() => {
+            this.gridDrowSize();
+            this.visualOptimalRoute(this.gridSize);
+            console.log("Прошла(-о): " + this.timeModel  + " секунд(-ы)(-а).");
+            setTimeout(() => {
+                this.timeModel += 1;
+            }, 1);
+        }, 999);
+        this.intervalDescriptorColor = setInterval(() => {
+            setTimeout(() => {
+                for (let i = 0; i < this.isColorFillTrafficLight.length; i++) {
+                    let time_green_signal = this.crossroadList[i].traffic_light!.time_green_signal;
+                    let time_red_signal = this.crossroadList[i].traffic_light!.time_red_signal;
+                    let module = time_green_signal + time_red_signal;
+
+                    if (this.timeModel % module <= time_red_signal) {
+                        this.isColorFillTrafficLight[i] = false;
+                    } else this.isColorFillTrafficLight[i] = true;
+                }
+            }, 1);
+        }, 999);
     }
 }
