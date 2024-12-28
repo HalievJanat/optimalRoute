@@ -32,6 +32,25 @@ export class UserPageComponent {
 
         this.UDSList[0] = JSON.parse(udsJSON);
         console.log(this.UDSList[0]);
+
+        this.drivers[0] = {
+            id_driver: 0,
+            family: 'asd',
+            name: 'fgh',
+            surname: 'jkl',
+            infringer: true,
+            vehicle: {
+                id_vehicle: 0,
+                brand: 'audi',
+                type_fuel: {
+                    id_type_fuel: 0,
+                    name: 'qwe',
+                    price: 40
+                },
+                consumption_fuel: 10,
+                max_speed: 300
+            }
+        }
         
 
         // httpService.getUDSList().subscribe({
@@ -122,6 +141,13 @@ export class UserPageComponent {
     start_crossroad: number = -1;
     end_crossroad: number = -1;
 
+    timeShowOptimalRoute: number = 0;
+    timeOut!: ReturnType<typeof setTimeout>;
+    intervalDescriptorColor!: ReturnType<typeof setTimeout>;
+    intervalDescriptorTime!: ReturnType<typeof setTimeout>;
+
+    isColorFillTrafficLight: boolean = false;
+
     gridSize = 50; // Масштаб
     radius = (this.gridSize * 2) / 5;
 
@@ -135,7 +161,7 @@ export class UserPageComponent {
             this.gridDrowSize();
 
             let tempGridSize = this.gridSize;
-            this.drawScaleCanvas(tempGridSize);
+            this.visualOptimalRoute(tempGridSize);
         }
     }
 
@@ -147,7 +173,7 @@ export class UserPageComponent {
             this.gridDrowSize();
 
             let tempGridSize = this.gridSize;
-            this.drawScaleCanvas(tempGridSize);
+            this.visualOptimalRoute(tempGridSize);
         }
     }
 
@@ -344,31 +370,6 @@ export class UserPageComponent {
     }
 
     public visualOptimalRoute(tempGridSize: number) {
-        for (let i = 0; i < this.crossroadList.length; i++) {
-            this.radius = (this.gridSize * 2) / 5;
-            this.crossroadList[i].x = Math.round(this.crossroadList[i].x / tempGridSize) * this.gridSize;
-            this.crossroadList[i].y = Math.round(this.crossroadList[i].y / tempGridSize) * this.gridSize;
-
-            let stroke: string = 'black';
-
-            if (i === this.start_crossroad) stroke = 'blue';
-            else if (i === this.end_crossroad) stroke = 'red';
-
-            const circle = new Konva.Circle({
-                x: this.crossroadList[i].x,
-                y: this.crossroadList[i].y,
-                radius: this.radius,
-                stroke: stroke,
-                full: '#fff',
-                //draggable: true, // Включаем перетаскивание
-            });
-
-            this.layer.add(circle);
-
-            // Обновляем слой
-            this.layer.draw();
-        }
-
         for (let i = 0; i < this.roadList.length; i++) {
             let ky = this.calculateKLine(
                 this.crossroadList[this.roadList[i].crossroad_1].x,
@@ -437,6 +438,68 @@ export class UserPageComponent {
             }
             this.drawLine(x1, y1, x2, y2, stroke, this.roadList[i].direction);
         }
+
+        for (let i = 0; i < this.crossroadList.length; i++) {
+            this.radius = (this.gridSize * 2) / 5;
+            this.crossroadList[i].x = Math.round(this.crossroadList[i].x / tempGridSize) * this.gridSize;
+            this.crossroadList[i].y = Math.round(this.crossroadList[i].y / tempGridSize) * this.gridSize;
+
+            let stroke: string = 'black';
+
+            if (i === this.start_crossroad) stroke = 'blue';
+            else if (i === this.end_crossroad) stroke = 'red';
+
+            const circle = new Konva.Circle({
+                x: this.crossroadList[i].x,
+                y: this.crossroadList[i].y,
+                radius: this.radius,
+                stroke: stroke,
+                full: '#fff',
+                //draggable: true, // Включаем перетаскивание
+            });
+
+            this.layer.add(circle);
+
+            if (this.timeShowOptimalRoute !== 0 && this.crossroadList[i].traffic_light !== null) {
+                for (let j = 0; j < 4; j++) {
+                    let placeX;
+                    let plaseY;
+                    let side = this.radius / 2;
+                    switch (j) {
+                        case 0:
+                            placeX = - 5*this.radius / 3;
+                            plaseY = - this.radius / 4;
+                            break;
+                        case 1:
+                            placeX = 5*this.radius / 3 - side;
+                            plaseY = this.radius / 4 - side;
+                            break;
+                        case 2:
+                            placeX = - this.radius / 4;
+                            plaseY = - 5*this.radius / 3;
+                            break;
+                        default:
+                            placeX = this.radius / 4 - side;
+                            plaseY = 5*this.radius / 3 - side;
+                            break;
+                    }
+
+                    const square = new Konva.Rect({
+                        x: this.crossroadList[i].x + placeX,
+                        y: this.crossroadList[i].y + plaseY,
+                        width: side,
+                        height: side,
+                        stroke: this.isColorFillTrafficLight ? 'red' : 'green',
+                        fill: '#fff'
+                        //draggable: true, // Включаем перетаскивание
+                    });
+        
+                    this.layer.add(square);
+                }
+            }
+            // Обновляем слой
+            this.layer.draw();
+        }
     }
 
     public gridDrowSize(): void {
@@ -482,7 +545,7 @@ export class UserPageComponent {
         else return;
         this.gridDrowSize();
 
-        this.drawScaleCanvas(tempGridSize);
+        this.visualOptimalRoute(tempGridSize);
     }
 
     public drawScaleCanvas(tempGridSize: number): void {
@@ -672,17 +735,42 @@ export class UserPageComponent {
         this.uds.route = this.route!;
         this.isCriteria = false;
 
-        this.httpService.sendOptimalRoute(this.uds).subscribe({
-            next: () => {
-                this.showOptimalRoute();
-            },
-            error: () => {
-                this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
-            },
-        });
+        this.isVisualMenu = false;
+        this.timeShowOptimalRoute = 15000;
+
+        console.log("Страница загрузилась");
+
+        this.timeOut = setTimeout(() => {
+            clearInterval(this.intervalDescriptorTime);
+            clearInterval(this.intervalDescriptorColor);
+            this.isVisualMenu = true;
+        }, this.timeShowOptimalRoute);
+        let sec = 1;
+        this.intervalDescriptorTime = setInterval(() => {
+            this.visualOptimalRoute(this.gridSize);
+            console.log("Прошла(-о): " + sec + " секунд(-ы)(-а).");
+            setTimeout(() => {
+                sec += 1;
+            }, 1);
+        }, 999);
+        this.intervalDescriptorColor = setInterval(() => {
+            setTimeout(() => {
+                this.isColorFillTrafficLight = !this.isColorFillTrafficLight;
+            }, 1);
+        }, 1999);
+
+        // this.httpService.sendOptimalRoute(this.uds).subscribe({
+        //     next: () => {
+        //         this.showOptimalRoute();
+        //     },
+        //     error: () => {
+        //         this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
+        //     },
+        // });
     }
 
     loadMapList() {
+        this.stopVusialOptimalRoute();
         const modalRef = this.modalService.open(ModalSelectingComponent, {
             centered: true,
         });
@@ -695,5 +783,16 @@ export class UserPageComponent {
                 this.addUDS(index);
             })
             .catch(() => {});
+    }
+
+    stopVusialOptimalRoute(): void {
+        if (!this.timeShowOptimalRoute) {
+            return;
+        }
+        clearTimeout(this.timeOut);
+        this.timeShowOptimalRoute = 0;
+        clearInterval(this.intervalDescriptorColor);
+        clearInterval(this.intervalDescriptorTime);
+        this.isVisualMenu = true;
     }
 }
