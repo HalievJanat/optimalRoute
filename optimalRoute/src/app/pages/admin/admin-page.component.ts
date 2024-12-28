@@ -43,7 +43,7 @@ export class AdminPageComponent {
                 this.UDSList = udsList;
             },
             error: () => {
-                router.navigateByUrl('error-page');
+                //TODO router.navigateByUrl('error-page');
             },
         });
         this.httpService.getTrafficLights().subscribe({
@@ -51,7 +51,7 @@ export class AdminPageComponent {
                 this.trafficLights = trafficLights;
             },
             error: () => {
-                router.navigateByUrl('error-page');
+                //TODO router.navigateByUrl('error-page');
             },
         });
         this.httpService.getStreets().subscribe({
@@ -59,7 +59,7 @@ export class AdminPageComponent {
                 this.streets = streets;
             },
             error: () => {
-                router.navigateByUrl('error-page');
+                //TODO router.navigateByUrl('error-page');
             },
         });
         this.httpService.getTypeCovers().subscribe({
@@ -67,7 +67,7 @@ export class AdminPageComponent {
                 this.coverTypes = coverTypes;
             },
             error: () => {
-                router.navigateByUrl('error-page');
+                //TODO router.navigateByUrl('error-page');
             },
         });
         this.httpService.getDegreeCorruptions().subscribe({
@@ -75,7 +75,7 @@ export class AdminPageComponent {
                 this.corruptionDegrees = corruptionDegrees;
             },
             error: () => {
-                router.navigateByUrl('error-page');
+                //TODO router.navigateByUrl('error-page');
             },
         });
     }
@@ -222,8 +222,8 @@ export class AdminPageComponent {
         this.isContextMenuVisibleCrossroad = false;
         this.isContextMenuVisibleRoad = false;
         this.indexCrossroad1 = -1;
-        if (this.crossroadList.length == 30) {
-            alert('Больше 30 нельзя');
+        if (this.crossroadList.length > 30) {
+            this.toastr.warning('Не может быть более 30 прогонов', 'Предупреждение');
             return;
         }
         this.isCrossroadAdd = true;
@@ -268,13 +268,13 @@ export class AdminPageComponent {
             this.isCrossroadAdd = false;
             for (let i = 0; i < this.crossroadList.length; i++) {
                 if (this.crossroadList[i].x == X && this.crossroadList[i].y == Y) {
-                    alert('Здесь нельзя установить перекресток');
+                    this.toastr.warning('Не удаётся установить перекресток', 'Предупреждение');
                     return;
                 }
             }
 
             if (!this.checkIntersectionRoad(X, Y)) {
-                alert('Здесь нельзя установить перекресток');
+                this.toastr.warning('Не удаётся установить перекресток', 'Предупреждение');
                 return;
             }
 
@@ -314,10 +314,10 @@ export class AdminPageComponent {
                 i++;
             }
             if (i == this.crossroadList.length) {
-                alert('Перекресток не найден!');
+                this.toastr.warning('Перекресток не найден', 'Предупреждение');
                 return;
             } else if (i == this.indexCrossroad1) {
-                alert('Прогон нельзя добавить к данным объектам!');
+                this.toastr.warning('Прогон нельзя добавить к данным объектам', 'Предупреждение');
                 return;
             }
 
@@ -328,7 +328,7 @@ export class AdminPageComponent {
                     countIndex++;
                 }
                 if (countIndex > 4) {
-                    alert('Больше 4 прогонов добавить нельзя');
+                    this.toastr.warning('Не может быть более 4 прогонов', 'Предупреждение');
                     return;
                 }
                 j++;
@@ -339,7 +339,7 @@ export class AdminPageComponent {
                     (this.roadList[y].crossroad_1 == this.indexCrossroad1 && this.roadList[y].crossroad_2 == i) ||
                     (this.roadList[y].crossroad_2 == this.indexCrossroad1 && this.roadList[y].crossroad_1 == i)
                 ) {
-                    alert('Нельзя добавить прогон!!!');
+                    this.toastr.warning('Не удаётся добавить прогон', 'Предупреждение');
                     this.isRoadAdd = false;
                     return;
                 }
@@ -349,7 +349,7 @@ export class AdminPageComponent {
             let by = this.calculateBLine(this.crossroadList[this.indexCrossroad1].y, ky, this.crossroadList[this.indexCrossroad1].x);
 
             if (!this.checkIntersectionCrossroad(ky, by, this.indexCrossroad1, i)) {
-                alert('Здесь нельзя установить прогон');
+                this.toastr.warning('Не удаётся установить прогон', 'Предупреждение');
                 return;
             }
 
@@ -377,7 +377,7 @@ export class AdminPageComponent {
             }
 
             if (this.crossroadList.length == i) {
-                alert('Перекресток не найден');
+                this.toastr.warning('Перекресток не найден', 'Предупреждение');
                 return;
             }
 
@@ -388,7 +388,7 @@ export class AdminPageComponent {
                     countIndex++;
                 }
                 if (countIndex > 4) {
-                    alert('Больше 4 прогонов добавить нельзя');
+                    this.toastr.warning('Нельзя добавить более 4 прогонов', 'Предупреждение');
                     return;
                 }
                 j++;
@@ -520,8 +520,8 @@ export class AdminPageComponent {
         this.isContextMenuVisibleCrossroad = false;
         this.isContextMenuVisibleRoad = false;
         this.indexCrossroad1 = -1;
-        if (this.crossroadList.length == 60) {
-            alert('Больше 60 нельзя');
+        if (this.roadList.length > 60) {
+            this.toastr.warning('Не может быть более 60 прогонов', 'Предупреждение');
             return;
         }
         this.isCrossroadAdd = false;
@@ -1116,7 +1116,7 @@ export class AdminPageComponent {
 
     saveUDS(): void {
         if (this.crossroadList.length < 2 || this.roadList.length < 1) {
-            alert('Ошибка, нельзя сохранить карту');
+            this.toastr.warning('Для сохранения необходимы минимум 2 перекрестка и 1 прогон', 'Предупреждение');
             return;
         }
 

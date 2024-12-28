@@ -180,12 +180,7 @@ input::placeholder {
 
     .submit-button {
         width: 80%;
-        background: linear-gradient(
-            to right,
-            #9daaa7 0%,
-            #516662 76%,
-            #728380 100%
-        );
+        background: linear-gradient(to right, #9daaa7 0%, #516662 76%, #728380 100%);
         border-radius: 10px;
         border: none;
         color: white;
@@ -220,8 +215,6 @@ input::placeholder {
     .panel-el {
         display: flex;
         align-items: center;
-        justify-content: flex-start;
-        margin-left: 10px;
         width: 100%;
         border-bottom: solid gray;
         border-block-width: 1px;
@@ -230,11 +223,19 @@ input::placeholder {
         box-shadow: 1px 1px 2px 0 rgba($color: #908d8d, $alpha: 1);
         border-right: none;
         span {
-            flex: 0;
+            padding-left: 15px;
+            flex: 2;
+            margin-left: 0%;
+            margin-right: auto;
         }
-        div button {
-            width: 100%;
-            font-size: 0.95rem;
+        div {
+            flex: 3;
+            margin-left: auto;
+            margin-right: 10px;
+            button {
+                width: 100%;
+                font-size: 0.95rem;
+            }
         }
     }
 }
@@ -257,14 +258,20 @@ input::placeholder {
     flex-direction: column;
     div {
         display: flex;
-        justify-content: start;
-        align-items: start;
+        align-items: center;
+        width: 100%;
         span {
-            flex: 0;
+            flex: 2.3;
             white-space: nowrap;
             width: 100%;
             margin-top: 4px;
+            margin-right: auto;
         }
+    }
+
+    input {
+        flex: 3;
+        margin-left: auto;
     }
 
     .error-input {
@@ -275,7 +282,7 @@ input::placeholder {
     }
 }
 
-div[aria-labelledby="dropdownBasic"] {
+div[aria-labelledby='dropdownBasic'] {
     max-height: 100px;
     overflow-y: auto;
 }
