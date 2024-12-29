@@ -8,6 +8,7 @@ import { UserPageComponent } from './pages/user-page/user-page.component';
 import { SystemPageComponent } from './pages/system-page/system-page.component';
 import { UserReferencePageComponent } from './pages/user-reference/user-reference-page.component';
 import { ErrorPageComponent } from './pages/error-page/error-page/error-page.component';
+import { canActivateAuth } from './pages/auth/access.guard';
 
 export const routes: Routes = [
     {
@@ -25,25 +26,31 @@ export const routes: Routes = [
     {
         path: 'admin-page',
         component: AdminPageComponent,
+        canActivate: [canActivateAuth],
     },
     {
         path: 'admin-page/db',
         component: AdminDbComponent,
+        canActivate: [canActivateAuth],
     },
     {
         path: 'user-page',
         component: UserPageComponent,
+        canActivate: [canActivateAuth],
     },
     {
         path: 'system-page',
         component: SystemPageComponent,
+        canActivate: [canActivateAuth],
     },
     {
         path: 'user-page/user-reference-page',
         component: UserReferencePageComponent,
+        canActivate: [canActivateAuth],
     },
     {
         path: 'error-page',
-        component: ErrorPageComponent
-    }
+        component: ErrorPageComponent,
+        canActivate: [canActivateAuth],
+    },
 ];

@@ -1,7 +1,6 @@
-import { Component, inject, Input } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { isRequiredError, stringRangeValidator } from '../../admin/admin-db/forms/validators';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { isRequiredError } from '../../admin/admin-db/forms/validators';
 
 @Component({
     selector: 'app-auth-form',
@@ -12,22 +11,19 @@ import { isRequiredError, stringRangeValidator } from '../../admin/admin-db/form
 })
 export class AuthFormComponent {
     @Input() btnText = '';
+    @Input() authFormGroup!: FormGroup<{
+        login: FormControl<string>;
+        password: FormControl<string>;
+    }>;
+    @Output() hasButtonPressed = new EventEmitter<boolean>;
 
-    private fb = inject(FormBuilder);
-
-    authFormGroup = this.fb.group({
-        login: ['', [Validators.required, stringRangeValidator(12, 4)]],
-        password: ['', [Validators.required, stringRangeValidator(12, 4)]],
-    });
-
-    constructor(private router: Router) {}
+    constructor() {}
 
     click() {
-        this.router.navigateByUrl('admin-page');
+        this.hasButtonPressed.emit(true);
     }
 
     isRequiredAuthError(form: FormGroup) {
         return isRequiredError(form);
     }
-
 }

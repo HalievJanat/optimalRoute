@@ -4,4 +4,6 @@
 <app-auth-form
     class="registration-form"
     [btnText]="'Зарегистрироваться'"
+    (hasButtonPressed)="hasRegistrationButtonPressed($event)" 
+    [authFormGroup]="registrationFormGroup"
 ></app-auth-form>

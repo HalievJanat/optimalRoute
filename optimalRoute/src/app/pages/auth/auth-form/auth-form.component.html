@@ -13,7 +13,7 @@
             }
         </div>
         <div class="col mb-4">
-            <button router class="btn btn-primary submit-button" type="button" [disabled]="authFormGroup.invalid" (click)="click()">
+            <button router class="btn btn-primary submit-button" type="button" [disabled]="authFormGroup.invalid || authFormGroup.disabled" (click)="click()">
                 {{ btnText }}
             </button>
             <div class="col mb-4">
