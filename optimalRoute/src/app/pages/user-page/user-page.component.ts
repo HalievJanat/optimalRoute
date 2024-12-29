@@ -823,11 +823,7 @@ export class UserPageComponent {
         this.roadList = this.uds.roads;
         this.crossroadOptimalRoute = this.uds.route!.all_routes[index].route;
         this.timeSpendOneElement = this.uds.route!.all_routes[index].time_spend_one_element;
-        this.timeShowOptimalRoute = this.timeSpendOneElement[this.timeSpendOneElement.length - 1];
-
-        console.log(this.crossroadOptimalRoute);
-        console.log(this.timeSpendOneElement);
-        console.log(this.timeShowOptimalRoute);
+        this.timeShowOptimalRoute = this.timeSpendOneElement[this.timeSpendOneElement.length - 1] * 1000;
 
         if (!this.crossroadOptimalRoute?.length) {
             alert('Маршрут не найден!');
