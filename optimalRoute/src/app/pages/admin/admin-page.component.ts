@@ -1301,10 +1301,7 @@ export class AdminPageComponent {
                     next: () => {
                         this.toastr.success('Карта успешно удалена', 'Удаление');
 
-                        const currentUrl = this.router.url;
-                        this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-                            this.router.navigateByUrl(currentUrl);
-                        });
+                        this.router.navigateByUrl('admin-page/2');
                     },
                     error: () => {
                         this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
