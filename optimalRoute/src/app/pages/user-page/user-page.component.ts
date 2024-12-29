@@ -855,13 +855,18 @@ export class UserPageComponent {
 
         this.intervalDescriptorColor = setInterval(() => {
             for (let i = 0; i < this.isColorFillTrafficLight.length; i++) {
-                let time_green_signal = this.crossroadList[i].traffic_light!.time_green_signal;
-                let time_red_signal = this.crossroadList[i].traffic_light!.time_red_signal;
-                let module = time_green_signal + time_red_signal;
-
-                if (this.timeModel % module < time_red_signal) {
+                if (this.crossroadList[i].traffic_light != null) {
+                    let time_green_signal = this.crossroadList[i].traffic_light!.time_green_signal;
+                    let time_red_signal = this.crossroadList[i].traffic_light!.time_red_signal;
+                    let module = time_green_signal + time_red_signal;
+    
+                    if (this.timeModel % module < time_red_signal) {
+                        this.isColorFillTrafficLight[i] = false;
+                    } else this.isColorFillTrafficLight[i] = true;
+                } else {
                     this.isColorFillTrafficLight[i] = false;
-                } else this.isColorFillTrafficLight[i] = true;
+                }
+                
             }
         }, 999);
         this.intervalDescriptorTime = setInterval(() => {
