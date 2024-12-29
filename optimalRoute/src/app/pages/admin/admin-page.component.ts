@@ -1214,11 +1214,7 @@ export class AdminPageComponent {
                 this.currentUDS = this.UDSList[index];
                 this.crossroadList = this.currentUDS.crossroads;
                 this.roadList = this.currentUDS.roads;
-
-                for (let i = 0; i < this.crossroadList.length; i++) {
-                    this.crossroadList[i].x = Math.round(this.crossroadList[i].x / 50) * this.gridSize;
-                    this.crossroadList[i].y = Math.round(this.crossroadList[i].y / 50) * this.gridSize;
-                }
+                this.gridSize = 50;
 
                 this.gridDrowSize();
                 this.drawScaleCanvas(this.gridSize);
