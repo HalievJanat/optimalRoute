@@ -1303,12 +1303,7 @@ export class AdminPageComponent {
                     next: () => {
                         this.toastr.success('Карта успешно удалена', 'Удаление');
 
-                        const currentUrl = this.router.url;
-                        this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-                            this.router.navigateByUrl(currentUrl).then(() => {
-                                this.createNewMapTag.nativeElement.click();
-                            });
-                        });
+                        this.createNewMapTag.nativeElement.click();
                     },
                     error: () => {
                         this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
