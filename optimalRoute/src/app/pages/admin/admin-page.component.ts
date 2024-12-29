@@ -275,6 +275,29 @@ export class AdminPageComponent {
                     return;
                 }
             }
+
+
+            for (let j = 0; j < this.roadList.length; j++) {
+                let crossroad_1 = this.roadList[j].crossroad_1;
+                let crossroad_2 = this.roadList[j].crossroad_2;
+                if (crossroad_1 === this.indexSelectedElement) {
+                    let ky = this.calculateKLine(X, Y, this.crossroadList[crossroad_2].x, this.crossroadList[crossroad_2].y);
+                    let by = this.calculateBLine(Y, ky, X);
+
+                    if (!this.checkIntersectionCrossroad(ky, by, crossroad_1, crossroad_2)) {
+                        this.toastr.warning('Не удаётся переместить перекресток', 'Предупреждение');
+                        return;
+                    }
+                } else {
+                    let ky = this.calculateKLine(this.crossroadList[crossroad_1].x, this.crossroadList[crossroad_1].y, X, Y);
+                    let by = this.calculateBLine(Y, ky, X);
+
+                    if (!this.checkIntersectionCrossroad(ky, by, crossroad_1, crossroad_2)) {
+                        this.toastr.warning('Не удаётся переместить перекресток', 'Предупреждение');
+                        return;
+                    }
+                }
+            }
             
             this.crossroadList[this.indexSelectedElement].x = X;
             this.crossroadList[this.indexSelectedElement].y = Y;
