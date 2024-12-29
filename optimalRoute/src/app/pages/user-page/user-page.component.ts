@@ -791,9 +791,9 @@ export class UserPageComponent {
                 //     alert('Маршрут не найден!');
                 // }
 
-                this.crossroadOptimalRoute = [];
-                this.start_crossroad = -1;
-                this.end_crossroad = -1;
+                // this.crossroadOptimalRoute = [];
+                // this.start_crossroad = -1;
+                // this.end_crossroad = -1;
             },
             error: () => {
                 this.toastr.error('Не удалось получить карту с маршрутом', 'Ошибка сервера');
@@ -822,6 +822,12 @@ export class UserPageComponent {
 
         this.crossroadList = this.uds.crossroads;
         this.roadList = this.uds.roads;
+
+        if (!this.uds.route!.all_routes[index].route) {
+            this.toastr.warning('Маршрут не найден!');
+            return;
+        }
+
         this.crossroadOptimalRoute = this.uds.route!.all_routes[index].route;
         this.timeSpendOneElement = this.uds.route!.all_routes[index].time_spend_one_element;
         this.timeShowOptimalRoute = this.timeSpendOneElement[this.timeSpendOneElement.length - 1] * 1000;
@@ -830,14 +836,9 @@ export class UserPageComponent {
         // this.timeSpendOneElement = [72.06, 72.06];
         // this.timeShowOptimalRoute = this.timeSpendOneElement[this.timeSpendOneElement.length - 1] * 1000;
 
-        console.log( this.crossroadOptimalRoute);
-        console.log( this.timeSpendOneElement);
-        console.log( this.timeShowOptimalRoute);
-
-        if (!this.crossroadOptimalRoute?.length) {
-            alert('Маршрут не найден!');
-            return;
-        }
+        console.log(this.crossroadOptimalRoute);
+        console.log(this.timeSpendOneElement);
+        console.log(this.timeShowOptimalRoute);
 
         this.simulateRoutes();
     }
