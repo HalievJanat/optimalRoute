@@ -154,6 +154,7 @@ export class UserPageComponent {
     timeSpendOneElement: number[] = [];
     criteriaOneElement: number[] = [];
     criteriaElement: string[] = [];
+    resultParameter: number = 0;
 
     indexRoute: number = 0;
 
@@ -896,6 +897,7 @@ export class UserPageComponent {
             return;
         }
 
+        this.resultParameter = 0;
         this.crossroadOptimalRoute = this.uds.route!.all_routes[index].route;
         this.timeSpendOneElement = this.uds.route!.all_routes[index].time_spend_one_element;
         this.timeShowOptimalRoute = this.timeSpendOneElement[this.timeSpendOneElement.length - 1] * 1000;
@@ -905,6 +907,10 @@ export class UserPageComponent {
         for (let i = 1; i < this.crossroadOptimalRoute!.length; i++) {
             this.criteriaElement.push(this.crossroadOptimalRoute![i - 1].toString() + '->' + this.crossroadOptimalRoute![i].toString());
             this.criteriaElement.push(this.crossroadOptimalRoute![i].toString());
+        }
+
+        for (let i = 0; i < this.criteriaOneElement.length; i++) {
+            this.resultParameter += this.criteriaOneElement[i];
         }
 
         // this.timeSpendOneElement = [70.06, 70.06];
