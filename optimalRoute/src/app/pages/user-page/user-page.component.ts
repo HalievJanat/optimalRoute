@@ -893,6 +893,9 @@ export class UserPageComponent {
             this.isColorFillTrafficLight = [];
             this.timeModel = 0;
         }, this.timeShowOptimalRoute + 100);
+
+        console.log(this.crossroadList);
+        console.log(this.roadList)
     }
 
     simulateAuto() {
@@ -929,8 +932,6 @@ export class UserPageComponent {
                         let crossroad_2 = this.roadList[i].crossroad_2;
                         let crossroadOptimal_1 = this.crossroadOptimalRoute![(indexListElement + 1) / 2 - 1];
                         let crossroadOptimal_2 = this.crossroadOptimalRoute![(indexListElement + 1) / 2];
-                        console.log("Перекресток 1: " + crossroad_1);
-                        console.log("Перекресток 2: " +crossroad_2);
                         if (crossroad_1 === crossroadOptimal_1 && crossroad_2 === crossroadOptimal_2) {
                             let listCoordinate = this.roadCircle(i);
 
@@ -953,6 +954,8 @@ export class UserPageComponent {
                             break;
                         }
                     }
+                    console.log("Перекресток 1: " + this.crossroadOptimalRoute![(indexListElement + 1) / 2 - 1]);
+                    console.log("Перекресток 2: " + this.crossroadOptimalRoute![(indexListElement + 1) / 2]);
 
                     lengthRoad = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
                     let timeRoad;
