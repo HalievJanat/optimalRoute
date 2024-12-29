@@ -783,8 +783,8 @@ export class UserPageComponent {
 
                 this.setRouteForBuild(0);
 
-                // this.gridDrowSize();
-                // this.visualOptimalRoute(this.gridSize);
+                this.gridDrowSize();
+                this.visualOptimalRoute(this.gridSize);
 
                 // if (!this.crossroadOptimalRoute?.length) {
                 //     alert('Маршрут не найден!');
