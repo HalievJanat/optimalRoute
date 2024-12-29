@@ -910,6 +910,7 @@ export class UserPageComponent {
         }
 
         for (let i = 0; i < this.criteriaOneElement.length; i++) {
+            this.criteriaOneElement[i] = Math.round(this.criteriaOneElement[i] * 100) / 100;
             this.resultParameter += this.criteriaOneElement[i];
         }
 
