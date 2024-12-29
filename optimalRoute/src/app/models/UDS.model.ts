@@ -38,6 +38,13 @@ export interface Route {
     end_crossroad: number;
     driver: Driver;
     criteria_searche: string;
-    crossroads: number[];
+    all_routes: Routes_Map[];
     type_fines: TypeFine[];
+}
+
+export interface Routes_Map {
+    name: string;
+    time_spend_one_element: number[];
+    criteria_one_element: number[];
+    route: number[];
 }

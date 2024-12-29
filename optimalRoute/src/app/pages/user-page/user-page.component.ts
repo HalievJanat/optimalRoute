@@ -28,66 +28,66 @@ export class UserPageComponent {
         config.backdrop = 'static';
         config.keyboard = false;
 
-        let udsJSON: string = '{"id_uds":0,"name":"Samara","crossroads":[{"id_crossroad":0,"id_uds":0,"x":150,"y":100,"traffic_light":{"id_traffic_light":0,"time_green_signal":2,"time_red_signal":2}},{"id_crossroad":1,"id_uds":0,"x":300,"y":50,"traffic_light":{"id_traffic_light":0,"time_green_signal":5,"time_red_signal":5}},{"id_crossroad":2,"id_uds":0,"x":100,"y":200,"traffic_light":{"id_traffic_light":0,"time_green_signal":20,"time_red_signal":20}},{"id_crossroad":3,"id_uds":0,"x":150,"y":250,"traffic_light":{"id_traffic_light":0,"time_green_signal":20,"time_red_signal":20}},{"id_crossroad":4,"id_uds":0,"x":250,"y":300,"traffic_light":{"id_traffic_light":0,"time_green_signal":20,"time_red_signal":20}},{"id_crossroad":5,"id_uds":0,"x":300,"y":150,"traffic_light":{"id_traffic_light":0,"time_green_signal":20,"time_red_signal":20}}],"roads":[{"crossroad_1":0,"crossroad_2":2,"id_uds":0,"street":{"id_street":0,"name":"Московское шоссе"},"traffic_signs":null,"type_cover":{"id_type_cover":0,"name":"Асфальт","coefficient_braking":1.5},"police_post":null,"length":4,"direction":0},{"crossroad_1":2,"crossroad_2":3,"id_uds":0,"street":{"id_street":1,"name":"Советская"},"traffic_signs":{"id_traffic_sign":0,"speed":30},"type_cover":{"id_type_cover":0,"name":"Асфальт","coefficient_braking":1.5},"police_post":null,"length":9,"direction":0},{"crossroad_1":1,"crossroad_2":5,"id_uds":0,"street":{"id_street":2,"name":"Ставропольская"},"traffic_signs":{"id_traffic_sign":0,"speed":30},"type_cover":{"id_type_cover":0,"name":"Асфальт","coefficient_braking":1.5},"police_post":{"corruption":{"id_corruption":0,"name":"Слабо","coefficient_corruption":1.2}},"length":1,"direction":0},{"crossroad_1":3,"crossroad_2":5,"id_uds":0,"street":{"id_street":3,"name":"Гагарина"},"traffic_signs":{"id_traffic_sign":0,"speed":30},"type_cover":{"id_type_cover":0,"name":"Асфальт","coefficient_braking":1.5},"police_post":{"corruption":{"id_corruption":1,"name":"Сильно","coefficient_corruption":1.9}},"length":1,"direction":0},{"crossroad_1":0,"crossroad_2":4,"id_uds":0,"street":{"id_street":0,"name":"Московское шоссе"},"traffic_signs":{"id_traffic_sign":0,"speed":30},"type_cover":{"id_type_cover":0,"name":"Асфальт","coefficient_braking":1.5},"police_post":null,"length":8,"direction":0}], "route": null}';
+        // let udsJSON: string = '{"id_uds":0,"name":"Samara","crossroads":[{"id_crossroad":0,"id_uds":0,"x":150,"y":100,"traffic_light":{"id_traffic_light":0,"time_green_signal":2,"time_red_signal":2}},{"id_crossroad":1,"id_uds":0,"x":300,"y":50,"traffic_light":{"id_traffic_light":0,"time_green_signal":5,"time_red_signal":5}},{"id_crossroad":2,"id_uds":0,"x":100,"y":200,"traffic_light":{"id_traffic_light":0,"time_green_signal":20,"time_red_signal":20}},{"id_crossroad":3,"id_uds":0,"x":150,"y":250,"traffic_light":{"id_traffic_light":0,"time_green_signal":20,"time_red_signal":20}},{"id_crossroad":4,"id_uds":0,"x":250,"y":300,"traffic_light":{"id_traffic_light":0,"time_green_signal":20,"time_red_signal":20}},{"id_crossroad":5,"id_uds":0,"x":300,"y":150,"traffic_light":{"id_traffic_light":0,"time_green_signal":20,"time_red_signal":20}}],"roads":[{"crossroad_1":0,"crossroad_2":2,"id_uds":0,"street":{"id_street":0,"name":"Московское шоссе"},"traffic_signs":null,"type_cover":{"id_type_cover":0,"name":"Асфальт","coefficient_braking":1.5},"police_post":null,"length":4,"direction":0},{"crossroad_1":2,"crossroad_2":3,"id_uds":0,"street":{"id_street":1,"name":"Советская"},"traffic_signs":{"id_traffic_sign":0,"speed":30},"type_cover":{"id_type_cover":0,"name":"Асфальт","coefficient_braking":1.5},"police_post":null,"length":9,"direction":0},{"crossroad_1":1,"crossroad_2":5,"id_uds":0,"street":{"id_street":2,"name":"Ставропольская"},"traffic_signs":{"id_traffic_sign":0,"speed":30},"type_cover":{"id_type_cover":0,"name":"Асфальт","coefficient_braking":1.5},"police_post":{"corruption":{"id_corruption":0,"name":"Слабо","coefficient_corruption":1.2}},"length":1,"direction":0},{"crossroad_1":3,"crossroad_2":5,"id_uds":0,"street":{"id_street":3,"name":"Гагарина"},"traffic_signs":{"id_traffic_sign":0,"speed":30},"type_cover":{"id_type_cover":0,"name":"Асфальт","coefficient_braking":1.5},"police_post":{"corruption":{"id_corruption":1,"name":"Сильно","coefficient_corruption":1.9}},"length":1,"direction":0},{"crossroad_1":0,"crossroad_2":4,"id_uds":0,"street":{"id_street":0,"name":"Московское шоссе"},"traffic_signs":{"id_traffic_sign":0,"speed":30},"type_cover":{"id_type_cover":0,"name":"Асфальт","coefficient_braking":1.5},"police_post":null,"length":8,"direction":0}], "route": null}';
 
-        this.UDSList[0] = JSON.parse(udsJSON);
-        console.log(this.UDSList[0]);
+        // this.UDSList[0] = JSON.parse(udsJSON);
+        // console.log(this.UDSList[0]);
 
-        this.drivers[0] = {
-            id_driver: 0,
-            family: 'asd',
-            name: 'fgh',
-            surname: 'jkl',
-            infringer: true,
-            vehicle: {
-                id_vehicle: 0,
-                brand: 'audi',
-                type_fuel: {
-                    id_type_fuel: 0,
-                    name: 'qwe',
-                    price: 40
-                },
-                consumption_fuel: 10,
-                max_speed: 300
-            }
-        }
+        // this.drivers[0] = {
+        //     id_driver: 0,
+        //     family: 'asd',
+        //     name: 'fgh',
+        //     surname: 'jkl',
+        //     infringer: true,
+        //     vehicle: {
+        //         id_vehicle: 0,
+        //         brand: 'audi',
+        //         type_fuel: {
+        //             id_type_fuel: 0,
+        //             name: 'qwe',
+        //             price: 40
+        //         },
+        //         consumption_fuel: 10,
+        //         max_speed: 300
+        //     }
+        // }
         
 
-        // httpService.getUDSList().subscribe({
-        //     next: uds => {
-        //         this.UDSList = uds;
-        //     },
-        //     error: () => {
-        //         router.navigateByUrl('error-page');
-        //     },
-        // });
+        httpService.getUDSList().subscribe({
+            next: uds => {
+                this.UDSList = uds;
+            },
+            error: () => {
+                router.navigateByUrl('error-page');
+            },
+        });
 
-        // httpService.getDrivers().subscribe({
-        //     next: drivers => {
-        //         this.drivers = drivers;
-        //     },
-        //     error: () => {
-        //         router.navigateByUrl('error-page');
-        //     },
-        // });
+        httpService.getDrivers().subscribe({
+            next: drivers => {
+                this.drivers = drivers;
+            },
+            error: () => {
+                router.navigateByUrl('error-page');
+            },
+        });
 
-        // httpService.getDrivers().subscribe({
-        //     next: drivers => {
-        //         this.drivers = drivers;
-        //     },
-        //     error: () => {
-        //         router.navigateByUrl('error-page');
-        //     },
-        // });
+        httpService.getDrivers().subscribe({
+            next: drivers => {
+                this.drivers = drivers;
+            },
+            error: () => {
+                router.navigateByUrl('error-page');
+            },
+        });
 
-        // httpService.getTypeFines().subscribe({
-        //     next: fines => {
-        //         this.fines = fines;
-        //     },
-        //     error: () => {
-        //         router.navigateByUrl('error-page');
-        //     },
-        // });
+        httpService.getTypeFines().subscribe({
+            next: fines => {
+                this.fines = fines;
+            },
+            error: () => {
+                router.navigateByUrl('error-page');
+            },
+        });
     }
 
     UDSList: UDS[] = [];
@@ -232,7 +232,7 @@ export class UserPageComponent {
                 },
             },
             criteria_searche: '',
-            crossroads: [],
+            all_routes: [],
             type_fines: [],
         };
 
@@ -360,30 +360,6 @@ export class UserPageComponent {
             }
         }
         return false;
-    }
-
-    public showOptimalRoute() {
-        this.httpService.getUDS().subscribe({
-            next: uds => {
-                this.crossroadList = uds.crossroads;
-                this.roadList = uds.roads;
-                this.crossroadOptimalRoute = uds.route?.crossroads;
-
-                this.gridDrowSize();
-                this.visualOptimalRoute(this.gridSize);
-
-                if (!this.crossroadOptimalRoute?.length) {
-                    alert('Маршрут не найден!');
-                }
-
-                this.crossroadOptimalRoute = [];
-                this.start_crossroad = -1;
-                this.end_crossroad = -1;
-            },
-            error: () => {
-                this.toastr.error('Не удалось получить карту с маршрутом', 'Ошибка сервера');
-            },
-        });
     }
 
     public visualOptimalRoute(tempGridSize: number) {
@@ -782,16 +758,51 @@ export class UserPageComponent {
 
         this.isVisualMenu = false;
 
-        this.simulateRoutes();
+        //this.simulateRoutes();
 
-        // this.httpService.sendOptimalRoute(this.uds).subscribe({
-        //     next: () => {
-        //          this.showOptimalRoute();
-        //     },
-        //     error: () => {
-        //         this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
-        //     },
-        // });
+        this.httpService.sendOptimalRoute(this.uds).subscribe({
+            next: () => {
+                 this.showOptimalRoute();
+            },
+            error: () => {
+                this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
+            },
+        });
+    }
+
+    showOptimalRoute() {
+        this.httpService.getUDS().subscribe({
+            next: uds => {
+                this.crossroadList = uds.crossroads;
+                this.roadList = uds.roads;
+                this.crossroadOptimalRoute = uds.route!.all_routes[0].route;
+                this.timeSpendOneElement = uds.route!.all_routes[0].time_spend_one_element;
+                this.timeShowOptimalRoute = this.timeSpendOneElement[this.timeSpendOneElement.length - 1];
+
+                console.log(uds.route);
+
+                if (!this.crossroadOptimalRoute?.length) {
+                    alert('Маршрут не найден!');
+                    return;
+                }
+
+                this.simulateRoutes();
+
+                // this.gridDrowSize();
+                // this.visualOptimalRoute(this.gridSize);
+
+                // if (!this.crossroadOptimalRoute?.length) {
+                //     alert('Маршрут не найден!');
+                // }
+
+                this.crossroadOptimalRoute = [];
+                this.start_crossroad = -1;
+                this.end_crossroad = -1;
+            },
+            error: () => {
+                this.toastr.error('Не удалось получить карту с маршрутом', 'Ошибка сервера');
+            },
+        });
     }
 
     loadMapList() {
@@ -825,9 +836,6 @@ export class UserPageComponent {
     }
 
     simulateRoutes(): void {
-        this.timeShowOptimalRoute = 31000;
-        this.crossroadOptimalRoute = [3, 2, 0, 4];
-        this.timeSpendOneElement = [5, 20, 25, 26, 31, 31];
 
         console.log("Страница загрузилась");
         for (let i = 0; i < this.crossroadList.length; i++) {
