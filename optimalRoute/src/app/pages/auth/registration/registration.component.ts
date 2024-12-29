@@ -29,8 +29,8 @@ export class RegistrationComponent {
     hasRegistrationButtonPressed(signal: boolean) {
         this.registrationFormGroup.disable();
 
-        const login = this.registrationFormGroup.controls.login.value;
-        const password = this.registrationFormGroup.controls.password.value;
+        const login = this.registrationFormGroup.controls.login.value.trim();
+        const password = this.registrationFormGroup.controls.password.value.trim();
 
         if (login === 'admin') {
             this.toastr.error('Пользователь с таким логином уже есть', 'Ошибка');

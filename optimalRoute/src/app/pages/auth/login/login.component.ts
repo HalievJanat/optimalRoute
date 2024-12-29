@@ -29,8 +29,8 @@ export class LoginComponent {
     hasLoginButtonPressed(signal: boolean) {
         this.loginFormGroup.disable();
 
-        const login = this.loginFormGroup.controls.login.value;
-        const password = this.loginFormGroup.controls.password.value;
+        const login = this.loginFormGroup.controls.login.value.trim();
+        const password = this.loginFormGroup.controls.password.value.trim();
 
         if (login === 'admin' && password === 'admin') {
             const authUser: AuthUser = {
