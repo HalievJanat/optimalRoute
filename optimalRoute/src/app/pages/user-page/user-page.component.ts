@@ -912,6 +912,7 @@ export class UserPageComponent {
 
         this.intervalDescriptorAuto = setInterval(() => {
             setTimeout(() => {
+                console.log(isNewElement);
                 while (this.timeModel > this.timeSpendOneElement[indexListElement - 1]) {
                     indexListElement++;
                     isNewElement = true;
@@ -928,6 +929,8 @@ export class UserPageComponent {
                         let crossroad_2 = this.roadList[i].crossroad_2;
                         let crossroadOptimal_1 = this.crossroadOptimalRoute![(indexListElement + 1) / 2 - 1];
                         let crossroadOptimal_2 = this.crossroadOptimalRoute![(indexListElement + 1) / 2];
+                        console.log("Перекресток 1: " + crossroad_1);
+                        console.log("Перекресток 2: " +crossroad_2);
                         if (crossroad_1 === crossroadOptimal_1 && crossroad_2 === crossroadOptimal_2) {
                             let listCoordinate = this.roadCircle(i);
 
@@ -962,7 +965,7 @@ export class UserPageComponent {
 
                     let k = lengthStep / lengthRoad;
 
-                    console.log(k);
+                    console.log('k = ' + k);
 
                     x = x1 + (x2 - x1) * k;
                     y = y1 + (y2 - y1) * k;
