@@ -762,7 +762,7 @@ export class UserPageComponent {
 
         this.isVisualMenu = false;
 
-        //this.simulateRoutes();
+        //this.setRouteForBuild(0);
 
         this.httpService.sendOptimalRoute(this.uds).subscribe({
             next: () => {
@@ -779,7 +779,7 @@ export class UserPageComponent {
             next: uds => {
                 this.uds = uds;
 
-                console.log(this.uds.route);
+                //console.log(this.uds.route);
 
                 this.setRouteForBuild(0);
 
@@ -825,6 +825,10 @@ export class UserPageComponent {
         this.timeSpendOneElement = this.uds.route!.all_routes[index].time_spend_one_element;
         this.timeShowOptimalRoute = this.timeSpendOneElement[this.timeSpendOneElement.length - 1];
 
+        console.log(this.crossroadOptimalRoute);
+        console.log(this.timeSpendOneElement);
+        console.log(this.timeShowOptimalRoute);
+
         if (!this.crossroadOptimalRoute?.length) {
             alert('Маршрут не найден!');
             return;
@@ -848,7 +852,6 @@ export class UserPageComponent {
     }
 
     simulateRoutes(): void {
-
         console.log("Страница загрузилась");
         for (let i = 0; i < this.crossroadList.length; i++) {
             this.isColorFillTrafficLight.push(false);
