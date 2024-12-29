@@ -107,8 +107,36 @@
                     </div>
                     <button class="buttonRoute submit-button" (click)="buildRoute()">Построить маршрут</button>
                 }
+            </ul>   
+        }
+        @if (isOptimalRoute) {
+            <ul>
+                <li ngbNavItem>
+                    <button ngbNavLink autofocus (click)="isRouteMap= true; 
+                    rightPanelHeaderText = '';
+                    this.isLeftClickCrossroad = false;
+                    this.isLeftClickRoad = false;">
+                        <img src="/assets/auto.png" alt="" />
+                        <span>Просмотр маршрутов</span>
+                    </button>
+                </li>
             </ul>
-            
+            @if(isRouteMap) {
+                <div class="panel-el">
+                    <div ngbDropdown [autoClose]="true" class="d-inline-block">
+                        <button type="button" class="btn btn-outline-primary dropdown-button" ngbDropdownToggle>
+                            {{ nameRoute || "Выберите водителя*"}} 
+                        </button>
+                        <div ngbDropdownMenu aria-labelledby="dropdownBasic">
+                            @for(route of uds.route?.all_routes; track $index) {
+                                <button ngbDropdownItem (click)="setRouteForBuild($index)">
+                                    {{ route.name }}
+                                </button>
+                            } 
+                        </div>
+                    </div>
+                </div>
+            }
         }
     </div>
         

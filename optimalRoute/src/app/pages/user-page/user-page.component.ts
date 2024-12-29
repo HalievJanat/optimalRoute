@@ -151,6 +151,10 @@ export class UserPageComponent {
     timeModel: number = 0;
     timeSpendOneElement: number[] = [];
 
+    isOptimalRoute: boolean = false;
+    isRouteMap: boolean = false;
+    nameRoute: string = '';
+
     gridSize = 50; // Масштаб
     radius = (this.gridSize * 2) / 5;
 
@@ -773,20 +777,11 @@ export class UserPageComponent {
     showOptimalRoute() {
         this.httpService.getUDS().subscribe({
             next: uds => {
-                this.crossroadList = uds.crossroads;
-                this.roadList = uds.roads;
-                this.crossroadOptimalRoute = uds.route!.all_routes[0].route;
-                this.timeSpendOneElement = uds.route!.all_routes[0].time_spend_one_element;
-                this.timeShowOptimalRoute = this.timeSpendOneElement[this.timeSpendOneElement.length - 1];
+                this.uds = uds;
 
-                console.log(uds.route);
+                console.log(this.uds.route);
 
-                if (!this.crossroadOptimalRoute?.length) {
-                    alert('Маршрут не найден!');
-                    return;
-                }
-
-                this.simulateRoutes();
+                this.setRouteForBuild(0);
 
                 // this.gridDrowSize();
                 // this.visualOptimalRoute(this.gridSize);
@@ -819,6 +814,23 @@ export class UserPageComponent {
                 this.addUDS(index);
             })
             .catch(() => {});
+    }
+
+    setRouteForBuild(index: number) {
+        this.stopVusialOptimalRoute();
+
+        this.crossroadList = this.uds.crossroads;
+        this.roadList = this.uds.roads;
+        this.crossroadOptimalRoute = this.uds.route!.all_routes[index].route;
+        this.timeSpendOneElement = this.uds.route!.all_routes[index].time_spend_one_element;
+        this.timeShowOptimalRoute = this.timeSpendOneElement[this.timeSpendOneElement.length - 1];
+
+        if (!this.crossroadOptimalRoute?.length) {
+            alert('Маршрут не найден!');
+            return;
+        }
+
+        this.simulateRoutes();
     }
 
     stopVusialOptimalRoute(): void {
