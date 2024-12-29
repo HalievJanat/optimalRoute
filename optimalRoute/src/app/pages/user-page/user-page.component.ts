@@ -778,6 +778,7 @@ export class UserPageComponent {
         this.httpService.getUDS().subscribe({
             next: uds => {
                 this.uds = uds;
+                console.log(uds);
 
                 //console.log(this.uds.route);
 
