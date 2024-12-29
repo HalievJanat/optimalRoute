@@ -261,6 +261,18 @@ export class AdminPageComponent {
 
         if (this.isMoveCrossroad) {
             this.isMoveCrossroad = false;
+            if (!this.checkIntersectionRoad(X, Y)) {
+                this.toastr.warning('Не удаётся переместить перекресток', 'Предупреждение');
+                return;
+            }
+
+            for (let i = 0; i < this.crossroadList.length; i++) {
+                if (X === this.crossroadList[i].x && Y === this.crossroadList[i].y) {
+                    this.toastr.warning('Не удаётся переместить перекресток', 'Предупреждение');
+                    return;
+                }
+            }
+            
             this.crossroadList[this.indexSelectedElement].x = X;
             this.crossroadList[this.indexSelectedElement].y = Y;
             this.gridDrowSize();
