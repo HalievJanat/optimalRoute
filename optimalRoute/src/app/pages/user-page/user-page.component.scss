@@ -55,18 +55,17 @@ a:hover {
     background-color: #efefef;
     //flex-grow: 0;
     width: 22%;
+    height: 670px;
+    overflow: auto;
 
     .border-left {
         border-bottom: solid black;
         border-block-width: 1px;
     }
 
-    overflow: hidden;
     ul {
         padding-left: 0px;
         border-bottom: #fff;
-        height: 670px;
-        overflow: scroll;
 
         .table-route {
             width: 100%;
