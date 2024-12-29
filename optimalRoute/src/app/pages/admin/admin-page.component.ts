@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, ElementRef, inject, ViewChild } from '@angular/core';
 import { HeaderComponent } from '../../header/header.component';
 import Konva from 'konva';
 import { CommonModule } from '@angular/common';
@@ -26,6 +26,8 @@ import { ModalDeleteConfirmComponent } from '../../modals/modal-delete-confirm/m
 })
 export class AdminPageComponent {
     httpService = inject(HttpService);
+    
+    @ViewChild('createNewMap', { static: true }) createNewMapTag!: ElementRef<HTMLAnchorElement>;
 
     UDSList: UDS[] = [];
     trafficLights: TrafficLights[] = [];
@@ -1304,8 +1306,7 @@ export class AdminPageComponent {
                         const currentUrl = this.router.url;
                         this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
                             this.router.navigateByUrl(currentUrl).then(() => {
-                                console.log(this.crossroadList);
-                                this.ngOnInit();
+                                this.createNewMapTag.nativeElement.click();
                             });
                         });
                     },
