@@ -279,20 +279,36 @@ export class AdminPageComponent {
             for (let j = 0; j < this.roadList.length; j++) {
                 let crossroad_1 = this.roadList[j].crossroad_1;
                 let crossroad_2 = this.roadList[j].crossroad_2;
+
+                let x1 = this.crossroadList[crossroad_1].x;
+                let y1 = this.crossroadList[crossroad_1].y;
+                let x2 = this.crossroadList[crossroad_2].x;
+                let y2 = this.crossroadList[crossroad_2].y;
+
                 if (crossroad_1 === this.indexSelectedElement) {
                     let ky = this.calculateKLine(X, Y, this.crossroadList[crossroad_2].x, this.crossroadList[crossroad_2].y);
                     let by = this.calculateBLine(Y, ky, X);
 
+                    this.crossroadList[this.indexSelectedElement].x = X;
+                    this.crossroadList[this.indexSelectedElement].y = Y;
+
                     if (!this.checkIntersectionCrossroad(ky, by, this.indexSelectedElement, crossroad_2)) {
                         this.toastr.warning('Не удаётся переместить перекресток', 'Предупреждение');
+                        this.crossroadList[this.indexSelectedElement].x = x1;
+                        this.crossroadList[this.indexSelectedElement].y = y1;
                         return;
                     }
                 } else if (crossroad_2 === this.indexSelectedElement) {
                     let ky = this.calculateKLine(this.crossroadList[crossroad_1].x, this.crossroadList[crossroad_1].y, X, Y);
                     let by = this.calculateBLine(Y, ky, X);
 
+                    this.crossroadList[this.indexSelectedElement].x = X;
+                    this.crossroadList[this.indexSelectedElement].y = Y;
+
                     if (!this.checkIntersectionCrossroad(ky, by, crossroad_1, this.indexSelectedElement)) {
                         this.toastr.warning('Не удаётся переместить перекресток', 'Предупреждение');
+                        this.crossroadList[this.indexSelectedElement].x = x2;
+                        this.crossroadList[this.indexSelectedElement].y = y2;
                         return;
                     }
                 }
