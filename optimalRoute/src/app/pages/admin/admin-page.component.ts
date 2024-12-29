@@ -16,6 +16,7 @@ import { ModalSelectingComponent } from '../../modals/modal-selecting/modal-sele
 import { Router } from '@angular/router';
 import { ModalSavingConfirmComponent } from '../../modals/modal-saving-confirm/modal-saving-confirm/modal-saving-confirm.component';
 import { ModalDeleteConfirmComponent } from '../../modals/modal-delete-confirm/modal-delete-confirm.component';
+import { ModalDevelopersComponent } from '../../modals/modal-developers/modal-developers/modal-developers.component';
 
 @Component({
     selector: 'app-admin-page',
@@ -26,7 +27,7 @@ import { ModalDeleteConfirmComponent } from '../../modals/modal-delete-confirm/m
 })
 export class AdminPageComponent {
     httpService = inject(HttpService);
-    
+
     @ViewChild('createNewMap', { static: true }) createNewMapTag!: ElementRef<HTMLAnchorElement>;
 
     UDSList: UDS[] = [];
@@ -84,8 +85,10 @@ export class AdminPageComponent {
         });
     }
 
-    open(content: any) {
-        this.modalService.open(content);
+    openDevelopersModal() {
+        this.modalService.open(ModalDevelopersComponent, {
+            centered: true,
+        });
     }
 
     dropdownGreenDuration = '';

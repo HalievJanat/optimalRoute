@@ -1,7 +1,7 @@
 <app-header>
     <a href="/admin-page" class="btn bg-transparent button">Вернуть к построению карты</a>
-    <a href="/registration" class="btn bg-transparent button">О системе</a>
-    <a href="/admin-page/db" class="btn bg-transparent button">О разработчиках</a>
+    <a href="/system-page" class="btn bg-transparent button">О системе</a>
+    <a class="btn bg-transparent button" (click)="openDevelopersModal()">О разработчиках</a>
 </app-header>
 <div class="editor-container">
     <ul ngbNav #leftnav="ngbNav" class="nav-tabs left-panel" orientation="vertical">
