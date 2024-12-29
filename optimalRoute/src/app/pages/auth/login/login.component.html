@@ -1,4 +1,5 @@
 <app-header>
     <a href="registration" class="btn bg-transparent button">Зарегистрироваться</a>
 </app-header>
-<app-auth-form class="login-form" [btnText]="'Войти'"></app-auth-form>
+<app-auth-form class="login-form" (hasButtonPressed)="hasLoginButtonPressed($event)" [authFormGroup]="loginFormGroup"
+    [btnText]="'Войти'"></app-auth-form>

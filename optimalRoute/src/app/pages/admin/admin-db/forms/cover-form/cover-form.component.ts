@@ -204,7 +204,6 @@ export class CoverFormComponent implements OnInit, AfterViewInit {
                                     next: typeCovers => {
                                         this.coverTypes = typeCovers;
 
-                                        this.coverTypes.splice(index, 1);
                                         this.coverTypeEditForm.controls.splice(index, 1);
                                         this.coverTypesArrSize--;
                                     },

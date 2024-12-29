@@ -15,6 +15,7 @@ import { ToastrService } from 'ngx-toastr';
 import { ModalSelectingComponent } from '../../modals/modal-selecting/modal-selecting/modal-selecting.component';
 import { Router } from '@angular/router';
 import { ModalSavingConfirmComponent } from '../../modals/modal-saving-confirm/modal-saving-confirm/modal-saving-confirm.component';
+import { ModalDeleteConfirmComponent } from '../../modals/modal-delete-confirm/modal-delete-confirm.component';
 
 @Component({
     selector: 'app-admin-page',
@@ -1278,5 +1279,35 @@ export class AdminPageComponent {
             .catch(() => {
                 this.router.navigateByUrl(nextPageUrl);
             });
+    }
+
+    deleteUDS() {
+        let uds: UDS = {
+            id_uds: this.currentUDS!.id_uds,
+            name: this.currentUDS!.name,
+            crossroads: this.crossroadList,
+            roads: this.roadList,
+            route: null,
+        };
+
+        const modalRef = this.modalService.open(ModalDeleteConfirmComponent, {
+            centered: true,
+        });
+        modalRef.componentInstance.deletedObj = this.currentUDS?.name;
+
+        modalRef.result
+            .then(() => {
+                this.httpService.deleteUDS(uds).subscribe({
+                    next: () => {
+                        this.toastr.success('Карта успешно удалена', 'Удаление');
+
+                        this.router.navigateByUrl('admin-page/2');
+                    },
+                    error: () => {
+                        this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
+                    },
+                });
+            })
+            .catch(() => {});
     }
 }

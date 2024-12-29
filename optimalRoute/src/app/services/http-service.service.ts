@@ -8,6 +8,7 @@ import { TypeCover } from '../models/cover-type.model';
 import { TrafficLights } from '../models/traffic-light.model';
 import { Observable } from 'rxjs';
 import { UDS } from '../models/UDS.model';
+import { AuthUser } from '../pages/auth/auth-user-constant';
 
 @Injectable({
     providedIn: 'root',
@@ -57,6 +58,10 @@ export class HttpService {
         return this.http.get<UDS[]>(`${this.apiUrl}/maps`);
     } 
 
+    getUDSListUser(): Observable<UDS[]> {
+        return this.http.get<UDS[]>(`${this.apiUrl}/maps-user`);
+    }
+
     addMapDbValue<T>(value: T, url: string) {
         return this.http.post(`${this.apiUrl}/admin/${url}`, value);
     }
@@ -80,5 +85,12 @@ export class HttpService {
     deleteUDS (value: UDS) {
         return this.http.put(`${this.apiUrl}/map`, value)
     }
-    
+
+    addNewUser (user: AuthUser) {
+        return this.http.post(`${this.apiUrl}/add-user`, user);
+    }
+
+    authorizeUser (user: AuthUser) {
+        return this.http.post(`${this.apiUrl}/check-user`, user)
+    }
 }

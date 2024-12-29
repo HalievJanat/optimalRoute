@@ -229,7 +229,6 @@ export class VehicleFormComponent implements OnInit, AfterViewInit {
                                     next: vehicles => {
                                         this.vehicles = vehicles;
 
-                                        this.vehicles.splice(index, 1);
                                         this.vehicleEditForm.controls.splice(index, 1);
                                         this.vehiclesArrSize--;
                                     },

@@ -210,7 +210,6 @@ export class DriverFormComponent implements OnInit, AfterViewInit {
                             next: drivers => {
                                 this.drivers = drivers;
 
-                                this.drivers.splice(index, 1);
                                 this.driverEditForm.controls.splice(index, 1);
                                 this.driversArrSize--;
                             },

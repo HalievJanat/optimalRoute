@@ -207,7 +207,6 @@ export class CorruptionFormComponent implements OnInit, AfterViewInit {
                                     next: udsList => {
                                         this.udsList = udsList;
 
-                                        this.corruptionDegrees.splice(index, 1);
                                         this.corruptionDegreeEditForm.controls.splice(index, 1);
                                         this.corruptionDegreeArrSize--;
                                     },

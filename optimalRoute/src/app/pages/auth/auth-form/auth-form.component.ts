@@ -1,33 +1,35 @@
-import { Component, inject, Input } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { isRequiredError, stringRangeValidator } from '../../admin/admin-db/forms/validators';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { isRequiredError } from '../../admin/admin-db/forms/validators';
+import { CommonModule } from '@angular/common';
 
 @Component({
     selector: 'app-auth-form',
     standalone: true,
-    imports: [ReactiveFormsModule],
+    imports: [ReactiveFormsModule, CommonModule],
     templateUrl: './auth-form.component.html',
     styleUrl: './auth-form.component.scss',
 })
 export class AuthFormComponent {
+    isPasswordVisible = false;
     @Input() btnText = '';
+    @Input() authFormGroup!: FormGroup<{
+        login: FormControl<string>;
+        password: FormControl<string>;
+    }>;
+    @Output() hasButtonPressed = new EventEmitter<boolean>;
 
-    private fb = inject(FormBuilder);
+    constructor() {}
 
-    authFormGroup = this.fb.group({
-        login: ['', [Validators.required, stringRangeValidator(12, 4)]],
-        password: ['', [Validators.required, stringRangeValidator(12, 4)]],
-    });
-
-    constructor(private router: Router) {}
+    changePasswordVisibility() {
+        this.isPasswordVisible = !this.isPasswordVisible;
+    }
 
     click() {
-        this.router.navigateByUrl('admin-page');
+        this.hasButtonPressed.emit(true);
     }
 
     isRequiredAuthError(form: FormGroup) {
         return isRequiredError(form);
     }
-
 }
