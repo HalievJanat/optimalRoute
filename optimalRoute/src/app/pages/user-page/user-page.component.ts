@@ -886,6 +886,7 @@ export class UserPageComponent {
         this.stopVusialOptimalRoute();
         this.isRouteMap = false;
         this.isModelTime = false;
+        this.criteriaElement = [];
 
         this.crossroadList = this.uds.crossroads;
         this.roadList = this.uds.roads;
