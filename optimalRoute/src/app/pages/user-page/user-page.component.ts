@@ -948,18 +948,18 @@ export class UserPageComponent {
             return;
         }
         this.timeShowOptimalRoute = 0;
-        this.uds.route!.all_routes[0] = {
-            name: 'Оптимальный маршрут',
-            criteria_one_element: [5, 0],
-            time_spend_one_element: [72.06, 72.06],
-            route: [3, 2]
-        }
-        this.uds.route!.all_routes[1] = {
-            name: 'Маршрут 1',
-            criteria_one_element: [5, 0],
-            time_spend_one_element: [72.06, 72.06],
-            route: [3, 2]
-        }
+        // this.uds.route!.all_routes[0] = {
+        //     name: 'Оптимальный маршрут',
+        //     criteria_one_element: [5, 0],
+        //     time_spend_one_element: [72.06, 72.06],
+        //     route: [3, 2]
+        // }
+        // this.uds.route!.all_routes[1] = {
+        //     name: 'Маршрут 1',
+        //     criteria_one_element: [5, 0],
+        //     time_spend_one_element: [72.06, 72.06],
+        //     route: [3, 2]
+        // }
         setTimeout(() => {
             console.log(this.uds.route?.all_routes[0]);
 
