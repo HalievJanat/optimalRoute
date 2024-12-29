@@ -287,7 +287,7 @@ export class AdminPageComponent {
                         this.toastr.warning('Не удаётся переместить перекресток', 'Предупреждение');
                         return;
                     }
-                } else {
+                } else if (crossroad_2 === this.indexSelectedElement) {
                     let ky = this.calculateKLine(this.crossroadList[crossroad_1].x, this.crossroadList[crossroad_1].y, X, Y);
                     let by = this.calculateBLine(Y, ky, X);
 
