@@ -1,15 +1,31 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
 <form [formGroup]="authFormGroup">
     <div class="col">
         <div class="col mb-4">
             <input type="text" class="form-control" formControlName="login" placeholder="Логин*" />
             @if (authFormGroup.controls.login.hasError('stringRange')) {
-                <span>Логин должен быть от 4 до 12 символов</span>
+                <span class="error-span">Логин должен быть от 4 до 12 символов</span>
             }
         </div>
         <div class="col mb-4">
-            <input type="text" class="form-control" formControlName="password" placeholder="Пароль*" />
+            <div class="input-group">
+                <input [type]="isPasswordVisible ? 'text' : 'password'" class="form-control" formControlName="password" placeholder="Пароль*" />
+                <div class="input-group-append">
+                    <span class="input-group-text">
+                        <i
+                          class="fa"
+                          [ngClass]="{
+                            'fa-eye-slash': !isPasswordVisible,
+                            'fa-eye': isPasswordVisible
+                          }"
+                          (click)="changePasswordVisibility()"
+                        ></i>
+                    </span>
+                  </div>
+            </div>
             @if (authFormGroup.controls.password.hasError('stringRange')) {
-                <span>Пароль должен быть от 4 до 12 символов</span>
+                <span class="error-span">Пароль должен быть от 4 до 12 символов</span>
             }
         </div>
         <div class="col mb-4">
@@ -18,7 +34,7 @@
             </button>
             <div class="col mb-4">
                 @if (isRequiredAuthError(authFormGroup)) {
-                    <span>* - поля являются обязательными</span>
+                    <span class="error-span">* - поля являются обязательными</span>
                 }
             </div>  
         </div>   

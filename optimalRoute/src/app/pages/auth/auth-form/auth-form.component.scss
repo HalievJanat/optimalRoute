@@ -13,7 +13,16 @@ form {
     width: 20%;
 }
 
-span {
+.input-group-append .input-group-text {
+    background-color: rgba(154, 154, 149, 0.5);
+    height: 100%; /* Растягиваем по высоте инпута */
+    display: flex;
+    align-items: center; /* Центрируем иконку вертикально */
+    justify-content: center; /* Центрируем иконку горизонтально (опционально) */
+    padding: 0 10px; /* Дополнительное внутреннее отступление, чтобы иконка не прилипала */
+}
+
+.error-span {
     position: absolute;
     color: #ff0000;
     user-select: none;
