@@ -1,13 +1,16 @@
 import { inject } from '@angular/core';
-import { authUser } from './auth-user-constant';
 import { Router } from '@angular/router';
+import { AuthUser } from './auth-user-constant';
 
 export const canActivateAuth = (route: import('@angular/router').ActivatedRouteSnapshot) => {
     const router = inject(Router);
+    let item = sessionStorage.getItem('user');
 
-    if (!authUser.login) {
+    if (!item) {
         return router.navigateByUrl('login');
     }
+
+    const authUser: AuthUser = JSON.parse(item);
 
     const restrictedRoutes = ['admin-page', 'admin-page/db']; // Укажите маршруты, которые требуют adminRole
 

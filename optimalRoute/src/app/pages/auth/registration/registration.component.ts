@@ -5,7 +5,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { stringRangeValidator } from '../../admin/admin-db/forms/validators';
 import { ToastrService } from 'ngx-toastr';
-import { AuthUser, authUser } from '../auth-user-constant';
+import { AuthUser } from '../auth-user-constant';
 import { HttpService } from '../../../services/http-service.service';
 
 @Component({
@@ -48,13 +48,17 @@ export class RegistrationComponent {
         this.httpService.addNewUser(newUser).subscribe({
             next: isAdding => {
                 if (isAdding) {
-                    authUser.login = login;
-                    authUser.password = password;
-                    authUser.adminRole = false;
+                    const authUser: AuthUser = {
+                        login: login,
+                        password: password,
+                        adminRole: false,
+                    };
+                    sessionStorage.setItem('user', JSON.stringify(authUser));
+                    
                     this.router.navigateByUrl('user-page');
                     return
                 }
-                
+
                 this.registrationFormGroup.reset();
                 this.registrationFormGroup.enable();
                 this.toastr.error('Пользователь с таким логином уже существует', 'Ошибка')
