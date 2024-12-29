@@ -195,7 +195,6 @@ export class StreetFormComponent implements OnInit, AfterViewInit {
                                     next: streets => {
                                         this.streets = streets;
 
-                                        this.streets.splice(index, 1);
                                         this.streetEditForm.controls.splice(index, 1);
                                         this.streetsArrSize--;
                                     },

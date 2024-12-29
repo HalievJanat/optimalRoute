@@ -228,7 +228,6 @@ export class FuelFormComponent implements OnInit, AfterViewInit {
                                             next: typeFuels => {
                                                 this.typeFuels = typeFuels;
 
-                                                this.typeFuels.splice(index, 1);
                                                 this.typeFuelEditForm.controls.splice(index, 1);
                                                 this.typeFuelsArrSize--;
                                             },

@@ -204,7 +204,6 @@ export class TrafficLightsFormComponent implements OnInit, AfterViewInit {
                                     next: trafficLights => {
                                         this.trafficLights = trafficLights;
 
-                                        this.trafficLights.splice(index, 1);
                                         this.trafficLightEditForm.controls.splice(index, 1);
                                         this.trafficLightsArrSize--;
                                     },
