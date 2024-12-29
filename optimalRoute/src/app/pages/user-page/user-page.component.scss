@@ -66,6 +66,14 @@ a:hover {
         padding-left: 0px;
         border-bottom: #fff;
 
+        .table-route {
+            width: 100%;
+            table {
+                width: 100%;
+                font-size: 10;
+            }
+        }
+
         button:hover {
             color: gray;
             border-color: gray;

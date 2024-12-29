@@ -133,12 +133,14 @@ export class UserPageComponent {
 
     route?: Route;
 
+    start_crossroad: number = -1;
+    end_crossroad: number = -1;
     isDistance: boolean = false;
     isTime: boolean = false;
     isCost: boolean = false;
 
-    start_crossroad: number = -1;
-    end_crossroad: number = -1;
+    dropdownScaleModelList: number[] = [1, 10, 20];
+    dropdownScaleModel: number = 1;
 
     timeShowOptimalRoute: number = 0;
     timeOut!: ReturnType<typeof setTimeout>;
@@ -150,9 +152,15 @@ export class UserPageComponent {
     isColorFillTrafficLight: boolean[] = [];
     timeModel: number = 0;
     timeSpendOneElement: number[] = [];
+    criteriaOneElement: number[] = [];
+    criteriaElement: string[] = [];
+
+    indexRoute: number = 0;
 
     isOptimalRoute: boolean = false;
     isRouteMap: boolean = false;
+    isModelTime: boolean = false;
+    isCriteriaElement: boolean = false;
     nameRoute: string = '';
 
     gridSize = 50; // Масштаб
@@ -164,7 +172,7 @@ export class UserPageComponent {
     //Метод для правой панели
     methodRightPanelOpen(): void {
         this.isRightPanelOpen = !this.isRightPanelOpen;
-        if (this.isVisualMenu) {
+        if (this.isVisualMenu || this.isOptimalRoute) {
             this.gridDrowSize();
 
             let tempGridSize = this.gridSize;
@@ -180,7 +188,7 @@ export class UserPageComponent {
     methodLeftPanelOpen(): void {
         this.isLeftPanelOpen = !this.isLeftPanelOpen;
 
-        if (this.isVisualMenu) {
+        if (this.isVisualMenu || this.isOptimalRoute) {
             this.gridDrowSize();
 
             let tempGridSize = this.gridSize;
@@ -248,6 +256,8 @@ export class UserPageComponent {
     leftClickCanvas(X: number, Y: number): void {
         this.isLeftClickCrossroad = false;
         this.isLeftClickRoad = false;
+        this.isRouteMap = false;
+        this.isModelTime = false;
         
         if ((!this.isRouteStart && !this.isRouteEnd) || !this.defineClickCrossroad(X, Y)) {
             if (!this.isDriver) this.rightPanelHeaderText = '';
@@ -278,6 +288,8 @@ export class UserPageComponent {
     doubleClickCanvas(X: number, Y: number): void {
         this.isLeftClickCrossroad = false;
         this.isLeftClickRoad = false;
+        this.isRouteMap = false;
+        this.isModelTime = false;
         if (this.defineClickCrossroad(X, Y)) {
             this.rightPanelHeaderText = 'Параметры перекрёстка';
             const crossroad = this.crossroadList[this.indexSelectedElement].traffic_light;
@@ -468,7 +480,7 @@ export class UserPageComponent {
                     stroke = 'black';
                 }
             }
-            this.drawLine(x1, y1, x2, y2, stroke, this.roadList[i].direction);
+            this.drawLine(x1, y1, x2, y2, stroke, this.roadList[i].direction, 1);
         }
         this.layer.draw();
     }
@@ -552,10 +564,10 @@ export class UserPageComponent {
         const height = this.stage.height();
 
         for (let x = 0; x < width; x += this.gridSize) {
-            this.drawLine(x, 0, x, height, '#ddd', -1);
+            this.drawLine(x, 0, x, height, '#ddd', -1, 1);
         }
         for (let y = 0; y < height; y += this.gridSize) {
-            this.drawLine(0, y, width, y, '#ddd', -1);
+            this.drawLine(0, y, width, y, '#ddd', -1, 1);
         }
     }
 
@@ -642,11 +654,11 @@ export class UserPageComponent {
                 y2 = this.crossroadList[this.roadList[i].crossroad_2].y - this.radius;
             }
 
-            this.drawLine(x1, y1, x2, y2, '#000', this.roadList[i].direction);
+            this.drawLine(x1, y1, x2, y2, '#000', this.roadList[i].direction, 1);
         }
     }
 
-    public drawLine(x1: number, y1: number, x2: number, y2: number, stroke: string, direction: number): void {
+    public drawLine(x1: number, y1: number, x2: number, y2: number, stroke: string, direction: number, strokeWidth: number): void {
         if (direction == -1) {
             this.layer.add(
                 new Konva.Line({
@@ -660,7 +672,7 @@ export class UserPageComponent {
                 new Konva.Arrow({
                     points: [x1, y1, x2, y2],
                     stroke: stroke,
-                    strokeWidth: 1,
+                    strokeWidth: strokeWidth,
                     fill: stroke,
                     pointerAtBeginning: true,
                 })
@@ -819,9 +831,61 @@ export class UserPageComponent {
             .catch(() => {});
     }
 
+    getElement(index: number): void {
+        this.gridDrowSize();
+        this.visualOptimalRoute(this.gridSize);
+
+        if (index % 2 === 0) {
+            let i = 0;
+            let direction = 0;
+            let criteriaElement = this.criteriaElement[index].toString();
+            let criteriaElementStart = criteriaElement.charAt(0);
+            let criteriaElementEnd = criteriaElement.charAt(3);
+
+            while (i < this.roadList.length) {
+                let crossroad_1 = this.roadList[i].crossroad_1;
+                let crossroad_2 = this.roadList[i].crossroad_2;
+                let crossroadOptimal_1 = Number(criteriaElementStart);
+                let crossroadOptimal_2 = Number(criteriaElementEnd);
+                if (crossroad_1 === crossroadOptimal_1 && crossroad_2 === crossroadOptimal_2) {
+                    direction = this.roadList[i].direction;
+                    break;
+                } else if (crossroad_2 === crossroadOptimal_1 && crossroad_1 === crossroadOptimal_2) { 
+                    direction = this.roadList[i].direction;
+                    break;
+                }
+                i++;
+            }
+
+            let listCoordinate = this.roadCircle(i);
+
+            let x1 = listCoordinate[0];
+            let x2 = listCoordinate[1];
+            let y1 = listCoordinate[2];
+            let y2 = listCoordinate[3];
+
+            this.drawLine(x1, y1, x2, y2, 'orange', direction, 2);
+        } else {
+            let x = this.crossroadList[Number(this.criteriaElement[index])].x;
+            let y = this.crossroadList[Number(this.criteriaElement[index])].y;
+            const circle = new Konva.Circle({
+                x: x,
+                y: y,
+                radius: this.radius,
+                stroke: 'orange',
+            });
+    
+            this.layer.add(circle);
+            
+            this.layer.draw();
+        }
+    }
+
     setRouteForBuild(index: number) {
+        this.indexRoute = index;
         this.stopVusialOptimalRoute();
-        this.isRouteMap= false;
+        this.isRouteMap = false;
+        this.isModelTime = false;
 
         this.crossroadList = this.uds.crossroads;
         this.roadList = this.uds.roads;
@@ -834,43 +898,76 @@ export class UserPageComponent {
         this.crossroadOptimalRoute = this.uds.route!.all_routes[index].route;
         this.timeSpendOneElement = this.uds.route!.all_routes[index].time_spend_one_element;
         this.timeShowOptimalRoute = this.timeSpendOneElement[this.timeSpendOneElement.length - 1] * 1000;
+        this.criteriaOneElement = this.uds.route!.all_routes[index].criteria_one_element;
 
-        // this.crossroadOptimalRoute = [3, 2];
-        // this.timeSpendOneElement = [72.06, 72.06];
+        //this.crossroadOptimalRoute = [3, 2];
+        for (let i = 1; i < this.crossroadOptimalRoute!.length; i++) {
+            this.criteriaElement.push(this.crossroadOptimalRoute![i - 1].toString() + '->' + this.crossroadOptimalRoute![i].toString());
+            this.criteriaElement.push(this.crossroadOptimalRoute![i].toString());
+        }
+
+        // this.timeSpendOneElement = [70.06, 70.06];
         // this.timeShowOptimalRoute = this.timeSpendOneElement[this.timeSpendOneElement.length - 1] * 1000;
-
-        // console.log(this.crossroadOptimalRoute);
-        // console.log(this.timeSpendOneElement);
-        // console.log(this.timeShowOptimalRoute);
+        // this.criteriaOneElement = [5, 0];
 
         this.simulateRoutes();
     }
 
+    setScaleModel(index: number): void {
+        this.dropdownScaleModel = this.dropdownScaleModelList[index];
+    }
+
     closeVusialOptimalRoute(): void {
-        this.isOptimalRoute = false;
-        this.stopVusialOptimalRoute();
-
-        this.isVisualMenu = true;
         this.crossroadOptimalRoute = [];
-
         this.start_crossroad = -1;
         this.end_crossroad = -1;
 
-        this.gridDrowSize();
-        this.visualOptimalRoute(this.gridSize);
+        if (this.isOptimalRoute) {
+            this.isVisualMenu = true;
+            this.gridDrowSize();
+            this.visualOptimalRoute(this.gridSize);
+        }
+        this.isOptimalRoute = false;
+        this.stopVusialOptimalRoute();
+        this.dropdownScaleModel = 1;
+        this.dropDownDriver = undefined;
+        this.full_name = '';
+        this.isCost = false;
+        this.isDistance = false;
+        this.isTime = false;
     }
 
     stopVusialOptimalRoute(): void {
-        if (!this.timeShowOptimalRoute) {
-            return;
-        }
         clearTimeout(this.timeOut);
-        this.timeShowOptimalRoute = 0;
         clearInterval(this.intervalDescriptorColor);
         clearInterval(this.intervalDescriptorTime);
         clearInterval(this.intervalDescriptorAuto);
         this.timeModel = 0;
         this.isColorFillTrafficLight = [];
+        if (!this.timeShowOptimalRoute) {
+            return;
+        }
+        this.timeShowOptimalRoute = 0;
+        this.uds.route!.all_routes[0] = {
+            name: 'Оптимальный маршрут',
+            criteria_one_element: [5, 0],
+            time_spend_one_element: [72.06, 72.06],
+            route: [3, 2]
+        }
+        this.uds.route!.all_routes[1] = {
+            name: 'Маршрут 1',
+            criteria_one_element: [5, 0],
+            time_spend_one_element: [72.06, 72.06],
+            route: [3, 2]
+        }
+        setTimeout(() => {
+            console.log(this.uds.route?.all_routes[0]);
+
+            this.gridDrowSize();
+            this.visualOptimalRoute(this.gridSize);
+
+
+        }, 99);
     }
 
     simulateRoutes(): void {
@@ -893,7 +990,7 @@ export class UserPageComponent {
                     this.isColorFillTrafficLight[i] = false;
                 }
             }
-        }, 999);
+        }, 999 / this.dropdownScaleModel);
         this.intervalDescriptorTime = setInterval(() => {
             setTimeout(() => {
                 this.gridDrowSize();
@@ -901,16 +998,11 @@ export class UserPageComponent {
                 this.timeModel += 1;
                 console.log("Прошла(-о): " + this.timeModel  + " секунд(-ы)(-а).");
             }, 1);
-        }, 999);
+        }, 999 / this.dropdownScaleModel);
         this.simulateAuto();
         this.timeOut = setTimeout(() => {
-            clearInterval(this.intervalDescriptorTime);
-            clearInterval(this.intervalDescriptorColor);
-            clearInterval(this.intervalDescriptorAuto);
-            this.isVisualMenu = true;
-            this.isColorFillTrafficLight = [];
-            this.timeModel = 0;
-        }, this.timeShowOptimalRoute + 100);
+            this.stopVusialOptimalRoute();
+        }, (this.timeShowOptimalRoute + 100) / this.dropdownScaleModel);
 
         console.log(this.crossroadList);
         console.log(this.roadList)
@@ -972,11 +1064,6 @@ export class UserPageComponent {
                             break;
                         }
                     }
-                    console.log(this.crossroadOptimalRoute);
-                    console.log("index: 1: " + ((indexListElement + 1) / 2 - 1));
-                    console.log("index: 2:  " + ((indexListElement + 1) / 2));
-                    console.log(this.crossroadOptimalRoute![(indexListElement + 1) / 2 - 1]);
-                    console.log(this.crossroadOptimalRoute![(indexListElement + 1) / 2]);
 
                     lengthRoad = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
                     let timeRoad;
@@ -1007,7 +1094,7 @@ export class UserPageComponent {
                 }
                 this.drawCircle(x, y);
             }, 1);
-        }, 999);
+        }, 999 / this.dropdownScaleModel);
     }
 
     drawCircle (x: number, y: number): void {

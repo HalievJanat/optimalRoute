@@ -112,32 +112,91 @@
         @if (isOptimalRoute) {
             <ul>
                 <li ngbNavItem>
-                    <button ngbNavLink autofocus (click)="isRouteMap= true; 
+                    <button ngbNavLink autofocus (click)="isRouteMap= true; isModelTime= false;
                     rightPanelHeaderText = '';
-                    this.isLeftClickCrossroad = false;
-                    this.isLeftClickRoad = false;">
+                    this.gridDrowSize();
+                    this.visualOptimalRoute(this.gridSize);">
                         <img src="/assets/route-32.png" alt="" />
                         <span>Просмотр маршрутов</span>
                     </button>
                 </li>
-                <button class="buttonRoute submit-button" (click)="closeVusialOptimalRoute()">Закончить маршрут</button>
-            </ul>
-            @if(isRouteMap) {
-                <div class="panel-el">
-                    <div ngbDropdown [autoClose]="true" class="d-inline-block">
-                        <button type="button" class="btn btn-outline-primary dropdown-button" ngbDropdownToggle>
-                            {{ nameRoute || "Выберите водителя*"}} 
-                        </button>
-                        <div ngbDropdownMenu aria-labelledby="dropdownBasic">
-                            @for(route of uds.route?.all_routes; track $index) {
-                                <button ngbDropdownItem (click)="setRouteForBuild($index)">
-                                    {{ route.name }}
-                                </button>
-                            } 
+                @if(isRouteMap) {
+                    <div class="panel-el">
+                        <div ngbDropdown [autoClose]="true" class="d-inline-block">
+                            <button type="button" class="btn btn-outline-primary dropdown-button" ngbDropdownToggle>
+                                {{ nameRoute || "Выберите маршрут*"}} 
+                            </button>
+                            <div ngbDropdownMenu aria-labelledby="dropdownBasic">
+                                @for(route of uds.route?.all_routes; track $index) {
+                                    <button ngbDropdownItem (click)="setRouteForBuild($index)">
+                                        {{ route.name }}
+                                    </button>
+                                }
+                            </div>
                         </div>
                     </div>
-                </div>
-            }
+                }
+                @if (timeShowOptimalRoute) {
+                    <button class="buttonRoute submit-button" (click)="stopVusialOptimalRoute()">Завершить построение маршрута</button>
+                } @else {
+                    <li ngbNavItem>
+                        <button ngbNavLink autofocus (click)="isModelTime= true; isRouteMap = false;
+                        this.gridDrowSize();
+                        this.visualOptimalRoute(this.gridSize);
+                        rightPanelHeaderText = '';">
+                            <img src="/assets/route-32.png" alt="" />
+                            <span>Модельное время</span>
+                        </button>
+                    </li>
+                    @if (isModelTime) {
+                        <div class="panel-el">
+                            <div ngbDropdown [autoClose]="true" class="d-inline-block">
+                                <button type="button" class="btn btn-outline-primary dropdown-button" ngbDropdownToggle>
+                                    {{ dropdownScaleModel }} 
+                                </button>
+                                <div ngbDropdownMenu aria-labelledby="dropdownBasic">
+                                    @for(element of dropdownScaleModelList; track $index) {
+                                        <button ngbDropdownItem (click)="setScaleModel($index)">
+                                            {{ element }}
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <div (click)="isModelTime" class="table-route">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Элемент</th>
+                                    <th scope="col">Полученное значение критерия</th>
+                                    <th scope="col"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (element of criteriaOneElement; track $index) {
+                                    <tr>
+                                        <th>{{ criteriaElement[$index] }}</th>
+                                        <th>{{element}}</th>
+                                        <th>
+                                            <div ngbDropdown class="d-inline-block">
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-outline-primary dropdown-button valid-dropdown-button"
+                                                    (click)="getElement($index)"
+                                                >Показать</button>
+                                            </div>
+                                        </th>   
+                                    </tr>
+                                }    
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                <button class="buttonRoute submit-button" (click)="closeVusialOptimalRoute()">Вернуться к выбору критериев</button>
+            </ul>
+            
         }
     </div>
         
