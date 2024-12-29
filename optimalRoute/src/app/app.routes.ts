@@ -29,6 +29,11 @@ export const routes: Routes = [
         canActivate: [canActivateAuth],
     },
     {
+        path: 'admin-page2',
+        component: AdminPageComponent,
+        canActivate: [canActivateAuth],
+    },
+    {
         path: 'admin-page/db',
         component: AdminDbComponent,
         canActivate: [canActivateAuth],

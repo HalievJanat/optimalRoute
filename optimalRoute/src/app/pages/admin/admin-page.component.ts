@@ -1300,9 +1300,11 @@ export class AdminPageComponent {
                 this.httpService.deleteUDS(uds).subscribe({
                     next: () => {
                         this.toastr.success('Карта успешно удалена', 'Удаление');
-                        
-                        this.router.navigated = false;
-                        this.router.navigateByUrl('admin-page');                    },
+
+                        this.router.url === 'admin-page'
+                            ? this.router.navigateByUrl('admin-page2')
+                            : this.router.navigateByUrl('admin-page');
+                    },
                     error: () => {
                         this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
                     },

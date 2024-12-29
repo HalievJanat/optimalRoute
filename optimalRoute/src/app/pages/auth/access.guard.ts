@@ -12,7 +12,7 @@ export const canActivateAuth = (route: import('@angular/router').ActivatedRouteS
 
     const authUser: AuthUser = JSON.parse(item);
 
-    const restrictedRoutes = ['admin-page', 'admin-page/db']; // Укажите маршруты, которые требуют adminRole
+    const restrictedRoutes = ['admin-page', 'admin-page2', 'admin-page/db']; // Укажите маршруты, которые требуют adminRole
 
     // Если пользователь пытается перейти на ограниченные страницы без adminRole
     if (!authUser.adminRole && restrictedRoutes.includes(route.routeConfig?.path || '')) {
