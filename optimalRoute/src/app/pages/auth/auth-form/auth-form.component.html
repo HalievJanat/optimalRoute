@@ -1,13 +1,26 @@
-<form>
+<form [formGroup]="authFormGroup">
     <div class="col">
         <div class="col mb-4">
-            <input type="text" class="form-control" placeholder="Логин*" />
+            <input type="text" class="form-control" formControlName="login" placeholder="Логин*" />
+            @if (authFormGroup.controls.login.hasError('stringRange')) {
+                <span>Логин должен быть от 4 до 12 символов</span>
+            }
         </div>
         <div class="col mb-4">
-            <input type="text" class="form-control" placeholder="Пароль*" />
+            <input type="text" class="form-control" formControlName="password" placeholder="Пароль*" />
+            @if (authFormGroup.controls.password.hasError('stringRange')) {
+                <span>Пароль должен быть от 4 до 12 символов</span>
+            }
         </div>
+        <div class="col mb-4">
+            <button router class="btn btn-primary submit-button" type="button" [disabled]="authFormGroup.invalid" (click)="click()">
+                {{ btnText }}
+            </button>
+            <div class="col mb-4">
+                @if (isRequiredAuthError(authFormGroup)) {
+                    <span>* - поля являются обязательными</span>
+                }
+            </div>  
+        </div>   
     </div>
-    <button router class="btn btn-primary submit-button" type="button" (click)="click()">
-        {{ btnText }}
-    </button>
 </form>

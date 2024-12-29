@@ -1,3 +1,24 @@
+div.col.mb-4 {
+    margin-bottom: 10% !important;
+}
+
+.ng-dirty.ng-invalid:not(form) {
+    border-color: #ff0000; /* red */
+    &::placeholder {
+        color: #ff0000;
+    }
+}
+
+form {
+    width: 20%;
+}
+
+span {
+    position: absolute;
+    color: #ff0000;
+    user-select: none;
+}
+
 button:hover {
     color: gray;
     border-color: gray;
@@ -9,12 +30,7 @@ input:focus {
 }
 
 .submit-button {
-    background: linear-gradient(
-        to right,
-        #9daaa7 0%,
-        #516662 76%,
-        #728380 100%
-    );
+    background: linear-gradient(to right, #9daaa7 0%, #516662 76%, #728380 100%);
     border-radius: 10px;
     border-color: white;
 }
