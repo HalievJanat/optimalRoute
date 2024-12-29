@@ -5,6 +5,8 @@ import { AuthUser, authUser } from '../auth-user-constant';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { stringRangeValidator } from '../../admin/admin-db/forms/validators';
 import { Router } from '@angular/router';
+import { HttpService } from '../../../services/http-service.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
     selector: 'app-login',
@@ -16,6 +18,8 @@ import { Router } from '@angular/router';
 export class LoginComponent {
     private fb = inject(FormBuilder);
     private router = inject(Router);
+    private httpService = inject(HttpService);
+    private toastr = inject(ToastrService);
 
     loginFormGroup = this.fb.nonNullable.group({
         login: ['', [Validators.required, stringRangeValidator(12, 4)]],
@@ -36,12 +40,29 @@ export class LoginComponent {
             return;
         }
 
-        //TODO посылаем POST, чтобы проверить, ест ли такое user иначе ошибка в toastr
-        authUser.login = login;
-        authUser.password = password;
-        authUser.adminRole = false;
+        const user: AuthUser = {
+            login: login,
+            password: password,
+            adminRole: false,
+        };
 
-        this.loginFormGroup.reset();
-        this.loginFormGroup.enable();
+        this.httpService.authorizeUser(user).subscribe({
+            next: areUserFind => {
+                if (areUserFind) {
+                    authUser.login = login;
+                    authUser.password = password;
+                    authUser.adminRole = false;
+                    this.router.navigateByUrl('user-page');
+                    return;
+                }
+
+                this.loginFormGroup.reset();
+                this.loginFormGroup.enable();
+                this.toastr.error('Ошибка в логине или пароле', 'Ошибка');
+            },
+            error: () => {
+                this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
+            },
+        });
     }
 }

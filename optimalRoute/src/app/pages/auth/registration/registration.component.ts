@@ -47,11 +47,18 @@ export class RegistrationComponent {
 
         this.httpService.addNewUser(newUser).subscribe({
             next: isAdding => {
-                //SOMETHING
-                //TODO посылаем POST, чтобы проверить, ест ли такое user иначе ошибка в toastr
-                authUser.login = login;
-                authUser.password = password;
-                authUser.adminRole = false;
+                if (isAdding) {
+                    authUser.login = login;
+                    authUser.password = password;
+                    authUser.adminRole = false;
+                    this.router.navigateByUrl('user-page');
+                    return
+                }
+                
+                this.registrationFormGroup.reset();
+                this.registrationFormGroup.enable();
+                this.toastr.error('Пользователь с таким логином уже существует', 'Ошибка')
+
             },
             error: () => {
                 this.toastr.error('Не удалось подключиться к серверу', 'Ошибка');
