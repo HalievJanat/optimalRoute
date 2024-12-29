@@ -1301,8 +1301,9 @@ export class AdminPageComponent {
                     next: () => {
                         this.toastr.success('Карта успешно удалена', 'Удаление');
 
+                        const currentUrl = this.router.url;
                         this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-                            this.router.navigate([this.router.url]);
+                            this.router.navigateByUrl(currentUrl);
                         });
                     },
                     error: () => {
