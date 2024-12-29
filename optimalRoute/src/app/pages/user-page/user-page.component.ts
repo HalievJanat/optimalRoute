@@ -53,7 +53,7 @@ export class UserPageComponent {
         // }
         
 
-        httpService.getUDSList().subscribe({
+        httpService.getUDSListUser().subscribe({
             next: uds => {
                 this.UDSList = uds;
             },
