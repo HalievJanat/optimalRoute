@@ -823,7 +823,7 @@ export class UserPageComponent {
         this.crossroadList = this.uds.crossroads;
         this.roadList = this.uds.roads;
 
-        if (!this.uds.route!.all_routes) {
+        if (!this.uds.route!.all_routes.length) {
             this.toastr.warning('Маршрут не найден!');
             return;
         }
