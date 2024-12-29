@@ -520,7 +520,7 @@ export class UserPageComponent {
             y1 = this.crossroadList[this.roadList[i].crossroad_1].y + this.radius;
             y2 = this.crossroadList[this.roadList[i].crossroad_2].y - this.radius;
         }
-        return [x1, x2, y1, y2]
+        return [x1, x2, y1, y2];
     }
 
     public gridDrowSize(): void {
@@ -762,7 +762,7 @@ export class UserPageComponent {
 
         this.isVisualMenu = false;
 
-        this.setRouteForBuild(0);
+        //this.setRouteForBuild(0);
 
         this.httpService.sendOptimalRoute(this.uds).subscribe({
             next: () => {
