@@ -913,7 +913,8 @@ export class UserPageComponent {
             this.criteriaOneElement[i] = Math.round(this.criteriaOneElement[i] * 100) / 100;
             this.resultParameter += this.criteriaOneElement[i];
         }
-
+        
+        this.resultParameter = Math.round(this.resultParameter * 100) / 100;
         // this.timeSpendOneElement = [70.06, 70.06];
         // this.timeShowOptimalRoute = this.timeSpendOneElement[this.timeSpendOneElement.length - 1] * 1000;
         // this.criteriaOneElement = [5, 0];
