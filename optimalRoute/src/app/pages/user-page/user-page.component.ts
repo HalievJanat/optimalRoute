@@ -269,7 +269,7 @@ export class UserPageComponent {
             return;
         }
         if (this.start_crossroad === this.indexSelectedElement || this.end_crossroad === this.indexSelectedElement) {
-            alert('Нельзя выбрать один и тот же перекресток');
+            this.toastr.warning('Нельзя выбрать один и тот же перекресток');
             return;
         } else if (this.isRouteStart === true) {
             this.start_crossroad = this.indexSelectedElement;
@@ -739,20 +739,20 @@ export class UserPageComponent {
 
     buildRoute(): void {
         if (this.start_crossroad === -1) {
-            alert('Точка отправления не выбрана');
+            this.toastr.warning('Точка отправления не выбрана');
             return;
         }
         if (this.end_crossroad === -1) {
-            alert('Точка прибытия не выбрана');
+            this.toastr.warning('Точка прибытия не выбрана');
             return;
         }
         if (this.dropDownDriver === undefined) {
-            alert('Водитель не выбран');
+            this.toastr.warning('Водитель не выбран');
             return;
         }
 
         if (!this.isCost && !this.isTime && !this.isDistance) {
-            alert('Критерий не выбран');
+            this.toastr.warning('Критерий не выбран');
             return;
         }
 
@@ -802,7 +802,7 @@ export class UserPageComponent {
                 //this.visualOptimalRoute(this.gridSize);
 
                 // if (!this.crossroadOptimalRoute?.length) {
-                //     alert('Маршрут не найден!');
+                //     this.toastr.warning('Маршрут не найден!');
                 // }
 
                 // this.crossroadOptimalRoute = [];
