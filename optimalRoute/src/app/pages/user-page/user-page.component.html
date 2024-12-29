@@ -116,10 +116,11 @@
                     rightPanelHeaderText = '';
                     this.isLeftClickCrossroad = false;
                     this.isLeftClickRoad = false;">
-                        <img src="/assets/auto.png" alt="" />
+                        <img src="/assets/route-32.png" alt="" />
                         <span>Просмотр маршрутов</span>
                     </button>
                 </li>
+                <button class="buttonRoute submit-button" (click)="closeVusialOptimalRoute()">Закончить маршрут</button>
             </ul>
             @if(isRouteMap) {
                 <div class="panel-el">
