@@ -954,7 +954,8 @@ export class UserPageComponent {
                             break;
                         }
                     }
-                    console.log("index: " + indexListElement);
+                    console.log("index: 1" + ((indexListElement + 1) / 2 - 1));
+                    console.log("index: 2" + ((indexListElement + 1) / 2));
                     console.log("Перекресток 1: " + this.crossroadOptimalRoute![(indexListElement + 1) / 2 - 1]);
                     console.log("Перекресток 2: " + this.crossroadOptimalRoute![(indexListElement + 1) / 2]);
 
